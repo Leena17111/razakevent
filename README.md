@@ -21,7 +21,7 @@ Equipment and certification management: helps admins and organizers coordinate t
 
 ## Project Structure
 
-RazakEvent uses a feature-based layered Flutter folder structure. The project is organized to separate shared resources, shared data files, and feature modules so that the codebase can grow across future sprints without becoming messy.
+RazakEvent uses a feature-based layered Flutter folder structure. The project is organized to separate shared resources, shared data files, and feature modules.
 
 ```text
 lib/
@@ -42,7 +42,8 @@ lib/
     └── <feature_name>/
         ├── presentation/   # Screens and UI
         ├── logic/          # Controllers and screen behavior
-        └── data/           # Optional Feature-specific models, repositories, and services if needed
+        └── data/           # Optional feature-specific models, repositories, and services if needed
+```
 
 ## Getting Started
 
@@ -55,7 +56,7 @@ flutter pub get
 flutter run
 ```
 
-Make sure Flutter is installed and an emulator or physical device is running before executing flutter run command
+Make sure Flutter is installed and an emulator or physical device is running before executing the `flutter run` command.
 
 A few resources to get you started if this is your first Flutter project:
 
