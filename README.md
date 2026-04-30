@@ -19,6 +19,31 @@ Equipment and certification management: helps admins and organizers coordinate t
 - **Backend / Cloud Services:** Firebase Authentication and Cloud Firestore
 - **Database:** Cloud Firestore
 
+## Project Structure
+
+RazakEvent uses a feature-based layered Flutter folder structure. The project is organized to separate shared resources, shared data files, and feature modules so that the codebase can grow across future sprints without becoming messy.
+
+```text
+lib/
+├── main.dart
+│
+├── core/
+│   ├── constants/      # Shared app colors, text styles, and constants
+│   ├── theme/          # App-wide theme configuration
+│   ├── utils/          # Validators and helper functions
+│   └── widgets/        # Reusable UI components
+│
+├── data/               # Common/shared data layer used by multiple features
+│   ├── models/         # Shared models, e.g. UserModel
+│   ├── repositories/   # Shared app-level data logic
+│   └── services/       # Shared Firebase/Auth/Firestore service functions
+│
+└── features/           # App modules organized by feature
+    └── <feature_name>/
+        ├── presentation/   # Screens and UI
+        ├── logic/          # Controllers and screen behavior
+        └── data/           # Optional Feature-specific models, repositories, and services if needed
+
 ## Getting Started
 
 To run this project locally:
