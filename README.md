@@ -5,9 +5,13 @@ An event management system built specifically for Kolej Tun Razak (KTR) at Unive
 # Modules
 
 User authentication and profile management: allows registration by users, authenticating users, managing their profiles, and logging out securely.
+
 Event management: Helps admins and organizers (club and community) manage upcoming events and paper workflow at KTR.
+
 Event participation: helps students browse upcoming events, apply for events, volunteer and submit feedback.
+
 Equipment and certification management: helps admins and organizers coordinate the process of equipment borrowing, and receiving ceritificates after the events.
+
 
 # Tech stack
 
