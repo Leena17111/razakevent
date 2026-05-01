@@ -1,94 +1,158 @@
 # GitHub Workflow
 
-This file explains how our team should push code and documentation to GitHub for RazakEvent development.
-
 ## Main Rule
 
 Do not work directly on the `main` branch.
 
-Each task should have its own branch. After completing the task, create a pull request and merge it into `main`.
+Each task or subtask should have its own branch. The branch name should follow the Jira work item number and a short task name.
 
-## 1. Get the latest main branch before starting any work
+After completing the task, commit your changes, push your branch, create a pull request, and merge it into `main`.
 
-\```bash
+---
+
+## Branch Naming Format
+
+Use this format:
+
+```bash
+AD-number-short-task-name
+```
+
+---
+
+## 1. Get the Latest Main Branch Before Starting Work
+
+Before starting any task, make sure your local `main` branch is updated.
+
+```bash
 git checkout main
 git pull origin main
-\```
+```
+
+---
 
 ## 2. Create a New Branch
 
-\```bash
-git checkout -b <branch-name>
-\```
+Create a new branch based on the Jira task or subtask you are working on.
+
+```bash
+git checkout -b AD-number-short-task-name
+```
+
+Example:
+
+```bash
+git checkout -b AD-11-registration-ui
+```
+
+---
 
 ## 3. Make Your Changes
 
 Complete your assigned coding or documentation task in the project files.
 
+---
 
-## 4. Check Changes
+## 4. Check Your Changes
 
-\```bash
+Check which files were changed:
+
+```bash
 git status
-\```
+```
+
+---
 
 ## 5. Add Changes
 
-\```bash
+Add all changed files:
+
+```bash
 git add .
-\```
+```
+
+Or add a specific file only:
+
+```bash
+git add file-path
+```
+
+---
 
 ## 6. Commit Changes
 
-\```bash
-git commit -m "<commit-message>"
-\```
+Commit message should include the Jira issue number and a short description.
 
-## 7. Push the Branch
+Format:
 
-\```bash
-git push origin <branch-name>
-\```
+```bash
+git commit -m "AD-number Short description of changes"
+```
+
+---
+
+## 7. Push Your Branch
+
+Push your branch to GitHub.
+
+```bash
+git push origin AD-number-short-task-name
+```
+
+---
 
 ## 8. Create a Pull Request
 
-On GitHub, create a pull request with:
+After pushing the branch:
 
-\```text
-base: main
-compare: <branch-name>
-\```
+1. Open the project repository on GitHub.
+2. Click **Compare & pull request**.
+3. Write the pull request title using the Jira issue number.
+4. Add a short description of what was done.
+5. Create the pull request.
 
-Then add a title and description.
+Pull request title format:
 
-## 9. Merge the Pull Request
+```text
+AD-number Short description of changes
+```
 
-After reviewing the changes, merge the pull request into `main`.
+---
 
-## 10. Update Local Main After Merge
+## 9. Review and Merge
 
-\```bash
+Before merging:
+
+1. Check that the code is correct.
+2. Make sure the app still runs.
+3. Ask a teammate to review if needed.
+4. Merge the pull request into `main`.
+
+After merging, delete the branch if it is no longer needed.
+
+---
+
+## 10. Start a New Task
+
+Before starting the next task, update your local `main` branch again:
+
+```bash
 git checkout main
 git pull origin main
-\```
+```
 
+Then create a new branch for the next Jira task:
 
-## Quick Summary
+```bash
+git checkout -b AD-number-short-task-name
+```
 
-\```bash
-git checkout main
-git pull origin main
+---
 
-git checkout -b <branch-name>
+## Important Notes
 
-git status
-git add .
-git commit -m "<commit-message>"
-git push origin <branch-name>
-\```
-
-Then create a pull request:
-
-\```text
-<branch-name> → main
-\```
+- Do not commit directly to `main`.
+- Always create a branch for each Jira task or subtask.
+- Always pull the latest `main` before starting new work.
+- Keep branch names short and clear.
+- Keep commit messages simple and understandable.
