@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'register_screen.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-import 'core/theme/app_theme.dart';
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-void main() {
-  runApp(const RazakEventApp());
+  runApp(const MyApp());
 }
 
 class RazakEventApp extends StatelessWidget {
@@ -14,18 +20,14 @@ class RazakEventApp extends StatelessWidget {
     return MaterialApp(
       title: 'RazakEvent',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'RazakEvent Sprint 1',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A237E),
+          primary: const Color(0xFF1A237E),
         ),
+        useMaterial3: true,
       ),
+      home: const RegisterScreen(),
     );
   }
 }
