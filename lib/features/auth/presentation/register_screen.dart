@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
  
 import '../logic/auth_controller.dart';
- 
+ import 'login_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // Brand colour tokens
 // ─────────────────────────────────────────────────────────────────────────────
@@ -782,7 +782,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           GestureDetector(
             // TODO: Navigate to LoginScreen (teammate's task — do not connect yet).
-            onTap: () {},
+            onTap: () {
+             Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (_) => const LoginScreen()),
+  );
+              
+            },
             child: const Text(
               'Log In',
               style: TextStyle(

@@ -6,6 +6,8 @@ import 'package:razakevent/core/widgets/custom_button.dart';
 import 'package:razakevent/core/widgets/custom_text_field.dart';
 import 'package:razakevent/data/services/auth_service.dart';
 import 'package:razakevent/features/home/presentation/home_screen.dart';
+import 'package:razakevent/features/auth/presentation/forgot_password_screen.dart';
+import 'package:razakevent/features/auth/presentation/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -176,7 +178,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: _HoverTextButton(
                           text: 'Forgot Password?',
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPasswordScreen(),
+                              ),
+    );
+                          },
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -218,7 +227,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: AppColors.textSecondary),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RegisterScreen(),
+      ),
+    );
+    
+                              },
                               style: TextButton.styleFrom(
                                 overlayColor: Colors.transparent,
                               ),
