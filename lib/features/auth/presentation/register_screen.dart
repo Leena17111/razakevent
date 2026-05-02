@@ -1,9 +1,10 @@
 // lib/features/auth/presentation/register_screen.dart
-// Jira AD-11: Design registration screen UI only.
-// No Firebase or backend logic connected yet.
-
+// Jira AD-11: Registration screen — UI connected to AuthController.
+ 
 import 'package:flutter/material.dart';
-
+ 
+import '../logic/auth_controller.dart';
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // Brand colour tokens
 // ─────────────────────────────────────────────────────────────────────────────
@@ -11,13 +12,26 @@ const _navy = Color(0xFF1A237E);
 const _red = Color(0xFFC8102E);
 const _bg = Color(0xFFF5F6FA);
 const _inputBg = Color(0xFFF3F4F6);
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // Role enum
 // ─────────────────────────────────────────────────────────────────────────────
 enum UserRole { student, organizerHead, secretary }
-
+ 
 extension _RoleMeta on UserRole {
+  /// The exact role string expected by AuthController / UserModel.
+  String get roleString {
+    switch (this) {
+      case UserRole.student:
+        return 'Student';
+      case UserRole.organizerHead:
+        return 'Organizer Head';
+      case UserRole.secretary:
+        return 'Secretary';
+    }
+  }
+ 
+  /// Display label shown on the card (may contain a newline).
   String get label {
     switch (this) {
       case UserRole.student:
@@ -28,7 +42,7 @@ extension _RoleMeta on UserRole {
         return 'Secretary';
     }
   }
-
+ 
   IconData get icon {
     switch (this) {
       case UserRole.student:
@@ -39,7 +53,7 @@ extension _RoleMeta on UserRole {
         return Icons.business_center_rounded;
     }
   }
-
+ 
   Color get accent {
     switch (this) {
       case UserRole.student:
@@ -51,40 +65,67 @@ extension _RoleMeta on UserRole {
     }
   }
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // RegisterScreen
 // ─────────────────────────────────────────────────────────────────────────────
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
-
+ 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
-
+ 
 class _RegisterScreenState extends State<RegisterScreen> {
+  // ── Backend ───────────────────────────────────────────────────────────────
+  final AuthController _authController = AuthController();
+ 
+  // ── Form ──────────────────────────────────────────────────────────────────
   final _formKey = GlobalKey<FormState>();
   UserRole? _selectedRole;
-
-  // Common
+ 
+  // ── Common controllers ────────────────────────────────────────────────────
   final _fullNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _matricCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
-
-  // Organizer Head
+ 
+  // ── Organizer Head ────────────────────────────────────────────────────────
   String? _orgType;
+  String? _orgName;
   final _verificationCtrlOrg = TextEditingController();
-
-  // Secretary
+ 
+  // ── Secretary ─────────────────────────────────────────────────────────────
   final _verificationCtrlSec = TextEditingController();
-
-  // Password visibility
+ 
+  // ── UI state ──────────────────────────────────────────────────────────────
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-
+  bool _isRegistering = false;
+ 
+  // ── Organization names ────────────────────────────────────────────────────
+  static const List<String> _excoNames = [
+    'Exco Sukan',
+    'Exco Dokumentasi',
+    'Exco Keselamatan',
+    'Exco Akademik',
+    'Exco Kerohanian',
+    'Exco Kebajikan',
+    'Exco Keusahawanan',
+    'Exco Kebudayaan',
+  ];
+ 
+  static const List<String> _clubNames = [
+    'Kirana Razak',
+    'Senimas',
+    'RASREC',
+    'INVICTUS',
+    'KSTAR',
+    'UNLOC',
+  ];
+ 
   @override
   void dispose() {
     _fullNameCtrl.dispose();
@@ -97,16 +138,101 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _verificationCtrlSec.dispose();
     super.dispose();
   }
-
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────────────────────────────
   String? _required(String? v) =>
       (v == null || v.trim().isEmpty) ? 'This field is required' : null;
-
+ 
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      ),
+    );
+  }
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // _handleRegister — wires form → AuthController → Firestore
+  // ─────────────────────────────────────────────────────────────────────────
+  Future<void> _handleRegister() async {
+    // 1. Role must be selected.
+    if (_selectedRole == null) {
+      _showSnackBar('Please select a role.');
+      return;
+    }
+ 
+    // 2. Validate all form fields.
+    final isFormValid = _formKey.currentState!.validate();
+    if (!isFormValid) return;
+ 
+    // 3. Organizer Head must choose an organization type.
+    if (_selectedRole == UserRole.organizerHead && _orgType == null) {
+      _showSnackBar('Please select organization type.');
+      return;
+    }
+ 
+    // 3.1 Organizer Head must choose an organization name.
+    if (_selectedRole == UserRole.organizerHead && _orgName == null) {
+      _showSnackBar('Please select organization name.');
+      return;
+    }
+ 
+    // 4. Start loading.
+    setState(() => _isRegistering = true);
+ 
+    // 5. Resolve verification code by role.
+    String? verificationCode;
+    if (_selectedRole == UserRole.organizerHead) {
+      verificationCode = _verificationCtrlOrg.text;
+    } else if (_selectedRole == UserRole.secretary) {
+      verificationCode = _verificationCtrlSec.text;
+    }
+    // Student: verificationCode stays null.
+ 
+    // 6. Call AuthController.
+    final success = await _authController.register(
+      fullName: _fullNameCtrl.text,
+      email: _emailCtrl.text,
+      password: _passwordCtrl.text,
+      role: _selectedRole!.roleString,
+      phoneNumber: _phoneCtrl.text,
+      matricNumber: _matricCtrl.text,
+      organizationType: _orgType,
+      organizationName: _orgName,
+      verificationCode: verificationCode,
+    );
+ 
+    // 7. Stop loading.
+    setState(() => _isRegistering = false);
+ 
+    // 8. Guard against the widget being unmounted during the async gap.
+    if (!mounted) return;
+ 
+    // 9. Notify user.
+    if (success) {
+      _showSnackBar('Account created successfully.');
+      // TODO: Navigate to the home / login screen after successful registration.
+    } else {
+      _showSnackBar(
+        _authController.errorMessage ?? 'Registration failed. Please try again.',
+      );
+    }
+  }
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // BUILD
+  // ─────────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final topPad = MediaQuery.of(context).padding.top;
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth > 480 ? 440.0 : screenWidth;
-
+ 
     return Scaffold(
       backgroundColor: _bg,
       body: Column(
@@ -143,7 +269,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (_selectedRole == null)
                               _buildRolePrompt()
                             else ...[
-                              Divider(color: Colors.grey.shade200, thickness: 1, height: 1),
+                              Divider(
+                                color: Colors.grey.shade200,
+                                thickness: 1,
+                                height: 1,
+                              ),
                               const SizedBox(height: 20),
                               _buildAllFields(),
                               const SizedBox(height: 28),
@@ -166,8 +296,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
-  // ── Header ────────────────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Header
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildHeader(double topPad) {
     return Container(
       width: double.infinity,
@@ -194,17 +326,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           SizedBox(height: 4),
           Text(
             'Create your account',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
       ),
     );
   }
-
-  // ── Role selector ─────────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Role selector
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildRoleSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,12 +363,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ],
     );
   }
-
+ 
   Widget _buildRoleCard(UserRole role) {
     final isSelected = _selectedRole == role;
     final accent = role.accent;
     return GestureDetector(
-      onTap: () => setState(() => _selectedRole = role),
+      onTap: _isRegistering ? null : () => setState(() => _selectedRole = role),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
@@ -278,7 +409,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
+ 
   Widget _buildRolePrompt() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -290,8 +421,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
-  // ── All form fields (role-aware) ──────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // All form fields (role-aware)
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildAllFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,11 +465,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           validator: _required,
           keyboardType: TextInputType.phone,
         ),
-
+ 
         // ── Organizer Head extras ─────────────────────────────────────────
         if (_selectedRole == UserRole.organizerHead) ...[
           const SizedBox(height: 16),
           _buildOrgTypeSelector(),
+          const SizedBox(height: 16),
+          _buildOrgNameDropdown(),
           const SizedBox(height: 16),
           _buildTextField(
             label: 'Verification Code',
@@ -346,7 +481,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             validator: _required,
           ),
         ],
-
+ 
         // ── Secretary extras ──────────────────────────────────────────────
         if (_selectedRole == UserRole.secretary) ...[
           const SizedBox(height: 16),
@@ -358,7 +493,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             validator: _required,
           ),
         ],
-
+ 
         const SizedBox(height: 16),
         _buildTextField(
           label: 'Password',
@@ -381,7 +516,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           obscureText: _obscureConfirm,
           validator: (v) {
             if (v == null || v.trim().isEmpty) return 'This field is required';
-            // TODO: add password-match check when AuthController is connected
+            if (v != _passwordCtrl.text) return 'Passwords do not match';
             return null;
           },
           suffixIcon: _visibilityToggle(
@@ -392,8 +527,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ],
     );
   }
-
-  // ── Org Type selector ─────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Organization Type pill selector (Exco / Club)
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildOrgTypeSelector() {
     const options = ['Exco', 'Club'];
     return Column(
@@ -419,7 +556,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               final isSelected = _orgType == opt;
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _orgType = opt),
+                  onTap: _isRegistering
+                      ? null
+                      : () => setState(() {
+                            _orgType = opt;
+                            _orgName = null;
+                          }),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     margin: const EdgeInsets.all(5),
@@ -431,7 +573,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       opt,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey.shade600,
+                        color:
+                            isSelected ? Colors.white : Colors.grey.shade600,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
@@ -445,8 +588,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ],
     );
   }
-
-  // ── Generic text field ────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Organization Name dropdown (depends on Exco / Club)
+  // ─────────────────────────────────────────────────────────────────────────
+  Widget _buildOrgNameDropdown() {
+    final orgNames = _orgType == 'Club' ? _clubNames : _excoNames;
+ 
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Organization Name',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _orgName,
+          validator: (value) =>
+              value == null || value.trim().isEmpty
+                  ? 'Please select organization name'
+                  : null,
+          isExpanded: true,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: _inputBg,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+            border: _inputBorder(),
+            enabledBorder: _inputBorder(),
+            focusedBorder: _inputBorder(color: _navy, width: 1.5),
+            errorBorder: _inputBorder(color: _red, width: 1.5),
+            focusedErrorBorder: _inputBorder(color: _red, width: 1.5),
+          ),
+          hint: Text(
+            _orgType == null
+                ? 'Select organization type first'
+                : 'Select organization',
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          ),
+          items: orgNames.map((name) {
+            return DropdownMenuItem<String>(
+              value: name,
+              child: Text(
+                name,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+            );
+          }).toList(),
+          onChanged: _isRegistering || _orgType == null
+              ? null
+              : (value) => setState(() => _orgName = value),
+        ),
+      ],
+    );
+  }
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Generic text field
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildTextField({
     required String label,
     required TextEditingController ctrl,
@@ -476,13 +680,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           validator: validator,
           keyboardType: keyboardType,
           textCapitalization: textCapitalization,
+          enabled: !_isRegistering,
           style: const TextStyle(fontSize: 14, color: Colors.black87),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+            hintStyle:
+                TextStyle(color: Colors.grey.shade400, fontSize: 14),
             filled: true,
             fillColor: _inputBg,
-            prefixIcon: Icon(icon, color: Colors.grey.shade500, size: 20),
+            prefixIcon:
+                Icon(icon, color: Colors.grey.shade500, size: 20),
             suffixIcon: suffixIcon,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -496,7 +703,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ],
     );
   }
-
+ 
   OutlineInputBorder _inputBorder({Color? color, double width = 0}) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
@@ -505,47 +712,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
           : BorderSide(color: color, width: width),
     );
   }
-
-  Widget _visibilityToggle({required bool obscure, required VoidCallback onTap}) {
+ 
+  Widget _visibilityToggle({
+    required bool obscure,
+    required VoidCallback onTap,
+  }) {
     return IconButton(
       icon: Icon(
-        obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        obscure
+            ? Icons.visibility_outlined
+            : Icons.visibility_off_outlined,
         color: Colors.grey.shade500,
         size: 20,
       ),
-      onPressed: onTap,
+      onPressed: _isRegistering ? null : onTap,
     );
   }
-
-  // ── Create Account button ─────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Create Account button
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildCreateAccountButton() {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        // TODO: Connect to AuthController.register() when backend is ready.
-        onPressed: () {},
+        onPressed: _isRegistering ? null : _handleRegister,
         style: ElevatedButton.styleFrom(
           backgroundColor: _red,
           foregroundColor: Colors.white,
+          disabledBackgroundColor: _red.withOpacity(0.7),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        child: const Text(
-          'Create Account',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.3,
-          ),
-        ),
+        child: _isRegistering
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : const Text(
+                'Create Account',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
       ),
     );
   }
-
-  // ── Login link ────────────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Login link
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildLoginLink() {
     return Center(
       child: Row(
@@ -556,7 +781,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
           GestureDetector(
-            // TODO: Navigate to LoginScreen
+            // TODO: Navigate to LoginScreen (teammate's task — do not connect yet).
             onTap: () {},
             child: const Text(
               'Log In',
@@ -571,8 +796,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
-  // ── Footer ────────────────────────────────────────────────────────────────
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Footer
+  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildFooter() {
     return Center(
       child: Text(
