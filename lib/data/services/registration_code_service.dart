@@ -17,21 +17,21 @@
 // ─────
 // Called only for Organizer Head and Secretary during registration.
 // Student registration bypasses this service entirely.
- 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart'; // for UserRole constants
- 
+
 class RegistrationCodeService {
   // ── Dependencies ───────────────────────────────────────────────────────────
   final FirebaseFirestore _firestore;
- 
+
   // Firestore collection name — declared as a constant so it can be updated in
   // one place if it ever changes.
   static const String _collection = 'registrationCodes';
- 
+
   RegistrationCodeService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
- 
+
   // ── isValidCode ────────────────────────────────────────────────────────────
   /// Checks whether [code] is a valid, active registration code for the given
   /// [role] and (optionally) [organizationType].
@@ -56,41 +56,41 @@ class RegistrationCodeService {
     // ── Step 1: reject empty codes immediately ─────────────────────────────
     final trimmedCode = code.trim();
     if (trimmedCode.isEmpty) return false;
- 
+
     try {
       // ── Step 2: fetch the document ───────────────────────────────────────
       final docSnapshot = await _firestore
           .collection(_collection)
           .doc(trimmedCode)
           .get();
- 
+
       // ── Step 3: document must exist ──────────────────────────────────────
       if (!docSnapshot.exists) return false;
- 
+
       final data = docSnapshot.data();
       if (data == null) return false;
- 
+
       // ── Step 4: code must be active ──────────────────────────────────────
       final isActive = data['isActive'];
       if (isActive != true) return false;
- 
+
       // ── Step 5: role must match ──────────────────────────────────────────
       final storedRole = data['role'] as String?;
       if (storedRole == null || storedRole != role) return false;
- 
+
       // ── Step 6: Organizer Head — also check organizationType ─────────────
       if (role == UserRole.organizerHead) {
         final storedOrgType = data['organizationType'] as String?;
- 
+
         // organizationType must be provided by the caller.
         if (organizationType == null || organizationType.trim().isEmpty) {
           return false;
         }
- 
+
         // The code's organizationType must match what the user selected.
         if (storedOrgType != organizationType.trim()) return false;
       }
- 
+
       // ── All checks passed ────────────────────────────────────────────────
       return true;
     } catch (_) {
@@ -101,4 +101,3 @@ class RegistrationCodeService {
     }
   }
 }
- 

@@ -94,6 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
  
   // ── Organizer Head ────────────────────────────────────────────────────────
   String? _orgType;
+  String? _orgName;
   final _verificationCtrlOrg = TextEditingController();
  
   // ── Secretary ─────────────────────────────────────────────────────────────
@@ -103,6 +104,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isRegistering = false;
+ 
+  // ── Organization names ────────────────────────────────────────────────────
+  static const List<String> _excoNames = [
+    'Exco Sukan',
+    'Exco Dokumentasi',
+    'Exco Keselamatan',
+    'Exco Akademik',
+    'Exco Kerohanian',
+    'Exco Kebajikan',
+    'Exco Keusahawanan',
+    'Exco Kebudayaan',
+  ];
+ 
+  static const List<String> _clubNames = [
+    'Kirana Razak',
+    'Senimas',
+    'RASREC',
+    'INVICTUS',
+    'KSTAR',
+    'UNLOC',
+  ];
  
   @override
   void dispose() {
@@ -154,6 +176,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
  
+    // 3.1 Organizer Head must choose an organization name.
+    if (_selectedRole == UserRole.organizerHead && _orgName == null) {
+      _showSnackBar('Please select organization name.');
+      return;
+    }
+ 
     // 4. Start loading.
     setState(() => _isRegistering = true);
  
@@ -175,6 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phoneNumber: _phoneCtrl.text,
       matricNumber: _matricCtrl.text,
       organizationType: _orgType,
+      organizationName: _orgName,
       verificationCode: verificationCode,
     );
  
@@ -442,6 +471,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 16),
           _buildOrgTypeSelector(),
           const SizedBox(height: 16),
+          _buildOrgNameDropdown(),
+          const SizedBox(height: 16),
           _buildTextField(
             label: 'Verification Code',
             ctrl: _verificationCtrlOrg,
@@ -527,7 +558,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: GestureDetector(
                   onTap: _isRegistering
                       ? null
-                      : () => setState(() => _orgType = opt),
+                      : () => setState(() {
+                            _orgType = opt;
+                            _orgName = null;
+                          }),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     margin: const EdgeInsets.all(5),
@@ -550,6 +584,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
               );
             }).toList(),
           ),
+        ),
+      ],
+    );
+  }
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Organization Name dropdown (depends on Exco / Club)
+  // ─────────────────────────────────────────────────────────────────────────
+  Widget _buildOrgNameDropdown() {
+    final orgNames = _orgType == 'Club' ? _clubNames : _excoNames;
+ 
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Organization Name',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _orgName,
+          validator: (value) =>
+              value == null || value.trim().isEmpty
+                  ? 'Please select organization name'
+                  : null,
+          isExpanded: true,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: _inputBg,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+            border: _inputBorder(),
+            enabledBorder: _inputBorder(),
+            focusedBorder: _inputBorder(color: _navy, width: 1.5),
+            errorBorder: _inputBorder(color: _red, width: 1.5),
+            focusedErrorBorder: _inputBorder(color: _red, width: 1.5),
+          ),
+          hint: Text(
+            _orgType == null
+                ? 'Select organization type first'
+                : 'Select organization',
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          ),
+          items: orgNames.map((name) {
+            return DropdownMenuItem<String>(
+              value: name,
+              child: Text(
+                name,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+            );
+          }).toList(),
+          onChanged: _isRegistering || _orgType == null
+              ? null
+              : (value) => setState(() => _orgName = value),
         ),
       ],
     );
@@ -720,4 +813,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
- 

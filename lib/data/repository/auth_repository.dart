@@ -11,23 +11,23 @@
 //   - Form-field validation (email format, password length, etc.) — that lives
 //     in the controller / UI layer.
 //   - Direct calls to FirebaseAuth — those go through AuthService.
- 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // for UserCredential
- 
+
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/registration_code_service.dart';
- 
+
 class AuthRepository {
   // ── Dependencies ───────────────────────────────────────────────────────────
   final AuthService _authService;
   final RegistrationCodeService _codeService;
   final FirebaseFirestore _firestore;
- 
+
   // Firestore collection where user profiles are stored.
   static const String _usersCollection = 'users';
- 
+
   AuthRepository({
     AuthService? authService,
     RegistrationCodeService? registrationCodeService,
@@ -35,9 +35,9 @@ class AuthRepository {
   })  : _authService = authService ?? AuthService(),
         _codeService = registrationCodeService ?? RegistrationCodeService(),
         _firestore = firestore ?? FirebaseFirestore.instance;
- 
+
   // ── registerUser ───────────────────────────────────────────────────────────
-  /// Full registration flow.  Returns a [UserModel] on success.
+  /// Full registration flow. Returns a [UserModel] on success.
   ///
   /// Throws an [Exception] with a human-readable message on any failure so the
   /// controller layer can surface it to the user without knowing the internals.
@@ -49,6 +49,7 @@ class AuthRepository {
     required String phoneNumber,
     required String matricNumber,
     String? organizationType,
+    String? organizationName,
     String? verificationCode,
   }) async {
     // ── Step 1: Trim all text inputs ─────────────────────────────────────────
@@ -58,27 +59,52 @@ class AuthRepository {
     final trimmedPhone = phoneNumber.trim();
     final trimmedMatric = matricNumber.trim();
     final trimmedOrgType = organizationType?.trim();
+    final trimmedOrgName = organizationName?.trim();
     final trimmedCode = verificationCode?.trim();
- 
+
     // ── Step 2 / 3 / 4: Role-specific verification code checks ──────────────
     if (trimmedRole == UserRole.organizerHead) {
-      // Organizer Head must supply both organizationType and verificationCode.
+      // Organizer Head must supply organizationType, organizationName,
+      // and verificationCode.
       if (trimmedOrgType == null || trimmedOrgType.isEmpty) {
         throw Exception(
           'Please select an organization type (Exco or Club).',
         );
       }
+
       if (trimmedOrgType != OrgType.exco && trimmedOrgType != OrgType.club) {
         throw Exception(
           'Organization type must be either Exco or Club.',
         );
       }
+
+      if (trimmedOrgName == null || trimmedOrgName.isEmpty) {
+        throw Exception(
+          'Please select an organization name.',
+        );
+      }
+
+      // Make sure the selected organization name belongs to the selected type.
+      if (trimmedOrgType == OrgType.exco &&
+          !OrgName.excos.contains(trimmedOrgName)) {
+        throw Exception(
+          'Please select a valid Exco name.',
+        );
+      }
+
+      if (trimmedOrgType == OrgType.club &&
+          !OrgName.clubs.contains(trimmedOrgName)) {
+        throw Exception(
+          'Please select a valid Club name.',
+        );
+      }
+
       if (trimmedCode == null || trimmedCode.isEmpty) {
         throw Exception(
           'A verification code is required for Organizer Head registration.',
         );
       }
- 
+
       // ── Step 5: Validate code against Firestore ──────────────────────────
       final isValid = await _codeService.isValidCode(
         code: trimmedCode,
@@ -98,7 +124,7 @@ class AuthRepository {
           'A verification code is required for Secretary registration.',
         );
       }
- 
+
       // ── Step 5: Validate code against Firestore ──────────────────────────
       final isValid = await _codeService.isValidCode(
         code: trimmedCode,
@@ -112,7 +138,7 @@ class AuthRepository {
       }
     }
     // Student: no verification code needed — fall through.
- 
+
     // ── Step 6: Create Firebase Auth account ─────────────────────────────────
     // Keep a reference to UserCredential so we can delete the Auth account if
     // the Firestore write fails later.
@@ -127,7 +153,7 @@ class AuthRepository {
       // firebase_auth just to display an error message.
       throw Exception(_friendlyAuthError(e.code));
     }
- 
+
     // ── Step 7: Get the new user UID ─────────────────────────────────────────
     final uid = credential.user?.uid;
     if (uid == null || uid.isEmpty) {
@@ -136,7 +162,7 @@ class AuthRepository {
         'Registration failed: could not retrieve user ID. Please try again.',
       );
     }
- 
+
     // ── Step 8: Build the UserModel ──────────────────────────────────────────
     final newUser = UserModel(
       uid: uid,
@@ -146,10 +172,11 @@ class AuthRepository {
       phoneNumber: trimmedPhone,
       matricNumber: trimmedMatric,
       organizationType: trimmedOrgType,
+      organizationName: trimmedOrgName,
       verificationCode: trimmedCode,
       status: 'approved', // All users start as approved for now.
     );
- 
+
     // ── Step 9: Save user profile to Firestore ───────────────────────────────
     try {
       await _firestore
@@ -157,27 +184,27 @@ class AuthRepository {
           .doc(uid)
           .set(newUser.toMap());
     } catch (e) {
-      // Firestore write failed.  Delete the Auth account so we do not leave an
+      // Firestore write failed. Delete the Auth account so we do not leave an
       // orphaned auth entry without a matching Firestore profile.
       try {
         await credential.user?.delete();
       } catch (_) {
         // Ignore any error from the cleanup delete — there is nothing more we
-        // can do here.  Log this in a real app (e.g. Firebase Crashlytics).
+        // can do here. Log this in a real app (e.g. Firebase Crashlytics).
       }
       throw Exception(
         'Your account was created but your profile could not be saved. '
         'Please try registering again.',
       );
     }
- 
+
     // ── Step 10: Return the saved UserModel ──────────────────────────────────
     return newUser;
   }
- 
+
   // ── _friendlyAuthError ────────────────────────────────────────────────────
   /// Converts a [FirebaseAuthException] error code into a short, user-facing
-  /// message.  Add more codes here as needed.
+  /// message. Add more codes here as needed.
   String _friendlyAuthError(String code) {
     switch (code) {
       case 'email-already-in-use':
