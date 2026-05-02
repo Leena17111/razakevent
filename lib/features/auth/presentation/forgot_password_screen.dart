@@ -1,11 +1,7 @@
-// lib/features/auth/presentation/forgot_password_screen.dart
-// AD-16: Design forgot password UI screen
-// AD-17: Implement Firebase password reset email
-// AD-20: Verify reset flow and update password
-// AD-29: Show reset password messages
-
 import 'package:flutter/material.dart';
 import '../logic/forgot_password_controller.dart';
+import 'package:razakevent/features/auth/presentation/login_screen.dart';
+
 
 const _navy = Color(0xFF1A237E);
 const _red = Color(0xFFC8102E);
@@ -109,8 +105,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
+            onPressed: () => Navigator.pushReplacement(
+  context,
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+            ),
+                      ),
           const Text(
             'Back to Login',
             style: TextStyle(
