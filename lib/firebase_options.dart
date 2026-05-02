@@ -4,43 +4,23 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
         return ios;
-      case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
+      case TargetPlatform.macOS:
+        return macos;
       case TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+          'DefaultFirebaseOptions have not been configured for linux.',
         );
       default:
         throw UnsupportedError(
@@ -48,6 +28,26 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCKaudeyyJJsWkVuAAHgyaG85_Iws-RDE8',
+    appId: '1:595633177345:web:b00c46d56c52df9a105100',
+    messagingSenderId: '595633177345',
+    projectId: 'razakevent-b4852',
+    authDomain: 'razakevent-b4852.firebaseapp.com',
+    storageBucket: 'razakevent-b4852.firebasestorage.app',
+    measurementId: 'G-Y5ZS8XNXSS',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCKaudeyyJJsWkVuAAHgyaG85_Iws-RDE8',
+    appId: '1:595633177345:web:3447fd9c3896960b105100',
+    messagingSenderId: '595633177345',
+    projectId: 'razakevent-b4852',
+    authDomain: 'razakevent-b4852.firebaseapp.com',
+    storageBucket: 'razakevent-b4852.firebasestorage.app',
+    measurementId: 'G-KDBS3LL26G',
+  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAfYE0q7IwmQxFTveDXTKylAegDsWR-PyY',
@@ -65,4 +65,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'razakevent-b4852.firebasestorage.app',
     iosBundleId: 'com.example.razakevent',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDfIGmgf0skmUfB4qvpVpAKpDDjlFz5Fdo',
+    appId: '1:595633177345:ios:7617e3222e642d9b105100',
+    messagingSenderId: '595633177345',
+    projectId: 'razakevent-b4852',
+    storageBucket: 'razakevent-b4852.firebasestorage.app',
+    iosBundleId: 'com.example.razakevent',
+  );
+
 }
