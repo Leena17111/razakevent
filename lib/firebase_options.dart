@@ -25,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -71,6 +65,25 @@ class DefaultFirebaseOptions {
     authDomain: 'razakevent-b4852.firebaseapp.com',
     storageBucket: 'razakevent-b4852.firebasestorage.app',
     measurementId: 'G-Y5ZS8XNXSS',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDfIGmgf0skmUfB4qvpVpAKpDDjlFz5Fdo',
+    appId: '1:595633177345:ios:7617e3222e642d9b105100',
+    messagingSenderId: '595633177345',
+    projectId: 'razakevent-b4852',
+    storageBucket: 'razakevent-b4852.firebasestorage.app',
+    iosBundleId: 'com.example.razakevent',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCKaudeyyJJsWkVuAAHgyaG85_Iws-RDE8',
+    appId: '1:595633177345:web:3447fd9c3896960b105100',
+    messagingSenderId: '595633177345',
+    projectId: 'razakevent-b4852',
+    authDomain: 'razakevent-b4852.firebaseapp.com',
+    storageBucket: 'razakevent-b4852.firebasestorage.app',
+    measurementId: 'G-KDBS3LL26G',
   );
 
 }
