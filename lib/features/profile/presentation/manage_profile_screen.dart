@@ -127,6 +127,8 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
   }
 
   void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -135,6 +137,10 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       ),
     );
+  }
+
+  void _showLockedFieldMessage(String fieldName) {
+    _showSnackBar('$fieldName cannot be edited.');
   }
 
   Future<void> _saveProfile() async {
@@ -405,22 +411,20 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
             ),
             const SizedBox(height: 12),
 
-            _buildProfileField(
+            _buildLockedProfileField(
               label: 'Email Address',
               controller: _emailCtrl,
               icon: Icons.email_rounded,
               iconColor: _red,
-              enabled: false,
             ),
 
             if (!isAdmin) ...[
               const SizedBox(height: 12),
-              _buildProfileField(
+              _buildLockedProfileField(
                 label: 'Matric Number',
                 controller: _matricCtrl,
                 icon: Icons.tag_rounded,
                 iconColor: _mint,
-                enabled: false,
               ),
               const SizedBox(height: 12),
               _buildProfileField(
@@ -555,56 +559,81 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     );
   }
 
+  Widget _buildLockedProfileField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    required Color iconColor,
+  }) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showLockedFieldMessage(label),
+      child: AbsorbPointer(
+        child: _buildProfileField(
+          label: label,
+          controller: controller,
+          icon: icon,
+          iconColor: iconColor,
+          enabled: false,
+        ),
+      ),
+    );
+  }
+
   Widget _buildReadOnlyInfoTile({
     required String label,
     required String value,
     required IconData icon,
     required Color iconColor,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FC),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: iconColor,
-              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showLockedFieldMessage(label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F9FC),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.white, size: 19),
             ),
-            child: Icon(icon, color: Colors.white, size: 19),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
