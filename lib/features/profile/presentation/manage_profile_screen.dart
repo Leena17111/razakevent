@@ -12,6 +12,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../core/routes/app_routes.dart';
 import '../../../data/models/user_model.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../logic/profile_controller.dart';
@@ -80,10 +81,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     return null;
   }
 
-  /// Gets the first letter from the user's full name.
-  /// Example:
-  /// Ahmad bin Abdullah -> A
-  /// KTR Admin -> K
   String _initialFromName(String fullName) {
     final trimmed = fullName.trim();
 
@@ -141,6 +138,15 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
 
   void _showLockedFieldMessage(String fieldName) {
     _showSnackBar('$fieldName cannot be edited.');
+  }
+
+  void _goBackToHome() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
   Future<void> _saveProfile() async {
@@ -215,7 +221,7 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
                           SliverToBoxAdapter(
                             child: Padding(
                               padding:
-                                  const EdgeInsets.fromLTRB(18, 16, 18, 18),
+                                  const EdgeInsets.fromLTRB(18, 14, 18, 18),
                               child: Column(
                                 children: [
                                   _buildProfileCard(user),
@@ -237,38 +243,38 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     final roleColor = _roleColor(user.role);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(18, 16, 18, 0),
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+      margin: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [_navyLight, _navy],
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: _navy.withOpacity(0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: _navy.withOpacity(0.16),
+            blurRadius: 16,
+            offset: const Offset(0, 7),
           ),
         ],
       ),
       child: Column(
         children: [
           _buildTopBar(user),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           Container(
-            width: 82,
-            height: 82,
+            width: 68,
+            height: 68,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(26),
+              borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
-                  blurRadius: 16,
-                  offset: const Offset(0, 7),
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
@@ -277,25 +283,25 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
               _initialFromName(user.fullName),
               style: const TextStyle(
                 color: _navy,
-                fontSize: 36,
+                fontSize: 31,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             user.fullName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 15.5,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.2,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.92),
               borderRadius: BorderRadius.circular(30),
@@ -303,13 +309,13 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(_roleIcon(user.role), color: roleColor, size: 15),
-                const SizedBox(width: 6),
+                Icon(_roleIcon(user.role), color: roleColor, size: 13),
+                const SizedBox(width: 5),
                 Text(
                   user.role,
                   style: TextStyle(
                     color: roleColor,
-                    fontSize: 12.5,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -324,12 +330,17 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
   Widget _buildTopBar(UserModel user) {
     return Row(
       children: [
+        _circleIconButton(
+          icon: Icons.arrow_back_ios_new_rounded,
+          onTap: _goBackToHome,
+        ),
+        const SizedBox(width: 10),
         const Expanded(
           child: Text(
             'My Profile',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 22,
+              fontSize: 19,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.3,
             ),
@@ -341,7 +352,7 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
             _showSnackBar('Notifications will be added later.');
           },
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         _circleIconButton(
           icon: _isEditing ? Icons.close_rounded : Icons.edit_rounded,
           onTap: () {
@@ -364,14 +375,14 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
       borderRadius: BorderRadius.circular(50),
       onTap: onTap,
       child: Container(
-        width: 39,
-        height: 39,
+        width: 35,
+        height: 35,
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.14),
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withOpacity(0.08)),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(icon, color: Colors.white, size: 18),
       ),
     );
   }
@@ -384,11 +395,11 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.07),
-            blurRadius: 18,
+            blurRadius: 16,
             offset: const Offset(0, 7),
           ),
         ],
@@ -400,7 +411,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
           children: [
             _buildSectionHeader(),
             const SizedBox(height: 16),
-
             _buildProfileField(
               label: 'Full Name',
               controller: _fullNameCtrl,
@@ -410,14 +420,12 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
               validator: _required,
             ),
             const SizedBox(height: 12),
-
             _buildLockedProfileField(
               label: 'Email Address',
               controller: _emailCtrl,
               icon: Icons.email_rounded,
               iconColor: _red,
             ),
-
             if (!isAdmin) ...[
               const SizedBox(height: 12),
               _buildLockedProfileField(
@@ -437,7 +445,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
                 keyboardType: TextInputType.phone,
               ),
             ],
-
             if (user.organizationType != null &&
                 user.organizationType!.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -448,7 +455,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
                 iconColor: const Color(0xFF7C4DFF),
               ),
             ],
-
             if (user.organizationName != null &&
                 user.organizationName!.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -459,7 +465,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
                 iconColor: const Color(0xFFF5A623),
               ),
             ],
-
             if (_isEditing) ...[
               const SizedBox(height: 18),
               _buildEditingButtons(user),
@@ -654,8 +659,9 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
           child: SizedBox(
             height: 50,
             child: OutlinedButton(
-              onPressed:
-                  _profileController.isSaving ? null : () => _cancelEditing(user),
+              onPressed: _profileController.isSaving
+                  ? null
+                  : () => _cancelEditing(user),
               style: OutlinedButton.styleFrom(
                 foregroundColor: _navy,
                 backgroundColor: Colors.white,
