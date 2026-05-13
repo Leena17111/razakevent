@@ -1,10 +1,14 @@
 // lib/features/home/presentation/home_screen.dart
 //
-// Home screen with role-based dashboard.
-// Shows:
-//   - Home title with initial-letter profile button
-//   - Welcome card based on user role
-//   - One main action card based on user role
+// Role-based home dashboard.
+// Sprint 1:
+//   - Loads authenticated user's Firestore profile.
+//   - Keeps profile shortcut.
+// Sprint 2 setup:
+//   - Shows role-based dashboard entry cards.
+//   - Uses prepared AppRoutes names.
+//   - Does not navigate to missing Sprint 2 screens yet.
+//   - Does not show dummy stats or fake recent documents.
 
 import 'package:flutter/material.dart';
 
@@ -43,18 +47,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _firstName(String fullName) {
     final trimmed = fullName.trim();
-
     if (trimmed.isEmpty) return 'there';
-
     return trimmed.split(' ').first;
   }
 
   String _initialFromName(String fullName) {
     final trimmed = fullName.trim();
-
     if (trimmed.isEmpty) return '?';
-
     return trimmed[0].toUpperCase();
+  }
+
+  String _organizerOrganizationName(UserModel user) {
+    final organizationName = user.organizationName?.trim();
+
+    if (organizationName == null || organizationName.isEmpty) {
+      return 'Organizer Head';
+    }
+
+    return organizationName;
   }
 
   Color _roleColor(String role) {
@@ -117,73 +127,51 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String _welcomeSubtitle(String role) {
+  String _heroTitle(UserModel user) {
+    switch (user.role) {
+      case UserRole.admin:
+        return 'Document Review';
+      case UserRole.organizerHead:
+        return _organizerOrganizationName(user);
+      case UserRole.secretary:
+        return 'Secretary';
+      case UserRole.student:
+        return 'Student';
+      default:
+        return 'Dashboard';
+    }
+  }
+
+  String _heroSubtitle(String role) {
     switch (role) {
       case UserRole.student:
-        return 'Explore KTR events and activities made for students.';
+        return 'Explore KTR events and activities.';
       case UserRole.organizerHead:
-        return 'Manage your organization events and keep activities on track.';
+        return 'Manage your events';
       case UserRole.secretary:
-        return 'Manage event documents, proposals, and reports in one place.';
+        return 'Manage event documentation';
       case UserRole.admin:
-        return 'Review submitted documents and monitor event administration.';
+        return 'Review and approve event documentation';
       default:
         return 'Access your RazakEvent dashboard.';
     }
   }
 
-  String _mainActionTitle(String role) {
-    switch (role) {
-      case UserRole.student:
-        return 'Discover Events';
-      case UserRole.organizerHead:
-        return 'Manage My Events';
-      case UserRole.secretary:
-        return 'Manage Documents';
-      case UserRole.admin:
-        return 'Review Documents';
-      default:
-        return 'View Dashboard';
-    }
+  Future<void> _openProfile() async {
+    await Navigator.pushNamed(context, AppRoutes.profile);
+
+    if (!mounted) return;
+
+    await _profileController.loadCurrentUserProfile();
   }
 
-  String _mainActionSubtitle(String role) {
-    switch (role) {
-      case UserRole.student:
-        return 'Browse upcoming KTR events and activities.';
-      case UserRole.organizerHead:
-        return 'Create, update, and track events under your organization.';
-      case UserRole.secretary:
-        return 'Upload and manage proposals, reports, and financial documents.';
-      case UserRole.admin:
-        return 'Review submitted proposals, reports, and official documents.';
-      default:
-        return 'Access your RazakEvent dashboard.';
-    }
-  }
-
-  IconData _mainActionIcon(String role) {
-    switch (role) {
-      case UserRole.student:
-        return Icons.event_available_rounded;
-      case UserRole.organizerHead:
-        return Icons.edit_calendar_rounded;
-      case UserRole.secretary:
-        return Icons.folder_copy_rounded;
-      case UserRole.admin:
-        return Icons.fact_check_rounded;
-      default:
-        return Icons.dashboard_rounded;
-    }
-  }
-
-  void _showComingSoon(String featureName) {
+  void _showPreparedFeature(String featureName) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '$featureName will be added in the next sprint.',
+          '$featureName screen will be connected by the assigned teammate.',
           style: AppTextStyles.body.copyWith(color: AppColors.textWhite),
         ),
         backgroundColor: AppColors.primary,
@@ -194,13 +182,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _openProfile() async {
-  await Navigator.pushNamed(context, AppRoutes.profile);
+  void _showComingSoon(String featureName) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-  if (!mounted) return;
-
-  await _profileController.loadCurrentUserProfile();
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$featureName will be added in a later sprint.',
+          style: AppTextStyles.body.copyWith(color: AppColors.textWhite),
+        ),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,14 +222,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   : SafeArea(
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 22),
+                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildTopBar(user),
-                            const SizedBox(height: 14),
-                            _buildWelcomeCard(user),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 16),
+                            _buildHeroCard(user),
+                            const SizedBox(height: 18),
                             _buildDashboardSection(user),
                           ],
                         ),
@@ -245,42 +242,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopBar(UserModel user) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Text(
             'Home',
             style: AppTextStyles.title.copyWith(
               color: AppColors.textPrimary,
-              fontSize: 24,
+              fontSize: 25,
               fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
+              letterSpacing: -0.6,
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        _buildCircleIconButton(
+          icon: Icons.notifications_none_rounded,
+          onTap: () => _showComingSoon('Notifications'),
+        ),
+        const SizedBox(width: 10),
         Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(50),
             onTap: _openProfile,
             child: Container(
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryLight,
-                    AppColors.primary,
-                  ],
-                ),
+                color: AppColors.primary,
                 shape: BoxShape.circle,
                 boxShadow: const [
                   BoxShadow(
                     color: AppColors.shadowNavy,
-                    blurRadius: 12,
+                    blurRadius: 14,
                     offset: Offset(0, 6),
                   ),
                 ],
@@ -301,13 +294,46 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildWelcomeCard(UserModel user) {
+  Widget _buildCircleIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(50),
+        onTap: onTap,
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            shape: BoxShape.circle,
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadowDark,
+                blurRadius: 12,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.primary,
+            size: 22,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroCard(UserModel user) {
     final roleColor = _roleColor(user.role);
     final roleBadgeBg = _roleBadgeBg(user.role);
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -317,23 +343,23 @@ class _HomeScreenState extends State<HomeScreen> {
             AppColors.primary,
           ],
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadowNavy,
-            blurRadius: 18,
-            offset: Offset(0, 8),
+            blurRadius: 22,
+            offset: Offset(0, 10),
           ),
         ],
       ),
       child: Stack(
         children: [
           Positioned(
-            right: -20,
-            bottom: -24,
+            right: -28,
+            bottom: -28,
             child: Icon(
-              Icons.calendar_month_rounded,
-              size: 125,
+              _heroBackgroundIcon(user.role),
+              size: 128,
               color: AppColors.textWhite.withOpacity(0.08),
             ),
           ),
@@ -344,20 +370,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Welcome, ${_firstName(user.fullName)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.textWhite.withOpacity(0.82),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _heroTitle(user),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.heading.copyWith(
                   color: AppColors.textWhite,
-                  fontSize: 27,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: -0.7,
+                  letterSpacing: -0.8,
                 ),
               ),
               const SizedBox(height: 7),
               SizedBox(
                 width: 300,
                 child: Text(
-                  _welcomeSubtitle(user.role),
+                  _heroSubtitle(user.role),
                   style: AppTextStyles.subtitle.copyWith(
-                    color: AppColors.textWhite.withOpacity(0.84),
+                    color: AppColors.textWhite.withOpacity(0.86),
                     fontSize: 13.5,
                     height: 1.35,
                   ),
@@ -374,7 +411,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(_roleIcon(user.role), color: roleColor, size: 16),
+                    Icon(
+                      _roleIcon(user.role),
+                      color: roleColor,
+                      size: 16,
+                    ),
                     const SizedBox(width: 7),
                     Text(
                       user.role,
@@ -394,18 +435,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  IconData _heroBackgroundIcon(String role) {
+    switch (role) {
+      case UserRole.admin:
+        return Icons.fact_check_rounded;
+      case UserRole.organizerHead:
+        return Icons.calendar_month_rounded;
+      case UserRole.secretary:
+        return Icons.description_rounded;
+      case UserRole.student:
+        return Icons.event_available_rounded;
+      default:
+        return Icons.dashboard_rounded;
+    }
+  }
+
   Widget _buildDashboardSection(UserModel user) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadowDark,
-            blurRadius: 18,
-            offset: Offset(0, 7),
+            blurRadius: 20,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -414,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildSectionHeader(user),
           const SizedBox(height: 16),
-          _buildMainActionCard(user),
+          _buildRoleActionCards(user),
         ],
       ),
     );
@@ -427,13 +483,13 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Container(
           width: 4,
-          height: 18,
+          height: 20,
           decoration: BoxDecoration(
             color: roleColor,
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 9),
         Expanded(
           child: Text(
             _dashboardTitle(user.role).toUpperCase(),
@@ -449,84 +505,301 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMainActionCard(UserModel user) {
-    final roleColor = _roleColor(user.role);
-    final roleBadgeBg = _roleBadgeBg(user.role);
-    final title = _mainActionTitle(user.role);
+  Widget _buildRoleActionCards(UserModel user) {
+    switch (user.role) {
+      case UserRole.organizerHead:
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Documents',
+                    subtitle: 'Track approval status',
+                    icon: Icons.description_rounded,
+                    color: AppColors.communityBadgeText,
+                    routeName: AppRoutes.trackEventDocumentStatus,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Event Details',
+                    subtitle: 'Manage event info',
+                    icon: Icons.event_note_rounded,
+                    color: AppColors.clubBadgeText,
+                    routeName: AppRoutes.eventDetailsList,
+                    isCompact: true,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _buildActionCard(
+              title: 'Feedback Form',
+              subtitle: 'Set up event feedback',
+              icon: Icons.feedback_rounded,
+              color: AppColors.accent,
+              routeName: AppRoutes.createEventFeedbackForm,
+              isAccentWide: true,
+            ),
+          ],
+        );
 
+      case UserRole.secretary:
+        return Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                title: 'Upload',
+                subtitle: 'Submit event documents',
+                icon: Icons.upload_file_rounded,
+                color: AppColors.communityBadgeText,
+                routeName: AppRoutes.uploadEventDocument,
+                isCompact: true,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionCard(
+                title: 'Status',
+                subtitle: 'Track all documents',
+                icon: Icons.fact_check_rounded,
+                color: AppColors.studentBadgeText,
+                routeName: AppRoutes.trackEventDocumentStatus,
+                isCompact: true,
+              ),
+            ),
+          ],
+        );
+
+      case UserRole.admin:
+        return Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                title: 'Review',
+                subtitle: 'Review pending documents',
+                icon: Icons.rule_folder_rounded,
+                color: AppColors.accent,
+                routeName: AppRoutes.reviewEventDocuments,
+                isCompact: true,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionCard(
+                title: 'Archive',
+                subtitle: 'View reviewed documents',
+                icon: Icons.inventory_2_rounded,
+                color: AppColors.textSecondary,
+                routeName: '',
+                isCompact: true,
+              ),
+            ),
+          ],
+        );
+
+      case UserRole.student:
+        return _buildActionCard(
+          title: 'Discover Events',
+          subtitle: 'Browse upcoming KTR events and activities.',
+          icon: Icons.event_available_rounded,
+          color: AppColors.studentBadgeText,
+          routeName: '',
+        );
+
+      default:
+        return _buildActionCard(
+          title: 'View Dashboard',
+          subtitle: 'Access your RazakEvent dashboard.',
+          icon: Icons.dashboard_rounded,
+          color: AppColors.primary,
+          routeName: '',
+        );
+    }
+  }
+
+  Widget _buildActionCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required String routeName,
+    bool isCompact = false,
+    bool isAccentWide = false,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: () => _showComingSoon(title),
+        borderRadius: BorderRadius.circular(24),
+        onTap: () {
+          if (routeName.isEmpty) {
+            _showComingSoon(title);
+            return;
+          }
+
+          _showPreparedFeature(title);
+        },
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceSoft,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: AppColors.borderLight),
+          constraints: BoxConstraints(
+            minHeight: isCompact ? 122 : 92,
           ),
-          child: Row(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isAccentWide ? AppColors.accent : AppColors.surfaceSoft,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isAccentWide ? AppColors.accent : AppColors.borderLight,
+            ),
+            boxShadow: isAccentWide
+                ? const [
+                    BoxShadow(
+                      color: AppColors.shadowDark,
+                      blurRadius: 14,
+                      offset: Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: isCompact
+              ? _buildCompactCardContent(
+                  title: title,
+                  subtitle: subtitle,
+                  icon: icon,
+                  color: color,
+                )
+              : _buildWideCardContent(
+                  title: title,
+                  subtitle: subtitle,
+                  icon: icon,
+                  color: color,
+                  isAccentWide: isAccentWide,
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactCardContent({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCardIcon(icon: icon, color: color),
+        const SizedBox(height: 18),
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.body.copyWith(
+            color: AppColors.textPrimary,
+            fontSize: 15.5,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.2,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          subtitle,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.body.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 11.8,
+            fontWeight: FontWeight.w500,
+            height: 1.25,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWideCardContent({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required bool isAccentWide,
+  }) {
+    final textColor = isAccentWide ? AppColors.textWhite : AppColors.textPrimary;
+    final subtitleColor = isAccentWide
+        ? AppColors.textWhite.withOpacity(0.84)
+        : AppColors.textSecondary;
+
+    return Row(
+      children: [
+        _buildCardIcon(
+          icon: icon,
+          color: color,
+          isAccent: isAccentWide,
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: roleBadgeBg,
-                  borderRadius: BorderRadius.circular(17),
-                ),
-                child: Icon(
-                  _mainActionIcon(user.role),
-                  color: roleColor,
-                  size: 25,
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body.copyWith(
+                  color: textColor,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.25,
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textPrimary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _mainActionSubtitle(user.role),
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.borderLight),
-                ),
-                child: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: AppColors.textMuted,
-                  size: 13,
+              const SizedBox(height: 5),
+              Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body.copyWith(
+                  color: subtitleColor,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
                 ),
               ),
             ],
           ),
         ),
+        const SizedBox(width: 12),
+        Icon(
+          Icons.arrow_forward_ios_rounded,
+          color: isAccentWide ? AppColors.textWhite : AppColors.textMuted,
+          size: 14,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCardIcon({
+    required IconData icon,
+    required Color color,
+    bool isAccent = false,
+  }) {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: isAccent
+            ? AppColors.textWhite.withOpacity(0.16)
+            : color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Icon(
+        icon,
+        color: isAccent ? AppColors.textWhite : color,
+        size: 24,
       ),
     );
   }
