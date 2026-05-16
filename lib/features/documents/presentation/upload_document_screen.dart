@@ -5,13 +5,10 @@ import '../../../core/constants/organization_lists.dart';
 import '../../../core/constants/event_lists.dart';
 import '../../../core/widgets/language_toggle.dart';
 import '../../../core/localization/locale_controller.dart';
+import '../../../l10n/app_localizations.dart';
 
 class UploadDocumentScreen extends StatelessWidget {
   const UploadDocumentScreen({super.key});
-
-  static const Color _navy = Color(0xFF1A237E);
-  static const Color _red = Color(0xFFC8102E);
-  static const Color _inputBg = Color(0xFFF3F4F6);
 
   @override
   Widget build(BuildContext context) {
@@ -46,34 +43,35 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<DocumentUploadController>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          _buildHeader(context, controller),
+          _buildHeader(context, controller, l10n),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildOrganizationTypeToggle(controller),
+                  _buildOrganizationTypeToggle(controller, l10n),
                   const SizedBox(height: 20),
-                  _buildOrganizationNameDropdown(controller),
+                  _buildOrganizationNameDropdown(controller, l10n),
                   const SizedBox(height: 20),
-                  _buildTitleField(controller),
+                  _buildTitleField(controller, l10n),
                   const SizedBox(height: 20),
-                  _buildDocumentTypeDropdown(controller),
+                  _buildDocumentTypeDropdown(controller, l10n),
                   const SizedBox(height: 20),
-                  _buildFileUploadArea(controller),
+                  _buildFileUploadArea(controller, l10n),
                   const SizedBox(height: 20),
-                  _buildRemarksField(controller),
+                  _buildRemarksField(controller, l10n),
                   const SizedBox(height: 8),
                   if (controller.errorMessage != null)
                     _buildErrorMessage(controller.errorMessage!),
                   const SizedBox(height: 24),
-                  _buildSubmitButton(context, controller),
+                  _buildSubmitButton(context, controller, l10n),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -84,8 +82,7 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────
-  Widget _buildHeader(BuildContext context, DocumentUploadController controller) {
+  Widget _buildHeader(BuildContext context, DocumentUploadController controller, AppLocalizations l10n) {
     return Container(
       color: _navy,
       padding: EdgeInsets.only(
@@ -115,43 +112,38 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Upload Event Document',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+          Text(
+            l10n.uploadEventDocument,
+            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Submit documentation for review',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+          Text(
+            l10n.submitDocumentationForReview,
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
         ],
       ),
     );
   }
 
-  // ── Organization Type Toggle ──────────────────────────────────────
-  Widget _buildOrganizationTypeToggle(DocumentUploadController controller) {
+  Widget _buildOrganizationTypeToggle(DocumentUploadController controller, AppLocalizations l10n) {
+    final labels = [l10n.exco, l10n.club];
+    final values = ['Exco', 'Club'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Organization Type'),
+        _label(l10n.organizationType),
         const SizedBox(height: 8),
         Container(
-          decoration: BoxDecoration(
-            color: _inputBg,
-            borderRadius: BorderRadius.circular(14),
-          ),
+          decoration: BoxDecoration(color: _inputBg, borderRadius: BorderRadius.circular(14)),
           padding: const EdgeInsets.all(4),
           child: Row(
-            children: ['Exco', 'Club'].map((type) {
-              final selected = controller.organizationType == type;
+            children: List.generate(labels.length, (i) {
+              final selected = controller.organizationType == values[i];
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => controller.setOrganizationType(type),
+                  onTap: () => controller.setOrganizationType(values[i]),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -159,11 +151,11 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
                       color: selected ? Colors.white : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: selected
-                          ? [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 4)]
+                          ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4)]
                           : [],
                     ),
                     child: Text(
-                      type,
+                      labels[i],
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
@@ -174,15 +166,14 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ),
         ),
       ],
     );
   }
 
-  // ── Organization Name Dropdown ────────────────────────────────────
-  Widget _buildOrganizationNameDropdown(DocumentUploadController controller) {
+  Widget _buildOrganizationNameDropdown(DocumentUploadController controller, AppLocalizations l10n) {
     final options = controller.organizationType == 'Exco'
         ? OrganizationLists.excoNames
         : OrganizationLists.clubNames;
@@ -190,11 +181,11 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Organization Name'),
+        _label(l10n.organization),
         const SizedBox(height: 8),
         _dropdownField(
           value: controller.organizationName,
-          hint: 'Select organization',
+          hint: l10n.selectEvent,
           icon: Icons.business_outlined,
           items: options,
           onChanged: controller.setOrganizationName,
@@ -203,12 +194,11 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Event / Document Title ────────────────────────────────────────
-  Widget _buildTitleField(DocumentUploadController controller) {
+  Widget _buildTitleField(DocumentUploadController controller, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Event/Document Title'),
+        _label(l10n.eventDocumentTitle),
         const SizedBox(height: 8),
         TextField(
           controller: _titleController,
@@ -230,16 +220,15 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Document Type Dropdown ────────────────────────────────────────
-  Widget _buildDocumentTypeDropdown(DocumentUploadController controller) {
+  Widget _buildDocumentTypeDropdown(DocumentUploadController controller, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Document Type'),
+        _label(l10n.documentType),
         const SizedBox(height: 8),
         _dropdownField(
           value: controller.documentType,
-          hint: 'Select document type',
+          hint: l10n.selectDocumentType,
           icon: Icons.insert_drive_file_outlined,
           items: EventLists.documentTypes,
           onChanged: controller.setDocumentType,
@@ -248,12 +237,11 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── File Upload Area ──────────────────────────────────────────────
-  Widget _buildFileUploadArea(DocumentUploadController controller) {
+  Widget _buildFileUploadArea(DocumentUploadController controller, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Upload PDF Document'),
+        _label(l10n.uploadPdfDocument),
         const SizedBox(height: 8),
         GestureDetector(
           onTap: controller.isLoading ? null : controller.pickFile,
@@ -266,37 +254,27 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: controller.hasFile ? _navy : Colors.grey.shade300,
-                style: BorderStyle.solid,
                 width: controller.hasFile ? 1.5 : 1,
               ),
             ),
             child: controller.hasFile
                 ? _buildFilePreview(controller)
-                : _buildFilePickerPrompt(),
+                : _buildFilePickerPrompt(l10n),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildFilePickerPrompt() {
+  Widget _buildFilePickerPrompt(AppLocalizations l10n) {
     return Column(
       children: [
         Icon(Icons.upload_rounded, size: 36, color: _navy),
         const SizedBox(height: 8),
-        Text(
-          'Choose PDF file',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: _navy,
-            fontSize: 14,
-          ),
-        ),
+        Text(l10n.choosePdfFile,
+            style: TextStyle(fontWeight: FontWeight.w600, color: _navy, fontSize: 14)),
         const SizedBox(height: 4),
-        const Text(
-          'PDF only, max 10MB',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
-        ),
+        Text(l10n.pdfOnlyMax10mb, style: const TextStyle(color: Colors.grey, fontSize: 12)),
       ],
     );
   }
@@ -306,18 +284,14 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
       children: [
         Icon(Icons.picture_as_pdf_rounded, size: 36, color: _navy),
         const SizedBox(height: 8),
-        Text(
-          controller.fileName,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
+        Text(controller.fileName,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis),
         const SizedBox(height: 4),
-        Text(
-          '${controller.fileSizeMB.toStringAsFixed(1)} MB',
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
-        ),
+        Text('${controller.fileSizeMB.toStringAsFixed(1)} MB',
+            style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 12),
         TextButton.icon(
           onPressed: controller.removeFile,
@@ -328,19 +302,18 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Remarks ───────────────────────────────────────────────────────
-  Widget _buildRemarksField(DocumentUploadController controller) {
+  Widget _buildRemarksField(DocumentUploadController controller, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Remarks (Optional)'),
+        _label(l10n.remarksOptional),
         const SizedBox(height: 8),
         TextField(
           controller: _remarksController,
           onChanged: controller.setRemarks,
           maxLines: 4,
           decoration: InputDecoration(
-            hintText: 'Add any additional notes or comments...',
+            hintText: l10n.additionalNotesHint,
             hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
             prefixIcon: const Padding(
               padding: EdgeInsets.only(bottom: 60),
@@ -359,7 +332,6 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Error Message ─────────────────────────────────────────────────
   Widget _buildErrorMessage(String message) {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
@@ -367,53 +339,38 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
         children: [
           const Icon(Icons.error_outline, color: Colors.red, size: 16),
           const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.red, fontSize: 13),
-            ),
-          ),
+          Expanded(child: Text(message, style: const TextStyle(color: Colors.red, fontSize: 13))),
         ],
       ),
     );
   }
 
-  // ── Submit Button ─────────────────────────────────────────────────
-  Widget _buildSubmitButton(BuildContext context, DocumentUploadController controller) {
+  Widget _buildSubmitButton(BuildContext context, DocumentUploadController controller, AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: controller.isLoading ? null : () => _handleSubmit(context, controller),
+        onPressed: controller.isLoading ? null : () => _handleSubmit(context, controller, l10n),
         style: ElevatedButton.styleFrom(
           backgroundColor: _navy,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          disabledBackgroundColor: _navy.withOpacity(0.5),
+          disabledBackgroundColor: _navy.withValues(alpha: 0.5),
         ),
         child: controller.isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-              )
-            : const Text(
-                'Submit Document',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+            ? const SizedBox(height: 20, width: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : Text(l10n.submitDocument,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }
 
-  // ── Submit Handler ────────────────────────────────────────────────
   Future<void> _handleSubmit(
-      BuildContext context, DocumentUploadController controller) async {
+      BuildContext context, DocumentUploadController controller, AppLocalizations l10n) async {
     final success = await controller.submit();
     if (!context.mounted) return;
-
-    if (success) {
-      _showSuccessDialog(context, controller);
-    }
+    if (success) _showSuccessDialog(context, controller);
   }
 
   void _showSuccessDialog(BuildContext context, DocumentUploadController controller) {
@@ -428,18 +385,12 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.check_circle_rounded,
-                  color: Colors.green, size: 48),
+              decoration: BoxDecoration(color: Colors.green.shade50, shape: BoxShape.circle),
+              child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 48),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Document Submitted!',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
+            const Text('Document Submitted!',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             const SizedBox(height: 8),
             const Text(
               'Your document has been submitted for review. You can track its status in the Document Status screen.',
@@ -451,7 +402,7 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // close dialog
+              Navigator.of(context).pop();
               controller.reset();
               _titleController.clear();
               _remarksController.clear();
@@ -460,8 +411,8 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop(); // close dialog
-              Navigator.of(context).pop(); // go back to dashboard
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _navy,
@@ -475,16 +426,10 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     );
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────
   Widget _label(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-        color: Color(0xFF1A237E),
-      ),
-    );
+    return Text(text,
+        style: const TextStyle(
+            fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF1A237E)));
   }
 
   Widget _dropdownField({
@@ -495,29 +440,23 @@ class _UploadDocumentViewState extends State<_UploadDocumentView> {
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: _inputBg,
-        borderRadius: BorderRadius.circular(14),
-      ),
+      decoration: BoxDecoration(color: _inputBg, borderRadius: BorderRadius.circular(14)),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          hint: Row(
-            children: [
-              Icon(icon, color: Colors.grey, size: 20),
-              const SizedBox(width: 10),
-              Text(hint, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-            ],
-          ),
+          hint: Row(children: [
+            Icon(icon, color: Colors.grey, size: 20),
+            const SizedBox(width: 10),
+            Text(hint, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+          ]),
           icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item, style: const TextStyle(fontSize: 14)),
-            );
-          }).toList(),
+          items: items
+              .map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item, style: const TextStyle(fontSize: 14))))
+              .toList(),
           onChanged: onChanged,
           dropdownColor: Colors.white,
           borderRadius: BorderRadius.circular(12),

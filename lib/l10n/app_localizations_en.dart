@@ -278,4 +278,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveFeedbackForm => 'Save Feedback Form';
+
+  @override
+  String get documentStatus => 'Document Status';
+
+  @override
+  String get searchDocuments => 'Search documents or organizations...';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterPending => 'Pending';
+
+  @override
+  String get filterApproved => 'Approved';
+
+  @override
+  String get filterRevision => 'Revision';
+
+  @override
+  String get filterRejected => 'Rejected';
+
+  @override
+  String get totalDocuments => 'Total';
+
+  @override
+  String get noDocumentsYet => 'No documents yet';
+
+  @override
+  String get uploadFirstDocument =>
+      'Upload your first document to get started.';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get statusPendingReview => 'Pending Review';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusNeedsCorrection => 'Needs Correction';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get documentDetails => 'Document Details';
+
+  @override
+  String get documentPdf => 'Document PDF';
+
+  @override
+  String get submissionDetails => 'Submission Details';
+
+  @override
+  String get reviewedDate => 'Reviewed Date';
+
+  @override
+  String get reviewedBy => 'Reviewed By';
+
+  @override
+  String get correctionRequired => 'Correction Required';
+
+  @override
+  String get rejectionReason => 'Rejection Reason';
+
+  @override
+  String get documentSubmitted => 'Document Submitted!';
+
+  @override
+  String get documentSubmittedMessage =>
+      'Your document has been submitted for review. You can track its status in the Document Status screen.';
+
+  @override
+  String get uploadAnother => 'Upload Another';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get remove => 'Remove';
 }

@@ -280,4 +280,87 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get saveFeedbackForm => 'Simpan Borang Maklum Balas';
+
+  @override
+  String get documentStatus => 'Status Dokumen';
+
+  @override
+  String get searchDocuments => 'Cari dokumen atau organisasi...';
+
+  @override
+  String get filterAll => 'Semua';
+
+  @override
+  String get filterPending => 'Menunggu';
+
+  @override
+  String get filterApproved => 'Diluluskan';
+
+  @override
+  String get filterRevision => 'Semakan';
+
+  @override
+  String get filterRejected => 'Ditolak';
+
+  @override
+  String get totalDocuments => 'Jumlah';
+
+  @override
+  String get noDocumentsYet => 'Tiada dokumen lagi';
+
+  @override
+  String get uploadFirstDocument =>
+      'Muat naik dokumen pertama anda untuk bermula.';
+
+  @override
+  String get noResultsFound => 'Tiada keputusan dijumpai';
+
+  @override
+  String get statusPendingReview => 'Menunggu Semakan';
+
+  @override
+  String get statusApproved => 'Diluluskan';
+
+  @override
+  String get statusNeedsCorrection => 'Perlu Pembetulan';
+
+  @override
+  String get statusRejected => 'Ditolak';
+
+  @override
+  String get documentDetails => 'Butiran Dokumen';
+
+  @override
+  String get documentPdf => 'PDF Dokumen';
+
+  @override
+  String get submissionDetails => 'Butiran Penghantaran';
+
+  @override
+  String get reviewedDate => 'Tarikh Disemak';
+
+  @override
+  String get reviewedBy => 'Disemak Oleh';
+
+  @override
+  String get correctionRequired => 'Pembetulan Diperlukan';
+
+  @override
+  String get rejectionReason => 'Sebab Penolakan';
+
+  @override
+  String get documentSubmitted => 'Dokumen Dihantar!';
+
+  @override
+  String get documentSubmittedMessage =>
+      'Dokumen anda telah dihantar untuk semakan. Anda boleh semak statusnya di skrin Status Dokumen.';
+
+  @override
+  String get uploadAnother => 'Muat Naik Lagi';
+
+  @override
+  String get done => 'Selesai';
+
+  @override
+  String get remove => 'Buang';
 }

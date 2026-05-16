@@ -631,6 +631,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Feedback Form'**
   String get saveFeedbackForm;
+
+  /// No description provided for @documentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Status'**
+  String get documentStatus;
+
+  /// No description provided for @searchDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Search documents or organizations...'**
+  String get searchDocuments;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
+
+  /// No description provided for @filterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get filterApproved;
+
+  /// No description provided for @filterRevision.
+  ///
+  /// In en, this message translates to:
+  /// **'Revision'**
+  String get filterRevision;
+
+  /// No description provided for @filterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get filterRejected;
+
+  /// No description provided for @totalDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalDocuments;
+
+  /// No description provided for @noDocumentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No documents yet'**
+  String get noDocumentsYet;
+
+  /// No description provided for @uploadFirstDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload your first document to get started.'**
+  String get uploadFirstDocument;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @statusPendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get statusPendingReview;
+
+  /// No description provided for @statusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get statusApproved;
+
+  /// No description provided for @statusNeedsCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Correction'**
+  String get statusNeedsCorrection;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
+  /// No description provided for @documentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Details'**
+  String get documentDetails;
+
+  /// No description provided for @documentPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Document PDF'**
+  String get documentPdf;
+
+  /// No description provided for @submissionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission Details'**
+  String get submissionDetails;
+
+  /// No description provided for @reviewedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed Date'**
+  String get reviewedDate;
+
+  /// No description provided for @reviewedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed By'**
+  String get reviewedBy;
+
+  /// No description provided for @correctionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Correction Required'**
+  String get correctionRequired;
+
+  /// No description provided for @rejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectionReason;
+
+  /// No description provided for @documentSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Submitted!'**
+  String get documentSubmitted;
+
+  /// No description provided for @documentSubmittedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your document has been submitted for review. You can track its status in the Document Status screen.'**
+  String get documentSubmittedMessage;
+
+  /// No description provided for @uploadAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Another'**
+  String get uploadAnother;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
 }
 
 class _AppLocalizationsDelegate
