@@ -19,4 +19,7 @@ class AppRoutes {
   static const String trackEventDocumentStatus = '/documents/status';
   static const String reviewEventDocuments = '/documents/review';
   static const String createEventFeedbackForm = '/feedback/create';
+
+  static const String documentDetails = '/documents/details';
+
 }
