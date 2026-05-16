@@ -640,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return;
           }
 
-          _showPreparedFeature(title);
+          Navigator.pushNamed(context, routeName);
         },
         child: Container(
           width: double.infinity,
