@@ -1,11 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class DocumentUploadController extends ChangeNotifier {
   // ── Form field state ──────────────────────────────────────────────
-  String _organizationType = 'Exco'; // 'Exco' or 'Club'
+  String _organizationType = 'Exco';
   String? _organizationName;
   String _title = '';
   String? _documentType;
@@ -32,13 +34,12 @@ class DocumentUploadController extends ChangeNotifier {
 
   bool get hasFile => _pickedFile != null;
   String get fileName => _pickedFile?.name ?? '';
-  double get fileSizeMB =>
-      (_pickedFile?.size ?? 0) / (1024 * 1024);
+  double get fileSizeMB => (_pickedFile?.size ?? 0) / (1024 * 1024);
 
   // ── Setters ──────────────────────────────────────────────────────
   void setOrganizationType(String type) {
     _organizationType = type;
-    _organizationName = null; // reset when type changes
+    _organizationName = null;
     notifyListeners();
   }
 
@@ -67,27 +68,27 @@ class DocumentUploadController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await FilePicker.pickFiles(
+       final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       withData: kIsWeb,
     );
 
+
     if (result == null || result.files.isEmpty) return;
 
     final file = result.files.first;
 
-    // Validate: PDF only
     if (file.extension?.toLowerCase() != 'pdf') {
       _errorMessage = 'Only PDF files are allowed.';
       notifyListeners();
       return;
     }
 
-    // Validate: max 10MB
-    final sizeMB = (file.size) / (1024 * 1024);
+    final sizeMB = file.size / (1024 * 1024);
     if (sizeMB > 10) {
-      _errorMessage = 'File size must not exceed 10MB. Your file is ${sizeMB.toStringAsFixed(1)}MB.';
+      _errorMessage =
+          'File size must not exceed 10MB. Your file is ${sizeMB.toStringAsFixed(1)}MB.';
       notifyListeners();
       return;
     }
@@ -136,13 +137,37 @@ class DocumentUploadController extends ChangeNotifier {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not authenticated.');
 
+      // 1. Upload PDF to Firebase Storage
+      final fileRef = FirebaseStorage.instance
+          .ref()
+          .child('event_documents')
+          .child(user.uid)
+          .child('${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}');
+
+      UploadTask uploadTask;
+      if (kIsWeb || _pickedFile!.bytes != null) {
+        uploadTask = fileRef.putData(
+          _pickedFile!.bytes!,
+          SettableMetadata(contentType: 'application/pdf'),
+        );
+      } else {
+        uploadTask = fileRef.putFile(
+          File(_pickedFile!.path!),
+          SettableMetadata(contentType: 'application/pdf'),
+        );
+      }
+
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // 2. Save document metadata to Firestore
       await FirebaseFirestore.instance.collection('documents').add({
         'title': _title.trim(),
         'organizationType': _organizationType,
         'organizationName': _organizationName,
         'documentType': _documentType,
         'remarks': _remarks.trim(),
-        'fileUrl': '',
+        'fileUrl': downloadUrl,
         'fileName': _pickedFile!.name,
         'fileSize': _pickedFile!.size,
         'status': 'Pending Review',
@@ -160,7 +185,7 @@ class DocumentUploadController extends ChangeNotifier {
       return true;
     } catch (e) {
       print('UPLOAD ERROR: $e');
-      _errorMessage = 'Submit failed: ${e.toString()}';
+      _errorMessage = 'Upload failed: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
       return false;
