@@ -31,7 +31,6 @@ class EventDetailsFormScreen extends StatefulWidget {
 class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final EventDetailsController _controller = EventDetailsController();
-  final FileUploadService _fileUploadService = FileUploadService();
 
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
@@ -49,6 +48,7 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
   String? _posterFileName;
   String? _posterUrl;
   String? _posterStoragePath;
+  PickedUploadFile? _pickedPosterFile;
 
   bool _isSaving = false;
 
@@ -104,18 +104,13 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     try {
-      final pickedFile = await _fileUploadService.pickEventPoster();
+      final pickedFile = await _controller.pickEventPoster();
 
       if (pickedFile == null) return;
 
       setState(() {
+        _pickedPosterFile = pickedFile;
         _posterFileName = pickedFile.name;
-
-        // Storage is disabled for now, so these remain empty.
-        // Later, when Firebase Storage is enabled, this is where posterUrl
-        // and posterStoragePath will be filled after upload.
-        _posterUrl = '';
-        _posterStoragePath = '';
       });
     } catch (_) {
       _showError(l10n.invalidPosterFile);
@@ -124,6 +119,7 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
 
   void _removePoster() {
     setState(() {
+      _pickedPosterFile = null;
       _posterFileName = null;
       _posterUrl = null;
       _posterStoragePath = null;
@@ -219,13 +215,6 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
     try {
       final existingEvent = widget.event;
 
-      // Temporary Sprint 2 logic:
-      // Save poster filename only because Firebase Storage requires Blaze.
-      // Later, when Storage is enabled, replace this with actual upload logic.
-      final posterFileName = _posterFileName ?? '';
-      final posterUrl = _posterUrl ?? '';
-      final posterStoragePath = _posterStoragePath ?? '';
-
       final participantCapacity = _registrationEnabled
           ? int.tryParse(_capacityController.text.trim())
           : null;
@@ -241,9 +230,9 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
         organizationType: widget.organizerProfile.organizationType,
         category: _selectedCategory,
         description: _descriptionController.text.trim(),
-        posterFileName: posterFileName,
-        posterUrl: posterUrl,
-        posterStoragePath: posterStoragePath,
+        posterFileName: _posterFileName ?? '',
+        posterUrl: _posterUrl ?? '',
+        posterStoragePath: _posterStoragePath ?? '',
         venue: _venueController.text.trim(),
         eventDateTime: _selectedDateTime,
         registrationEnabled: _registrationEnabled,
@@ -262,11 +251,18 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
         updatedAt: existingEvent?.updatedAt,
       );
 
-      if (widget.isEditMode) {
-        await _controller.updateEvent(event);
-      } else {
-        await _controller.createEvent(event);
-      }
+      final saveData = EventDetailsSaveData(
+        event: event,
+        pickedPosterFile: _pickedPosterFile,
+        posterFileName: _posterFileName ?? '',
+        posterUrl: _posterUrl ?? '',
+        posterStoragePath: _posterStoragePath ?? '',
+      );
+
+      await _controller.saveEventDetails(
+        data: saveData,
+        isEditMode: widget.isEditMode,
+      );
 
       if (!mounted) return;
 
@@ -572,7 +568,7 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
         Stack(
           children: [
             InkWell(
-              onTap: _pickPoster,
+              onTap: _isSaving ? null : _pickPoster,
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 width: double.infinity,
@@ -629,7 +625,7 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
-                    onTap: _removePoster,
+                    onTap: _isSaving ? null : _removePoster,
                     child: const SizedBox(
                       width: 26,
                       height: 26,

@@ -43,123 +43,95 @@ class EventCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (event.posterUrl.isNotEmpty) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                event.posterUrl,
-                width: double.infinity,
-                height: 120,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
-                  return Container(
-                    width: double.infinity,
-                    height: 120,
-                    color: AppColors.surfaceSoft,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.image_not_supported_outlined,
-                      color: AppColors.textSecondary,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 14),
-          ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.body.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 7,
+                  runSpacing: 7,
                   children: [
-                    Text(
-                      event.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    _EventChip(
+                      label: event.status,
+                      type: _EventChipType.status,
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 7,
-                      runSpacing: 7,
-                      children: [
-                        _EventChip(
-                          label: event.status,
-                          type: _EventChipType.status,
-                        ),
-                        _EventChip(
-                          label: event.category,
-                          type: _EventChipType.category,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _InfoLine(
-                      icon: Icons.calendar_today_outlined,
-                      text: dateText,
-                    ),
-                    const SizedBox(height: 6),
-                    _InfoLine(
-                      icon: Icons.location_on_outlined,
-                      text: event.venue,
-                    ),
-                    const SizedBox(height: 6),
-                    _InfoLine(
-                      icon: Icons.people_alt_outlined,
-                      text: registrationText,
+                    _EventChip(
+                      label: event.category,
+                      type: _EventChipType.category,
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                _InfoLine(
+                  icon: Icons.calendar_today_outlined,
+                  text: dateText,
+                ),
+                const SizedBox(height: 6),
+                _InfoLine(
+                  icon: Icons.location_on_outlined,
+                  text: event.venue,
+                ),
+                const SizedBox(height: 6),
+                _InfoLine(
+                  icon: Icons.people_alt_outlined,
+                  text: registrationText,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Material(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: onEdit,
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.edit_rounded,
+                      color: AppColors.textWhite,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(width: 12),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(14),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: onEdit,
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.edit_rounded,
-                          color: AppColors.textWhite,
-                          size: 20,
-                        ),
-                      ),
+              const SizedBox(width: 8),
+              Material(
+                color: AppColors.error,
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: onDelete,
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppColors.textWhite,
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Material(
-                    color: AppColors.error,
-                    borderRadius: BorderRadius.circular(14),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: onDelete,
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.delete_outline_rounded,
-                          color: AppColors.textWhite,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
@@ -215,20 +187,20 @@ class _EventChip extends StatelessWidget {
 
     if (type == _EventChipType.status) {
       if (lower == 'open') {
-        bg = const Color(0xFFD1FAE5);
+        bg = AppColors.studentBadgeBg;
         fg = AppColors.success;
       } else if (lower == 'draft') {
-        bg = const Color(0xFFE5E7EB);
+        bg = AppColors.surfaceSoft;
         fg = AppColors.textSecondary;
       } else if (lower == 'closed') {
-        bg = const Color(0xFFF3F4F6);
+        bg = AppColors.borderLight;
         fg = AppColors.textSecondary;
       } else if (lower == 'completed') {
-        bg = const Color(0xFFEDE9FE);
+        bg = AppColors.communityBadgeBg;
         fg = AppColors.communityBadgeText;
       }
     } else {
-      bg = const Color(0xFFE0EAFF);
+      bg = AppColors.primarySoft;
       fg = AppColors.primaryLight;
     }
 
