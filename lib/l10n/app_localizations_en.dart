@@ -361,4 +361,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remove => 'Remove';
+
+  @override
+  String get registrationDeadline => 'Registration Deadline';
+
+  @override
+  String get participantCapacity => 'Participant Capacity';
+
+  @override
+  String get registrationFeeRm => 'Registration Fee (RM)';
+
+  @override
+  String get contactPerson => 'Contact Person';
+
+  @override
+  String get enterName => 'Enter name';
+
+  @override
+  String get registered => 'registered';
+
+  @override
+  String get registrationDisabled => 'Registration disabled';
+
+  @override
+  String get noEventsYet => 'No events added yet.';
+
+  @override
+  String get addFirstEvent => 'Try adding your first event.';
+
+  @override
+  String get organizerProfileLoadError => 'Unable to load organizer profile.';
+
+  @override
+  String get organizationDetailsMissing =>
+      'Please make sure the account has organization details.';
+
+  @override
+  String get unableToLoadEvents => 'Unable to load events.';
+
+  @override
+  String get tryAgainLater => 'Please try again later.';
+
+  @override
+  String get eventPosterRequired => 'Event poster is required.';
+
+  @override
+  String get invalidPosterFile =>
+      'Invalid poster file. Please upload PNG, JPG, or JPEG up to 5MB.';
+
+  @override
+  String get registrationDeadlineRequired =>
+      'Registration deadline is required.';
+
+  @override
+  String get fieldRequired => 'The field is required.';
+
+  @override
+  String get enterValidNumber => 'Enter a valid number.';
+
+  @override
+  String get enterValidFee => 'Enter a valid fee.';
+
+  @override
+  String get unableToSaveEventDetails =>
+      'Unable to save event details. Please try again.';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteEventQuestion => 'Delete event?';
+
+  @override
+  String get deleteEventConfirmation =>
+      'Are you sure you want to delete this event? This action cannot be undone.';
+
+  @override
+  String get eventDeletedSuccessfully => 'Event deleted successfully.';
+
+  @override
+  String get unableToDeleteEvent => 'Unable to delete event. Please try again.';
 }

@@ -793,6 +793,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get remove;
+
+  /// No description provided for @registrationDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Deadline'**
+  String get registrationDeadline;
+
+  /// No description provided for @participantCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant Capacity'**
+  String get participantCapacity;
+
+  /// No description provided for @registrationFeeRm.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Fee (RM)'**
+  String get registrationFeeRm;
+
+  /// No description provided for @contactPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Person'**
+  String get contactPerson;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter name'**
+  String get enterName;
+
+  /// No description provided for @registered.
+  ///
+  /// In en, this message translates to:
+  /// **'registered'**
+  String get registered;
+
+  /// No description provided for @registrationDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration disabled'**
+  String get registrationDisabled;
+
+  /// No description provided for @noEventsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No events added yet.'**
+  String get noEventsYet;
+
+  /// No description provided for @addFirstEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adding your first event.'**
+  String get addFirstEvent;
+
+  /// No description provided for @organizerProfileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load organizer profile.'**
+  String get organizerProfileLoadError;
+
+  /// No description provided for @organizationDetailsMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please make sure the account has organization details.'**
+  String get organizationDetailsMissing;
+
+  /// No description provided for @unableToLoadEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load events.'**
+  String get unableToLoadEvents;
+
+  /// No description provided for @tryAgainLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again later.'**
+  String get tryAgainLater;
+
+  /// No description provided for @eventPosterRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Event poster is required.'**
+  String get eventPosterRequired;
+
+  /// No description provided for @invalidPosterFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid poster file. Please upload PNG, JPG, or JPEG up to 5MB.'**
+  String get invalidPosterFile;
+
+  /// No description provided for @registrationDeadlineRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration deadline is required.'**
+  String get registrationDeadlineRequired;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The field is required.'**
+  String get fieldRequired;
+
+  /// No description provided for @enterValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number.'**
+  String get enterValidNumber;
+
+  /// No description provided for @enterValidFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid fee.'**
+  String get enterValidFee;
+
+  /// No description provided for @unableToSaveEventDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to save event details. Please try again.'**
+  String get unableToSaveEventDetails;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deleteEventQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete event?'**
+  String get deleteEventQuestion;
+
+  /// No description provided for @deleteEventConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this event? This action cannot be undone.'**
+  String get deleteEventConfirmation;
+
+  /// No description provided for @eventDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Event deleted successfully.'**
+  String get eventDeletedSuccessfully;
+
+  /// No description provided for @unableToDeleteEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to delete event. Please try again.'**
+  String get unableToDeleteEvent;
 }
 
 class _AppLocalizationsDelegate

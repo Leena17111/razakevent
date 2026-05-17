@@ -12,6 +12,7 @@ import 'features/auth/presentation/register_screen.dart';
 import 'features/documents/presentation/document_details_screen.dart';
 import 'features/documents/presentation/document_status_screen.dart';
 import 'features/documents/presentation/upload_document_screen.dart';
+import 'features/events/presentation/event_details_list_screen.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/profile/presentation/manage_profile_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
@@ -60,6 +61,7 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.uploadEventDocument: (_) => const UploadDocumentScreen(),
             AppRoutes.trackEventDocumentStatus: (_) => const DocumentStatusScreen(),
             AppRoutes.documentDetails: (_) => const DocumentDetailsScreen(),
+            AppRoutes.eventDetailsList: (_) => const EventDetailsListScreen(),
           },
         );
       },

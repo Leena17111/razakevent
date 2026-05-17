@@ -363,4 +363,86 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get remove => 'Buang';
+
+  @override
+  String get registrationDeadline => 'Tarikh Tutup Pendaftaran';
+
+  @override
+  String get participantCapacity => 'Kapasiti Peserta';
+
+  @override
+  String get registrationFeeRm => 'Yuran Pendaftaran (RM)';
+
+  @override
+  String get contactPerson => 'Pegawai Dihubungi';
+
+  @override
+  String get enterName => 'Masukkan nama';
+
+  @override
+  String get registered => 'berdaftar';
+
+  @override
+  String get registrationDisabled => 'Pendaftaran tidak diaktifkan';
+
+  @override
+  String get noEventsYet => 'Tiada acara ditambah lagi.';
+
+  @override
+  String get addFirstEvent => 'Cuba tambah acara pertama anda.';
+
+  @override
+  String get organizerProfileLoadError =>
+      'Tidak dapat memuatkan profil penganjur.';
+
+  @override
+  String get organizationDetailsMissing =>
+      'Sila pastikan akaun mempunyai maklumat organisasi.';
+
+  @override
+  String get unableToLoadEvents => 'Tidak dapat memuatkan acara.';
+
+  @override
+  String get tryAgainLater => 'Sila cuba lagi kemudian.';
+
+  @override
+  String get eventPosterRequired => 'Poster acara diperlukan.';
+
+  @override
+  String get invalidPosterFile =>
+      'Fail poster tidak sah. Sila muat naik PNG, JPG, atau JPEG sehingga 5MB.';
+
+  @override
+  String get registrationDeadlineRequired =>
+      'Tarikh tutup pendaftaran diperlukan.';
+
+  @override
+  String get fieldRequired => 'Medan ini diperlukan.';
+
+  @override
+  String get enterValidNumber => 'Masukkan nombor yang sah.';
+
+  @override
+  String get enterValidFee => 'Masukkan yuran yang sah.';
+
+  @override
+  String get unableToSaveEventDetails =>
+      'Tidak dapat menyimpan butiran acara. Sila cuba lagi.';
+
+  @override
+  String get delete => 'Padam';
+
+  @override
+  String get deleteEventQuestion => 'Padam acara?';
+
+  @override
+  String get deleteEventConfirmation =>
+      'Adakah anda pasti mahu memadam acara ini? Tindakan ini tidak boleh dibuat asal.';
+
+  @override
+  String get eventDeletedSuccessfully => 'Acara berjaya dipadam.';
+
+  @override
+  String get unableToDeleteEvent =>
+      'Tidak dapat memadam acara. Sila cuba lagi.';
 }
