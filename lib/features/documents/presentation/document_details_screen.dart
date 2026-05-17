@@ -2,24 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../l10n/app_localizations.dart';
-
 import '../../../core/widgets/language_toggle.dart';
 import '../../../core/localization/locale_controller.dart';
+import '../../../core/routes/app_routes.dart';
+import '../logic/document_edit_controller.dart';
 
-class DocumentDetailsScreen extends StatelessWidget {
+class DocumentDetailsScreen extends StatefulWidget {
   const DocumentDetailsScreen({super.key});
 
+  @override
+  State<DocumentDetailsScreen> createState() => _DocumentDetailsScreenState();
+}
+
+class _DocumentDetailsScreenState extends State<DocumentDetailsScreen> {
   static const Color _navy = Color(0xFF1A237E);
+  String? _docId;
 
   @override
   Widget build(BuildContext context) {
-    final docId = ModalRoute.of(context)!.settings.arguments as String;
+    _docId = ModalRoute.of(context)!.settings.arguments as String;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('documents').doc(docId).get(),
+        future: FirebaseFirestore.instance.collection('documents').doc(_docId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -29,13 +36,14 @@ class DocumentDetailsScreen extends StatelessWidget {
           }
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
-          return _buildContent(context, data, l10n);
+          return _buildContent(context, data, l10n, _docId!);
         },
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, Map<String, dynamic> data, AppLocalizations l10n) {
+  Widget _buildContent(BuildContext context, Map<String, dynamic> data,
+      AppLocalizations l10n, String docId) {
     final status = data['status'] as String? ?? 'Pending Review';
     final title = data['title'] as String? ?? '';
     final orgName = data['organizationName'] as String? ?? '';
@@ -48,6 +56,7 @@ class DocumentDetailsScreen extends StatelessWidget {
     final reviewedBy = data['reviewedBy'] as String?;
     final adminComment = data['adminComment'] as String?;
     final remarks = data['remarks'] as String?;
+    final isPending = status == 'Pending Review';
 
     return Column(
       children: [
@@ -67,6 +76,12 @@ class DocumentDetailsScreen extends StatelessWidget {
                     style: const TextStyle(color: Colors.grey, fontSize: 14)),
                 const SizedBox(height: 20),
 
+                // Edit / Delete buttons — only when Pending Review
+                if (isPending) ...[
+                  _buildActionButtons(context, data, docId, fileUrl, l10n),
+                  const SizedBox(height: 16),
+                ],
+
                 // PDF section
                 _buildCard(
                   child: Column(
@@ -85,14 +100,18 @@ class DocumentDetailsScreen extends StatelessWidget {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: fileUrl.isNotEmpty ? () => _downloadFile(fileUrl) : null,
+                            onPressed:
+                                fileUrl.isNotEmpty ? () => _downloadFile(fileUrl) : null,
                             icon: const Icon(Icons.download_rounded, size: 16),
-                            label: Text(l10n.download, style: const TextStyle(fontSize: 13)),
+                            label: Text(l10n.download,
+                                style: const TextStyle(fontSize: 13)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _navy,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
                               disabledBackgroundColor: Colors.grey.shade300,
                             ),
                           ),
@@ -111,11 +130,14 @@ class DocumentDetailsScreen extends StatelessWidget {
                                 size: 48, color: _navy.withValues(alpha: 0.7)),
                             const SizedBox(height: 10),
                             Text(fileName,
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 14),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 4),
-                            Text('${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB',
-                                style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            Text(
+                                '${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB',
+                                style:
+                                    const TextStyle(color: Colors.grey, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -166,6 +188,107 @@ class DocumentDetailsScreen extends StatelessWidget {
     );
   }
 
+  // ── Edit / Delete Buttons ─────────────────────────────────────────
+  Widget _buildActionButtons(BuildContext context, Map<String, dynamic> data,
+      String docId, String fileUrl, AppLocalizations l10n) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () async {
+              final result = await Navigator.of(context).pushNamed(
+                AppRoutes.editDocument,
+                arguments: {'docId': docId, 'data': data},
+              );
+              // If edit was successful, refresh by rebuilding
+              if (result == true && mounted) {
+                setState(() {});
+              }
+            },
+            icon: const Icon(Icons.edit_rounded, size: 16),
+            label: Text(l10n.editDocument),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: _navy,
+              side: const BorderSide(color: _navy),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _confirmDelete(context, docId, fileUrl, l10n),
+            icon: const Icon(Icons.delete_outline_rounded, size: 16),
+            label: Text(l10n.delete),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red,
+              side: const BorderSide(color: Colors.red),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Delete Confirmation Dialog ────────────────────────────────────
+  void _confirmDelete(BuildContext context, String docId, String fileUrl,
+      AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l10n.deleteDocument, style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text(l10n.deleteDocumentConfirmation, style: const TextStyle(color: Colors.grey)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // close dialog
+              final success =
+                  await DocumentEditController.delete(docId, fileUrl);
+              if (!context.mounted) return;
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.documentDeletedSuccessfully),
+                    backgroundColor: Colors.green.shade700,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                );
+                Navigator.of(context).pop(); // go back to status screen
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.failedToDeleteDocument),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── Header ────────────────────────────────────────────────────────
   Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
     return Container(
@@ -177,28 +300,30 @@ class DocumentDetailsScreen extends StatelessWidget {
         bottom: 16,
       ),
       child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          Expanded(
+            child: Text(
+              l10n.documentDetails,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Expanded(
-              child: Text(
-                l10n.documentDetails,
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            LanguageToggle(
-              selectedLocale: Localizations.localeOf(context),
-              onLocaleChanged: (locale) => localeController.value = locale,
-            ),
-          ],
-        ),
+          ),
+          LanguageToggle(
+            selectedLocale: Localizations.localeOf(context),
+            onLocaleChanged: (locale) => localeController.value = locale,
+          ),
+        ],
+      ),
     );
   }
 
   // ── Admin Comment Card ────────────────────────────────────────────
-  Widget _buildAdminCommentCard(String status, String comment, AppLocalizations l10n) {
+  Widget _buildAdminCommentCard(
+      String status, String comment, AppLocalizations l10n) {
     final isCorrection = status == 'Needs Correction';
     final color = isCorrection ? Colors.orange : Colors.red;
 
@@ -306,14 +431,16 @@ class DocumentDetailsScreen extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 15, color: color),
           const SizedBox(width: 6),
           Text(label,
-              style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
+              style:
+                  TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
         ],
       ),
     );

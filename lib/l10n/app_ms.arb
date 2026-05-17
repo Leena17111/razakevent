@@ -148,5 +148,15 @@
   "deleteEventQuestion": "Padam acara?",
   "deleteEventConfirmation": "Adakah anda pasti mahu memadam acara ini? Tindakan ini tidak boleh dibuat asal.",
   "eventDeletedSuccessfully": "Acara berjaya dipadam.",
-  "unableToDeleteEvent": "Tidak dapat memadam acara. Sila cuba lagi."
+  "unableToDeleteEvent": "Tidak dapat memadam acara. Sila cuba lagi.",
+
+  "editDocument": "Edit Dokumen",
+  "deleteDocument": "Padam Dokumen",
+  "deleteDocumentConfirmation": "Adakah anda pasti mahu memadam dokumen ini? Tindakan ini tidak boleh dibuat asal.",
+  "documentUpdatedSuccessfully": "Dokumen berjaya dikemas kini.",
+  "documentDeletedSuccessfully": "Dokumen berjaya dipadam.",
+  "failedToDeleteDocument": "Gagal memadam dokumen.",
+  "replacePdf": "Ganti PDF",
+  "cancelReplacement": "Batal penggantian",
+  "newFileSelected": "Fail baharu dipilih"
 }

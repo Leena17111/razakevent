@@ -445,4 +445,32 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get unableToDeleteEvent =>
       'Tidak dapat memadam acara. Sila cuba lagi.';
+
+  @override
+  String get editDocument => 'Edit Dokumen';
+
+  @override
+  String get deleteDocument => 'Padam Dokumen';
+
+  @override
+  String get deleteDocumentConfirmation =>
+      'Adakah anda pasti mahu memadam dokumen ini? Tindakan ini tidak boleh dibuat asal.';
+
+  @override
+  String get documentUpdatedSuccessfully => 'Dokumen berjaya dikemas kini.';
+
+  @override
+  String get documentDeletedSuccessfully => 'Dokumen berjaya dipadam.';
+
+  @override
+  String get failedToDeleteDocument => 'Gagal memadam dokumen.';
+
+  @override
+  String get replacePdf => 'Ganti PDF';
+
+  @override
+  String get cancelReplacement => 'Batal penggantian';
+
+  @override
+  String get newFileSelected => 'Fail baharu dipilih';
 }

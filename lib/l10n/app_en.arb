@@ -148,5 +148,15 @@
   "deleteEventQuestion": "Delete event?",
   "deleteEventConfirmation": "Are you sure you want to delete this event? This action cannot be undone.",
   "eventDeletedSuccessfully": "Event deleted successfully.",
-  "unableToDeleteEvent": "Unable to delete event. Please try again."
+  "unableToDeleteEvent": "Unable to delete event. Please try again.",
+
+  "editDocument": "Edit Document",
+  "deleteDocument": "Delete Document",
+  "deleteDocumentConfirmation": "Are you sure you want to delete this document? This action cannot be undone.",
+  "documentUpdatedSuccessfully": "Document updated successfully.",
+  "documentDeletedSuccessfully": "Document deleted successfully.",
+  "failedToDeleteDocument": "Failed to delete document.",
+  "replacePdf": "Replace PDF",
+  "cancelReplacement": "Cancel replacement",
+  "newFileSelected": "New file selected"
 }

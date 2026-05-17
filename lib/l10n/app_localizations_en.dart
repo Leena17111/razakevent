@@ -441,4 +441,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unableToDeleteEvent => 'Unable to delete event. Please try again.';
+
+  @override
+  String get editDocument => 'Edit Document';
+
+  @override
+  String get deleteDocument => 'Delete Document';
+
+  @override
+  String get deleteDocumentConfirmation =>
+      'Are you sure you want to delete this document? This action cannot be undone.';
+
+  @override
+  String get documentUpdatedSuccessfully => 'Document updated successfully.';
+
+  @override
+  String get documentDeletedSuccessfully => 'Document deleted successfully.';
+
+  @override
+  String get failedToDeleteDocument => 'Failed to delete document.';
+
+  @override
+  String get replacePdf => 'Replace PDF';
+
+  @override
+  String get cancelReplacement => 'Cancel replacement';
+
+  @override
+  String get newFileSelected => 'New file selected';
 }
