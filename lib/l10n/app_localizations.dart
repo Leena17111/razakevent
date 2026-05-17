@@ -943,6 +943,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to delete event. Please try again.'**
   String get unableToDeleteEvent;
+
+  /// No description provided for @editDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Document'**
+  String get editDocument;
+
+  /// No description provided for @deleteDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Document'**
+  String get deleteDocument;
+
+  /// No description provided for @deleteDocumentConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this document? This action cannot be undone.'**
+  String get deleteDocumentConfirmation;
+
+  /// No description provided for @documentUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Document updated successfully.'**
+  String get documentUpdatedSuccessfully;
+
+  /// No description provided for @documentDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Document deleted successfully.'**
+  String get documentDeletedSuccessfully;
+
+  /// No description provided for @failedToDeleteDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete document.'**
+  String get failedToDeleteDocument;
+
+  /// No description provided for @replacePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace PDF'**
+  String get replacePdf;
+
+  /// No description provided for @cancelReplacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel replacement'**
+  String get cancelReplacement;
+
+  /// No description provided for @newFileSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'New file selected'**
+  String get newFileSelected;
 }
 
 class _AppLocalizationsDelegate

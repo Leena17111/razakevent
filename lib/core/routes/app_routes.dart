@@ -21,5 +21,5 @@ class AppRoutes {
   static const String createEventFeedbackForm = '/feedback/create';
 
   static const String documentDetails = '/documents/details';
-
+  static const String editDocument = '/documents/edit';
 }
