@@ -233,6 +233,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get chooseEvent => 'Pilih acara';
 
   @override
+  String get noEventsFound =>
+      'Tiada acara dijumpai. Sila cipta acara terlebih dahulu.';
+
+  @override
   String get builtInQuestions => 'Soalan Terbina Dalam';
 
   @override

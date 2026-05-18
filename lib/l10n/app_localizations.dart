@@ -542,6 +542,12 @@ abstract class AppLocalizations {
   /// **'Choose event'**
   String get chooseEvent;
 
+  /// No description provided for @noEventsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No events found. Create an event first.'**
+  String get noEventsFound;
+
   /// No description provided for @builtInQuestions.
   ///
   /// In en, this message translates to:

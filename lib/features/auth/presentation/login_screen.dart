@@ -5,9 +5,9 @@ import 'package:razakevent/core/utils/validators.dart';
 import 'package:razakevent/core/widgets/custom_button.dart';
 import 'package:razakevent/core/widgets/custom_text_field.dart';
 import 'package:razakevent/data/services/auth_service.dart';
-import 'package:razakevent/features/home/presentation/home_screen.dart';
 import 'package:razakevent/features/auth/presentation/forgot_password_screen.dart';
 import 'package:razakevent/features/auth/presentation/register_screen.dart';
+import 'package:razakevent/features/home/presentation/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -75,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
             Stack(
               clipBehavior: Clip.hardEdge,
               children: [
-                // Gradient background
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(28, 64, 28, 36),
@@ -104,7 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                // Decorative calendar icon — partially clipped off right edge
                 Positioned(
                   right: -30,
                   top: 10,
@@ -173,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
 
-                      // Forgot Password — blue by default, red on hover
+                      // Forgot Password
                       Align(
                         alignment: Alignment.centerRight,
                         child: _HoverTextButton(
@@ -182,9 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const ForgotPasswordScreen(),
-                              ),
-    );
+                                  builder: (_) =>
+                                      const ForgotPasswordScreen()),
+                            );
                           },
                         ),
                       ),
@@ -229,12 +227,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const RegisterScreen(),
-      ),
-    );
-    
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const RegisterScreen()),
+                                );
                               },
                               style: TextButton.styleFrom(
                                 overlayColor: Colors.transparent,

@@ -233,6 +233,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseEvent => 'Choose event';
 
   @override
+  String get noEventsFound => 'No events found. Create an event first.';
+
+  @override
   String get builtInQuestions => 'Built-in Questions';
 
   @override
