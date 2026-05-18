@@ -53,17 +53,37 @@ class FeedbackController extends ChangeNotifier {
 
       if (uid == null) throw Exception('Not authenticated');
 
-      final snapshot = await _firestore
-      .collection('events')
-      .orderBy('createdAt', descending: true)
-      .get();
+      // Step 1 — fetch all events created by this organizer
+      final eventsSnapshot = await _firestore
+          .collection('events')
+          .where('createdBy', isEqualTo: uid)
+          .orderBy('createdAt', descending: true)
+          .get();
 
-      debugPrint('=== FeedbackController: Events found: ${snapshot.docs.length} ===');
+      debugPrint('=== FeedbackController: Events found: ${eventsSnapshot.docs.length} ===');
 
-      _events = snapshot.docs
+      // Step 2 — fetch all feedback forms already created by this organizer
+      final formsSnapshot = await _firestore
+          .collection('feedbackForms')
+          .where('createdBy', isEqualTo: uid)
+          .get();
+
+      // Step 3 — collect event IDs that already have a feedback form
+      final usedEventIds = formsSnapshot.docs
+          .map((doc) => doc.data()['eventId'] as String)
+          .toSet();
+
+      debugPrint('=== FeedbackController: Events with existing forms: $usedEventIds ===');
+
+      // Step 4 — only show events that don't have a feedback form yet
+      _events = eventsSnapshot.docs
           .map((doc) => EventModel.fromFirestore(
               doc as DocumentSnapshot<Map<String, dynamic>>))
+          .where((event) => !usedEventIds.contains(event.eventId))
           .toList();
+
+      debugPrint('=== FeedbackController: Available events after filter: ${_events.length} ===');
+
     } catch (e) {
       debugPrint('=== FeedbackController: Error loading events: $e ===');
       _events = [];
@@ -171,7 +191,7 @@ class FeedbackController extends ChangeNotifier {
         final ref = _storage
             .ref()
             .child('feedback_qr')
-            .child(uid)                          
+            .child(uid)
             .child(
                 '${DateTime.now().millisecondsSinceEpoch}_$_qrCodeFileName');
 
@@ -203,6 +223,10 @@ class FeedbackController extends ChangeNotifier {
       _successMessage = 'Feedback form saved successfully!';
       _isSaving       = false;
       notifyListeners();
+
+      // Reload events to remove the one that just got a form
+      await loadEvents();
+
       return true;
     } catch (e) {
       debugPrint('=== FeedbackController: Error saving: $e ===');
