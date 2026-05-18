@@ -1,8 +1,6 @@
-// lib/main.dart
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'core/constants/app_colors.dart';
 import 'core/localization/locale_controller.dart';
 import 'core/routes/app_routes.dart';
@@ -11,22 +9,34 @@ import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/documents/presentation/document_details_screen.dart';
 import 'features/documents/presentation/document_status_screen.dart';
+import 'features/documents/presentation/edit_document_screen.dart';
 import 'features/documents/presentation/upload_document_screen.dart';
 import 'features/events/presentation/event_details_list_screen.dart';
+import 'features/feedback/presentation/create_feedback_form_screen.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/profile/presentation/manage_profile_screen.dart';
-import 'features/documents/presentation/edit_document_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyCKaudeyyJJsWkVuAAHgyaG85_Iws-RDE8',
+        appId: '1:595633177345:web:b00c46d56c52df9a105100',
+        messagingSenderId: '595633177345',
+        projectId: 'razakevent-b4852',
+        authDomain: 'razakevent-b4852.firebaseapp.com',
+        storageBucket: 'razakevent-b4852.firebasestorage.app',
+      ),
+    );
+  } else {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   runApp(const RazakEventApp());
 }
 
@@ -53,17 +63,18 @@ class RazakEventApp extends StatelessWidget {
           ),
           initialRoute: AppRoutes.splash,
           routes: {
-            AppRoutes.splash: (context) => const SplashScreen(),
-            AppRoutes.login: (context) => const LoginScreen(),
-            AppRoutes.register: (context) => const RegisterScreen(),
-            AppRoutes.resetPassword: (context) => const ForgotPasswordScreen(),
-            AppRoutes.home: (context) => const HomeScreen(),
-            AppRoutes.profile: (context) => const ManageProfileScreen(),
-            AppRoutes.uploadEventDocument: (_) => const UploadDocumentScreen(),
+            AppRoutes.splash:                   (context) => const SplashScreen(),
+            AppRoutes.login:                    (context) => const LoginScreen(),
+            AppRoutes.register:                 (context) => const RegisterScreen(),
+            AppRoutes.resetPassword:            (context) => const ForgotPasswordScreen(),
+            AppRoutes.home:                     (context) => const HomeScreen(),
+            AppRoutes.profile:                  (context) => const ManageProfileScreen(),
+            AppRoutes.uploadEventDocument:      (_) => const UploadDocumentScreen(),
             AppRoutes.trackEventDocumentStatus: (_) => const DocumentStatusScreen(),
-            AppRoutes.documentDetails: (_) => const DocumentDetailsScreen(),
-            AppRoutes.eventDetailsList: (_) => const EventDetailsListScreen(),
-            AppRoutes.editDocument: (_) => const EditDocumentScreen(),
+            AppRoutes.documentDetails:          (_) => const DocumentDetailsScreen(),
+            AppRoutes.editDocument:             (_) => const EditDocumentScreen(),
+            AppRoutes.eventDetailsList:         (_) => const EventDetailsListScreen(),
+            AppRoutes.createEventFeedbackForm:  (_) => const CreateFeedbackFormScreen(),
           },
         );
       },

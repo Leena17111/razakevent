@@ -79,6 +79,7 @@
   "setUpEventFeedbackCollection": "Sediakan borang maklum balas acara",
   "selectEvent": "Pilih Acara",
   "chooseEvent": "Pilih acara",
+  "noEventsFound": "Tiada acara dijumpai. Sila cipta acara terlebih dahulu.",
   "builtInQuestions": "Soalan Terbina Dalam",
   "satisfactionQuestion": "Sejauh manakah anda berpuas hati dengan acara ini?",
   "organizedQuestion": "Adakah acara ini diurus dengan baik?",

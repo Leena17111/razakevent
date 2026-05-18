@@ -79,6 +79,7 @@
   "setUpEventFeedbackCollection": "Set up event feedback collection",
   "selectEvent": "Select Event",
   "chooseEvent": "Choose event",
+  "noEventsFound": "No events found. Create an event first.",
   "builtInQuestions": "Built-in Questions",
   "satisfactionQuestion": "How satisfied are you with this event?",
   "organizedQuestion": "Was the event well-organized?",
