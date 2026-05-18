@@ -171,7 +171,7 @@ class FeedbackController extends ChangeNotifier {
         final ref = _storage
             .ref()
             .child('feedback_qr')
-            .child(uid!)                          
+            .child(uid)                          
             .child(
                 '${DateTime.now().millisecondsSinceEpoch}_$_qrCodeFileName');
 

@@ -8,7 +8,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/localization/locale_controller.dart';
 import '../../../core/widgets/language_toggle.dart';
-import '../../../data/models/event_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../logic/feedback_controller.dart';
 
@@ -278,7 +277,7 @@ class _CreateFeedbackFormScreenState
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                l10n.noEventsFound ?? '',
+                l10n.noEventsFound,
                 style: TextStyle(
                     color: Colors.grey.shade500, fontSize: 13),
               ),
