@@ -594,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: 'View reviewed documents',
                 icon: Icons.inventory_2_rounded,
                 color: AppColors.textSecondary,
-                routeName: '',
+                routeName: AppRoutes.adminReviewedDocuments,
                 isCompact: true,
               ),
             ),
