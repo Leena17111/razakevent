@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../core/localization/locale_controller.dart';
+import '../../../core/widgets/language_toggle.dart';
+import '../../../l10n/app_localizations.dart';
 import '../logic/admin_document_review_controller.dart';
-// TODO: Add localization keys for admin review screen
-// import '../../../l10n/app_localizations.dart';
 
 class AdminReviewDocumentScreen extends StatefulWidget {
   const AdminReviewDocumentScreen({super.key});
@@ -29,38 +31,45 @@ class _AdminReviewDocumentScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     _docId = ModalRoute.of(context)!.settings.arguments as String?;
 
     return ChangeNotifierProvider(
       create: (_) => AdminDocumentReviewController(),
-      child: Builder(builder: (context) {
-        return Scaffold(
-          backgroundColor: const Color(0xFFF5F6FA),
-          body: FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('documents')
-                .doc(_docId)
-                .get(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (!snapshot.hasData || !snapshot.data!.exists) {
-                return const Center(child: Text('Document not found.'));
-              }
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: const Color(0xFFF5F6FA),
+            body: FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('documents')
+                  .doc(_docId)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              final data =
-                  snapshot.data!.data() as Map<String, dynamic>;
-              return _buildContent(context, data);
-            },
-          ),
-        );
-      }),
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return Center(child: Text(l10n.documentNotFound));
+                }
+
+                final data =
+                    snapshot.data!.data() as Map<String, dynamic>;
+
+                return _buildContent(context, data);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildContent(
-      BuildContext context, Map<String, dynamic> data) {
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) {
     final title = data['title'] as String? ?? '';
     final orgType = data['organizationType'] as String? ?? '';
     final orgName = data['organizationName'] as String? ?? '';
@@ -81,17 +90,19 @@ class _AdminReviewDocumentScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // PDF Preview Card
-                _buildPdfPreviewCard(fileName, fileSize, fileUrl),
+                _buildPdfPreviewCard(context, fileName, fileSize, fileUrl),
                 const SizedBox(height: 16),
-
-                // Document Information Card
                 _buildDocumentInfoCard(
-                    title, orgType, orgName, docType,
-                    submittedByName, submittedAt, remarks),
+                  context,
+                  title,
+                  orgType,
+                  orgName,
+                  docType,
+                  submittedByName,
+                  submittedAt,
+                  remarks,
+                ),
                 const SizedBox(height: 16),
-
-                // Review Actions Card
                 _buildReviewActionsCard(context),
                 const SizedBox(height: 32),
               ],
@@ -102,8 +113,9 @@ class _AdminReviewDocumentScreenState
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────
   Widget _buildHeader(BuildContext context, String title) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       decoration: const BoxDecoration(
         color: _navy,
@@ -132,22 +144,29 @@ class _AdminReviewDocumentScreenState
                     color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back,
-                      color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Review Document',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                  l10n.reviewDocument,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              // Language toggle placeholder
-              // TODO: Add LanguageToggle widget here if needed
+              LanguageToggle(
+                selectedLocale: Localizations.localeOf(context),
+                onLocaleChanged: (locale) =>
+                    localeController.value = locale,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -155,7 +174,10 @@ class _AdminReviewDocumentScreenState
             padding: const EdgeInsets.only(left: 52),
             child: Text(
               title,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
@@ -163,9 +185,13 @@ class _AdminReviewDocumentScreenState
     );
   }
 
-  // ── PDF Preview Card ──────────────────────────────────────────────
   Widget _buildPdfPreviewCard(
-      String fileName, int fileSize, String fileUrl) {
+    BuildContext context,
+    String fileName,
+    int fileSize,
+    String fileUrl,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
     final sizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(1);
 
     return _buildCard(
@@ -175,31 +201,33 @@ class _AdminReviewDocumentScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'PDF PREVIEW',
-                style: TextStyle(
-                    color: _navy,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 0.5),
+              Text(
+                l10n.pdfPreview.toUpperCase(),
+                style: const TextStyle(
+                  color: _navy,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  letterSpacing: 0.5,
+                ),
               ),
-              GestureDetector(
-                onTap: fileUrl.isNotEmpty
-                    ? () => _downloadFile(fileUrl)
-                    : null,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.download_rounded,
-                    color: fileUrl.isNotEmpty
-                        ? _navy
-                        : Colors.grey,
-                    size: 20,
+              Tooltip(
+                message: l10n.download,
+                child: GestureDetector(
+                  onTap: fileUrl.isNotEmpty
+                      ? () => _downloadFile(fileUrl)
+                      : null,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.download_rounded,
+                      color: fileUrl.isNotEmpty ? _navy : Colors.grey,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -225,27 +253,34 @@ class _AdminReviewDocumentScreenState
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                            color:
-                                Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2)),
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
                     ),
-                    child: Icon(Icons.insert_drive_file_rounded,
-                        color: _navy.withValues(alpha: 0.8), size: 36),
+                    child: Icon(
+                      Icons.insert_drive_file_rounded,
+                      color: _navy.withValues(alpha: 0.8),
+                      size: 36,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     fileName,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 14),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '$sizeMB MB',
                     style: const TextStyle(
-                        color: Colors.grey, fontSize: 12),
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -256,8 +291,8 @@ class _AdminReviewDocumentScreenState
     );
   }
 
-  // ── Document Information Card ─────────────────────────────────────
   Widget _buildDocumentInfoCard(
+    BuildContext context,
     String title,
     String orgType,
     String orgName,
@@ -266,6 +301,8 @@ class _AdminReviewDocumentScreenState
     Timestamp? submittedAt,
     String? remarks,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     final isClub = orgType == 'Club';
     final chipColor = isClub ? Colors.purple : _navy;
     final chipBg = isClub
@@ -276,30 +313,36 @@ class _AdminReviewDocumentScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'DOCUMENT INFORMATION',
-            style: TextStyle(
-                color: _navy,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-                letterSpacing: 0.5),
+          Text(
+            l10n.documentInformation.toUpperCase(),
+            style: const TextStyle(
+              color: _navy,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: 14),
-          _infoRow('Event Title', title, bold: true),
+          _infoRow(l10n.eventTitle, title, bold: true),
           const SizedBox(height: 10),
-          // Organization row with chip
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
+              SizedBox(
                 width: 120,
-                child: Text('Organization',
-                    style:
-                        TextStyle(color: Colors.grey, fontSize: 13)),
+                child: Text(
+                  l10n.organization,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
+                ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: chipBg,
                   borderRadius: BorderRadius.circular(6),
@@ -307,60 +350,72 @@ class _AdminReviewDocumentScreenState
                 child: Text(
                   orgType,
                   style: TextStyle(
-                      color: chipColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600),
+                    color: chipColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(orgName,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 13)),
+                child: Text(
+                  orgName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          _infoRow('Document Type', docType, bold: true),
+          _infoRow(l10n.documentType, docType, bold: true),
           const SizedBox(height: 10),
-          _infoRow('Submitted By', submittedBy.isNotEmpty ? submittedBy : '—',
-              bold: true),
+          _infoRow(
+            l10n.submittedBy,
+            submittedBy.isNotEmpty ? submittedBy : '—',
+            bold: true,
+          ),
           const SizedBox(height: 10),
-          _infoRow('Submitted Date', _formatDateTime(submittedAt), bold: true),
+          _infoRow(
+            l10n.submittedDate,
+            _formatDateTime(context, submittedAt),
+            bold: true,
+          ),
           if (remarks != null && remarks.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _infoRow('Remarks', remarks, bold: true),
+            _infoRow(l10n.remarksOptional, remarks, bold: true),
           ],
         ],
       ),
     );
   }
 
-  // ── Review Actions Card ───────────────────────────────────────────
   Widget _buildReviewActionsCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<AdminDocumentReviewController>(
       builder: (context, controller, _) {
         return _buildCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'REVIEW ACTIONS',
-                style: TextStyle(
-                    color: _navy,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 0.5),
+              Text(
+                l10n.reviewActions.toUpperCase(),
+                style: const TextStyle(
+                  color: _navy,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  letterSpacing: 0.5,
+                ),
               ),
               const SizedBox(height: 16),
-
-              // Action selector row
               Row(
                 children: [
                   _actionButton(
-                    context,
                     controller,
-                    action: 'Approve',
+                    action: AdminDocumentReviewController.actionApprove,
+                    label: l10n.approve,
                     icon: Icons.check_circle_rounded,
                     color: Colors.green.shade600,
                     bgColor: Colors.green.shade50,
@@ -368,20 +423,20 @@ class _AdminReviewDocumentScreenState
                   ),
                   const SizedBox(width: 10),
                   _actionButton(
-                    context,
                     controller,
-                    action: 'Request Correction',
+                    action:
+                        AdminDocumentReviewController.actionRequestCorrection,
+                    label: l10n.requestCorrection,
                     icon: Icons.error_rounded,
                     color: Colors.orange.shade600,
                     bgColor: Colors.orange.shade50,
                     selectedBorderColor: Colors.orange.shade700,
-                    label: 'Request\nCorrection',
                   ),
                   const SizedBox(width: 10),
                   _actionButton(
-                    context,
                     controller,
-                    action: 'Reject',
+                    action: AdminDocumentReviewController.actionReject,
+                    label: l10n.reject,
                     icon: Icons.cancel_rounded,
                     color: Colors.red.shade600,
                     bgColor: Colors.red.shade50,
@@ -390,11 +445,12 @@ class _AdminReviewDocumentScreenState
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Admin Comment
-              const Text(
-                'Admin Comment',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+              Text(
+                l10n.adminComment,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -402,9 +458,11 @@ class _AdminReviewDocumentScreenState
                 onChanged: controller.setAdminComment,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: 'Add your review comments here...',
-                  hintStyle:
-                      const TextStyle(color: Colors.grey, fontSize: 13),
+                  hintText: l10n.adminCommentHint,
+                  hintStyle: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF3F4F6),
                   border: OutlineInputBorder(
@@ -415,14 +473,10 @@ class _AdminReviewDocumentScreenState
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Signed document upload (only for Approve)
               if (controller.isApprove) ...[
                 _buildSignedDocumentUpload(context, controller),
                 const SizedBox(height: 16),
               ],
-
-              // Error message
               if (controller.errorMessage != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -433,14 +487,19 @@ class _AdminReviewDocumentScreenState
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline,
-                          color: Colors.red.shade700, size: 16),
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.red.shade700,
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           controller.errorMessage!,
                           style: TextStyle(
-                              color: Colors.red.shade700, fontSize: 13),
+                            color: Colors.red.shade700,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
@@ -448,8 +507,6 @@ class _AdminReviewDocumentScreenState
                 ),
                 const SizedBox(height: 16),
               ],
-
-              // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -461,7 +518,8 @@ class _AdminReviewDocumentScreenState
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     disabledBackgroundColor: Colors.grey.shade300,
                     elevation: 0,
                   ),
@@ -470,12 +528,16 @@ class _AdminReviewDocumentScreenState
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2),
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
-                      : const Text(
-                          'Submit Review',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                      : Text(
+                          l10n.submitReview,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),
@@ -487,24 +549,25 @@ class _AdminReviewDocumentScreenState
   }
 
   Widget _actionButton(
-    BuildContext context,
     AdminDocumentReviewController controller, {
     required String action,
+    required String label,
     required IconData icon,
     required Color color,
     required Color bgColor,
     required Color selectedBorderColor,
-    String? label,
   }) {
     final isSelected = controller.selectedAction == action;
-    final displayLabel = label ?? action;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => controller.setSelectedAction(action),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+          padding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 4,
+          ),
           decoration: BoxDecoration(
             color: isSelected ? bgColor : const Color(0xFFF3F4F6),
             borderRadius: BorderRadius.circular(14),
@@ -525,15 +588,15 @@ class _AdminReviewDocumentScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                displayLabel,
+                label,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: isSelected
-                      ? FontWeight.bold
-                      : FontWeight.normal,
-                  color:
-                      isSelected ? Colors.black87 : Colors.grey.shade600,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected
+                      ? Colors.black87
+                      : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -544,9 +607,12 @@ class _AdminReviewDocumentScreenState
   }
 
   Widget _buildSignedDocumentUpload(
-      BuildContext context, AdminDocumentReviewController controller) {
+    BuildContext context,
+    AdminDocumentReviewController controller,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (controller.hasSignedFile) {
-      // Show picked file
       return Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -556,8 +622,11 @@ class _AdminReviewDocumentScreenState
         ),
         child: Row(
           children: [
-            Icon(Icons.insert_drive_file_rounded,
-                color: Colors.green.shade700, size: 24),
+            Icon(
+              Icons.insert_drive_file_rounded,
+              color: Colors.green.shade700,
+              size: 24,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -566,21 +635,28 @@ class _AdminReviewDocumentScreenState
                   Text(
                     controller.signedFileName,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 13),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     '${controller.signedFileSizeMB.toStringAsFixed(1)} MB',
-                    style:
-                        const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
             ),
             GestureDetector(
               onTap: controller.removeSignedFile,
-              child: Icon(Icons.close,
-                  color: Colors.grey.shade600, size: 20),
+              child: Icon(
+                Icons.close,
+                color: Colors.grey.shade600,
+                size: 20,
+              ),
             ),
           ],
         ),
@@ -588,7 +664,7 @@ class _AdminReviewDocumentScreenState
     }
 
     return GestureDetector(
-      onTap: controller.pickSignedFile,
+      onTap: () => controller.pickSignedFile(l10n),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -603,21 +679,27 @@ class _AdminReviewDocumentScreenState
         ),
         child: Column(
           children: [
-            Icon(Icons.upload_rounded,
-                color: Colors.green.shade600, size: 32),
+            Icon(
+              Icons.upload_rounded,
+              color: Colors.green.shade600,
+              size: 32,
+            ),
             const SizedBox(height: 8),
             Text(
-              'Upload Signed Document',
+              l10n.uploadSignedDocument,
               style: TextStyle(
-                  color: Colors.green.shade700,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+                color: Colors.green.shade700,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
-              'PDF with digital signature',
+              l10n.signedPdfWithDigitalSignature,
               style: TextStyle(
-                  color: Colors.green.shade600, fontSize: 12),
+                color: Colors.green.shade600,
+                fontSize: 12,
+              ),
             ),
           ],
         ),
@@ -625,29 +707,32 @@ class _AdminReviewDocumentScreenState
     );
   }
 
-  // ── Submit ────────────────────────────────────────────────────────
   Future<void> _submitReview(
-      BuildContext context, AdminDocumentReviewController controller) async {
+    BuildContext context,
+    AdminDocumentReviewController controller,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_docId == null) return;
 
-    final success = await controller.submitReview(_docId!);
+    final success = await controller.submitReview(_docId!, l10n);
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Review submitted successfully.'),
+          content: Text(l10n.reviewSubmittedSuccessfully),
           backgroundColor: Colors.green.shade700,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       Navigator.of(context).pop(true);
     }
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────
   Widget _buildCard({required Widget child}) {
     return Container(
       width: double.infinity,
@@ -657,9 +742,10 @@ class _AdminReviewDocumentScreenState
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2)),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: child,
@@ -672,8 +758,13 @@ class _AdminReviewDocumentScreenState
       children: [
         SizedBox(
           width: 120,
-          child: Text(label,
-              style: const TextStyle(color: Colors.grey, fontSize: 13)),
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 13,
+            ),
+          ),
         ),
         Expanded(
           child: Text(
@@ -690,20 +781,20 @@ class _AdminReviewDocumentScreenState
 
   Future<void> _downloadFile(String url) async {
     final uri = Uri.parse(url);
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
-  String _formatDateTime(Timestamp? ts) {
+  String _formatDateTime(BuildContext context, Timestamp? ts) {
     if (ts == null) return '—';
+
     final dt = ts.toDate();
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    final hour = dt.hour.toString().padLeft(2, '0');
-    final minute = dt.minute.toString().padLeft(2, '0');
-    return '${dt.day} ${months[dt.month - 1]} ${dt.year}, $hour:$minute';
+    final localizations = MaterialLocalizations.of(context);
+    final date = localizations.formatShortDate(dt);
+    final time = TimeOfDay.fromDateTime(dt).format(context);
+
+    return '$date, $time';
   }
 }

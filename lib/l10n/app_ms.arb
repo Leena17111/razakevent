@@ -159,5 +159,27 @@
   "failedToDeleteDocument": "Gagal memadam dokumen.",
   "replacePdf": "Ganti PDF",
   "cancelReplacement": "Batal penggantian",
-  "newFileSelected": "Fail baharu dipilih"
+  "newFileSelected": "Fail baharu dipilih",
+  "adminComment": "Komen Admin",
+"adminCommentHint": "Tambah komen semakan anda di sini...",
+"submitReview": "Hantar Semakan",
+"uploadSignedDocument": "Muat Naik Dokumen Bertandatangan",
+"signedPdfWithDigitalSignature": "PDF dengan tandatangan digital",
+"reviewSubmittedSuccessfully": "Semakan berjaya dihantar.",
+"documentNotFound": "Dokumen tidak dijumpai.",
+"selectReviewActionError": "Sila pilih tindakan semakan.",
+"correctionCommentRequired": "Sila berikan komen admin apabila meminta pembetulan.",
+"rejectionReasonRequired": "Sila berikan sebab penolakan.",
+"userNotAuthenticated": "Pengguna tidak disahkan.",
+"unableToReadSelectedPdf": "Tidak dapat membaca fail PDF yang dipilih.",
+"submissionFailed": "Penghantaran gagal. Sila cuba lagi.",
+"invalidSignedDocumentFile": "Fail tidak sah. Sila muat naik dokumen PDF sehingga 10MB.",
+"fileSizeMustNotExceed10mb": "Saiz fail tidak boleh melebihi 10MB. Fail anda ialah {sizeMB}MB.",
+"@fileSizeMustNotExceed10mb": {
+  "placeholders": {
+    "sizeMB": {
+      "type": "String"
+    }
+  }
+}
 }

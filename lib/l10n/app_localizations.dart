@@ -1003,6 +1003,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New file selected'**
   String get newFileSelected;
+
+  /// No description provided for @adminComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Comment'**
+  String get adminComment;
+
+  /// No description provided for @adminCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your review comments here...'**
+  String get adminCommentHint;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Review'**
+  String get submitReview;
+
+  /// No description provided for @uploadSignedDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Signed Document'**
+  String get uploadSignedDocument;
+
+  /// No description provided for @signedPdfWithDigitalSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF with digital signature'**
+  String get signedPdfWithDigitalSignature;
+
+  /// No description provided for @reviewSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully.'**
+  String get reviewSubmittedSuccessfully;
+
+  /// No description provided for @documentNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Document not found.'**
+  String get documentNotFound;
+
+  /// No description provided for @selectReviewActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a review action.'**
+  String get selectReviewActionError;
+
+  /// No description provided for @correctionCommentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide an admin comment when requesting correction.'**
+  String get correctionCommentRequired;
+
+  /// No description provided for @rejectionReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for rejection.'**
+  String get rejectionReasonRequired;
+
+  /// No description provided for @userNotAuthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'User is not authenticated.'**
+  String get userNotAuthenticated;
+
+  /// No description provided for @unableToReadSelectedPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read selected PDF file.'**
+  String get unableToReadSelectedPdf;
+
+  /// No description provided for @submissionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission failed. Please try again.'**
+  String get submissionFailed;
+
+  /// No description provided for @invalidSignedDocumentFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid file. Please upload a PDF document up to 10MB.'**
+  String get invalidSignedDocumentFile;
+
+  /// No description provided for @fileSizeMustNotExceed10mb.
+  ///
+  /// In en, this message translates to:
+  /// **'File size must not exceed 10MB. Your file is {sizeMB}MB.'**
+  String fileSizeMustNotExceed10mb(String sizeMB);
 }
 
 class _AppLocalizationsDelegate

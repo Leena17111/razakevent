@@ -6,7 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class AdminDocumentReviewController extends ChangeNotifier {
+  // Keep these as internal logic values. Do not localize them.
+  static const String actionApprove = 'Approve';
+  static const String actionRequestCorrection = 'Request Correction';
+  static const String actionReject = 'Reject';
+
   String? _selectedAction;
   String _adminComment = '';
 
@@ -27,14 +34,14 @@ class AdminDocumentReviewController extends ChangeNotifier {
   String get signedFileName => _signedFile?.name ?? '';
   double get signedFileSizeMB => (_signedFile?.size ?? 0) / (1024 * 1024);
 
-  bool get isApprove => _selectedAction == 'Approve';
-  bool get isRequestCorrection => _selectedAction == 'Request Correction';
-  bool get isReject => _selectedAction == 'Reject';
+  bool get isApprove => _selectedAction == actionApprove;
+  bool get isRequestCorrection => _selectedAction == actionRequestCorrection;
+  bool get isReject => _selectedAction == actionReject;
 
   void setSelectedAction(String action) {
     _selectedAction = action;
 
-    if (action != 'Approve') {
+    if (action != actionApprove) {
       _signedFile = null;
     }
 
@@ -47,7 +54,7 @@ class AdminDocumentReviewController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickSignedFile() async {
+  Future<void> pickSignedFile(AppLocalizations l10n) async {
     _errorMessage = null;
     notifyListeners();
 
@@ -62,9 +69,16 @@ class AdminDocumentReviewController extends ChangeNotifier {
     final file = result.files.first;
     final sizeMB = file.size / (1024 * 1024);
 
+    if ((file.extension ?? '').toLowerCase() != 'pdf') {
+      _errorMessage = l10n.invalidSignedDocumentFile;
+      notifyListeners();
+      return;
+    }
+
     if (sizeMB > 10) {
-      _errorMessage =
-          'File size must not exceed 10MB. Your file is ${sizeMB.toStringAsFixed(1)}MB.';
+      _errorMessage = l10n.fileSizeMustNotExceed10mb(
+        sizeMB.toStringAsFixed(1),
+      );
       notifyListeners();
       return;
     }
@@ -78,27 +92,27 @@ class AdminDocumentReviewController extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? validate() {
+  String? validate(AppLocalizations l10n) {
     if (_selectedAction == null) {
-      return 'Please select a review action.';
+      return l10n.selectReviewActionError;
     }
 
-    if (_selectedAction == 'Request Correction' &&
+    if (_selectedAction == actionRequestCorrection &&
         _adminComment.trim().isEmpty) {
-      return 'Please provide an admin comment when requesting correction.';
+      return l10n.correctionCommentRequired;
     }
 
-    if (_selectedAction == 'Reject' && _adminComment.trim().isEmpty) {
-      return 'Please provide a reason for rejection.';
+    if (_selectedAction == actionReject && _adminComment.trim().isEmpty) {
+      return l10n.rejectionReasonRequired;
     }
 
     return null;
   }
 
-  Future<bool> submitReview(String docId) async {
+  Future<bool> submitReview(String docId, AppLocalizations l10n) async {
     _errorMessage = null;
 
-    final validationError = validate();
+    final validationError = validate(l10n);
     if (validationError != null) {
       _errorMessage = validationError;
       notifyListeners();
@@ -112,17 +126,22 @@ class AdminDocumentReviewController extends ChangeNotifier {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
-        throw Exception('User not authenticated.');
+        _errorMessage = l10n.userNotAuthenticated;
+        _isLoading = false;
+        notifyListeners();
+        return false;
       }
 
       String? signedDocumentUrl;
       String? signedDocumentFileName;
+      String? signedDocumentStoragePath;
 
-      if (_selectedAction == 'Approve' && _signedFile != null) {
+      if (_selectedAction == actionApprove && _signedFile != null) {
         final ref = FirebaseStorage.instance
             .ref()
             .child('signed_documents')
             .child(user.uid)
+            .child(docId)
             .child(
               '${DateTime.now().millisecondsSinceEpoch}_${_signedFile!.name}',
             );
@@ -133,7 +152,10 @@ class AdminDocumentReviewController extends ChangeNotifier {
           final bytes = _signedFile!.bytes;
 
           if (bytes == null) {
-            throw Exception('Unable to read selected PDF file.');
+            _errorMessage = l10n.unableToReadSelectedPdf;
+            _isLoading = false;
+            notifyListeners();
+            return false;
           }
 
           uploadTask = ref.putData(
@@ -144,7 +166,10 @@ class AdminDocumentReviewController extends ChangeNotifier {
           final path = _signedFile!.path;
 
           if (path == null) {
-            throw Exception('Unable to read selected PDF file path.');
+            _errorMessage = l10n.unableToReadSelectedPdf;
+            _isLoading = false;
+            notifyListeners();
+            return false;
           }
 
           uploadTask = ref.putFile(
@@ -156,18 +181,20 @@ class AdminDocumentReviewController extends ChangeNotifier {
         final snapshot = await uploadTask;
         signedDocumentUrl = await snapshot.ref.getDownloadURL();
         signedDocumentFileName = _signedFile!.name;
+        signedDocumentStoragePath = ref.fullPath;
       }
 
+      // Keep Firestore status values stable because other screens may depend on them.
       final String status;
 
       switch (_selectedAction) {
-        case 'Approve':
+        case actionApprove:
           status = 'Approved';
           break;
-        case 'Request Correction':
+        case actionRequestCorrection:
           status = 'Needs Correction';
           break;
-        case 'Reject':
+        case actionReject:
           status = 'Rejected';
           break;
         default:
@@ -190,6 +217,10 @@ class AdminDocumentReviewController extends ChangeNotifier {
         updateData['signedDocumentFileName'] = signedDocumentFileName;
       }
 
+      if (signedDocumentStoragePath != null) {
+        updateData['signedDocumentStoragePath'] = signedDocumentStoragePath;
+      }
+
       await FirebaseFirestore.instance
           .collection('documents')
           .doc(docId)
@@ -201,7 +232,7 @@ class AdminDocumentReviewController extends ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint('REVIEW SUBMIT ERROR: $e');
-      _errorMessage = 'Submission failed: ${e.toString()}';
+      _errorMessage = l10n.submissionFailed;
       _isLoading = false;
       notifyListeners();
       return false;

@@ -477,4 +477,54 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get newFileSelected => 'Fail baharu dipilih';
+
+  @override
+  String get adminComment => 'Komen Admin';
+
+  @override
+  String get adminCommentHint => 'Tambah komen semakan anda di sini...';
+
+  @override
+  String get submitReview => 'Hantar Semakan';
+
+  @override
+  String get uploadSignedDocument => 'Muat Naik Dokumen Bertandatangan';
+
+  @override
+  String get signedPdfWithDigitalSignature => 'PDF dengan tandatangan digital';
+
+  @override
+  String get reviewSubmittedSuccessfully => 'Semakan berjaya dihantar.';
+
+  @override
+  String get documentNotFound => 'Dokumen tidak dijumpai.';
+
+  @override
+  String get selectReviewActionError => 'Sila pilih tindakan semakan.';
+
+  @override
+  String get correctionCommentRequired =>
+      'Sila berikan komen admin apabila meminta pembetulan.';
+
+  @override
+  String get rejectionReasonRequired => 'Sila berikan sebab penolakan.';
+
+  @override
+  String get userNotAuthenticated => 'Pengguna tidak disahkan.';
+
+  @override
+  String get unableToReadSelectedPdf =>
+      'Tidak dapat membaca fail PDF yang dipilih.';
+
+  @override
+  String get submissionFailed => 'Penghantaran gagal. Sila cuba lagi.';
+
+  @override
+  String get invalidSignedDocumentFile =>
+      'Fail tidak sah. Sila muat naik dokumen PDF sehingga 10MB.';
+
+  @override
+  String fileSizeMustNotExceed10mb(String sizeMB) {
+    return 'Saiz fail tidak boleh melebihi 10MB. Fail anda ialah ${sizeMB}MB.';
+  }
 }
