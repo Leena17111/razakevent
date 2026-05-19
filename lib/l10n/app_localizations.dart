@@ -950,6 +950,114 @@ abstract class AppLocalizations {
   /// **'Unable to delete event. Please try again.'**
   String get unableToDeleteEvent;
 
+  /// No description provided for @secretaryProposedEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed Events'**
+  String get secretaryProposedEvents;
+
+  /// No description provided for @filterNeedsPaperwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Paperwork'**
+  String get filterNeedsPaperwork;
+
+  /// No description provided for @filterSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get filterSubmitted;
+
+  /// No description provided for @allEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allEvents;
+
+  /// No description provided for @secretaryProposedEventsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage event paperwork'**
+  String get secretaryProposedEventsSubtitle;
+
+  /// No description provided for @secretaryEventDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Detail'**
+  String get secretaryEventDetail;
+
+  /// No description provided for @noPaperworkYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No paperwork submitted yet.'**
+  String get noPaperworkYet;
+
+  /// No description provided for @createPaperwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Paperwork'**
+  String get createPaperwork;
+
+  /// No description provided for @paperworkStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Paperwork Status'**
+  String get paperworkStatus;
+
+  /// No description provided for @noProposedEventsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No proposed events yet.'**
+  String get noProposedEventsYet;
+
+  /// No description provided for @noProposedEventsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Events added by organizers will appear here.'**
+  String get noProposedEventsSubtitle;
+
+  /// No description provided for @paperworkSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Paperwork Submitted'**
+  String get paperworkSubmitted;
+
+  /// No description provided for @paperworkSubmittedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your paperwork has been submitted for admin review.'**
+  String get paperworkSubmittedMessage;
+
+  /// No description provided for @eventInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Info'**
+  String get eventInfo;
+
+  /// No description provided for @registrationEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Enabled'**
+  String get registrationEnabled;
+
+  /// No description provided for @registrationDisabledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Disabled'**
+  String get registrationDisabledLabel;
+
+  /// No description provided for @allEventsPaperworkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All events have paperwork submitted.'**
+  String get allEventsPaperworkDone;
+
+  /// No description provided for @noSubmittedPaperworkYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No submitted paperwork yet.'**
+  String get noSubmittedPaperworkYet;
+
   /// No description provided for @editDocument.
   ///
   /// In en, this message translates to:

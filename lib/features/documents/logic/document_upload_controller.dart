@@ -6,25 +6,39 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class DocumentUploadController extends ChangeNotifier {
-  // ── Form field state ──────────────────────────────────────────────
+  // ── Event context (set when opened from secretary event detail) ───────────
+  String? _eventId;
+  String? _lockedOrganizationType;
+  String? _lockedOrganizationName;
+  String? _lockedEventTitle;
+
+  // ── Form field state ──────────────────────────────────────────────────────
   String _organizationType = 'Exco';
   String? _organizationName;
   String _title = '';
   String? _documentType;
   String _remarks = '';
 
-  // ── File state ───────────────────────────────────────────────────
+  // ── File state ────────────────────────────────────────────────────────────
   PlatformFile? _pickedFile;
 
-  // ── UI state ─────────────────────────────────────────────────────
+  // ── UI state ──────────────────────────────────────────────────────────────
   bool _isLoading = false;
   String? _errorMessage;
   bool _submitted = false;
 
-  // ── Getters ──────────────────────────────────────────────────────
-  String get organizationType => _organizationType;
-  String? get organizationName => _organizationName;
-  String get title => _title;
+  // ── Getters ───────────────────────────────────────────────────────────────
+  String? get eventId => _eventId;
+  bool get hasEventContext => _eventId != null;
+  String? get lockedOrganizationType => _lockedOrganizationType;
+  String? get lockedOrganizationName => _lockedOrganizationName;
+  String? get lockedEventTitle => _lockedEventTitle;
+
+  String get organizationType =>
+      _lockedOrganizationType ?? _organizationType;
+  String? get organizationName =>
+      _lockedOrganizationName ?? _organizationName;
+  String get title => _lockedEventTitle ?? _title;
   String? get documentType => _documentType;
   String get remarks => _remarks;
   PlatformFile? get pickedFile => _pickedFile;
@@ -36,19 +50,39 @@ class DocumentUploadController extends ChangeNotifier {
   String get fileName => _pickedFile?.name ?? '';
   double get fileSizeMB => (_pickedFile?.size ?? 0) / (1024 * 1024);
 
-  // ── Setters ──────────────────────────────────────────────────────
+  // ── Initialize with event context ─────────────────────────────────────────
+  void initWithEventContext({
+    required String eventId,
+    required String organizationType,
+    required String organizationName,
+    required String eventTitle,
+  }) {
+    _eventId = eventId;
+    _lockedOrganizationType = organizationType;
+    _lockedOrganizationName = organizationName;
+    _lockedEventTitle = eventTitle;
+    _organizationType = organizationType;
+    _organizationName = organizationName;
+    _title = eventTitle;
+    notifyListeners();
+  }
+
+  // ── Setters (only used when no event context) ─────────────────────────────
   void setOrganizationType(String type) {
+    if (hasEventContext) return;
     _organizationType = type;
     _organizationName = null;
     notifyListeners();
   }
 
   void setOrganizationName(String? name) {
+    if (hasEventContext) return;
     _organizationName = name;
     notifyListeners();
   }
 
   void setTitle(String value) {
+    if (hasEventContext) return;
     _title = value;
     notifyListeners();
   }
@@ -63,17 +97,16 @@ class DocumentUploadController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── File picking ─────────────────────────────────────────────────
+  // ── File picking ──────────────────────────────────────────────────────────
   Future<void> pickFile() async {
     _errorMessage = null;
     notifyListeners();
 
-       final result = await FilePicker.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       withData: kIsWeb,
     );
-
 
     if (result == null || result.files.isEmpty) return;
 
@@ -102,12 +135,12 @@ class DocumentUploadController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Validation ───────────────────────────────────────────────────
+  // ── Validation ────────────────────────────────────────────────────────────
   String? validate() {
-    if (_organizationName == null || _organizationName!.isEmpty) {
+    if (organizationName == null || organizationName!.isEmpty) {
       return 'Please select an organization name.';
     }
-    if (_title.trim().isEmpty) {
+    if (title.trim().isEmpty) {
       return 'Please enter the event or document title.';
     }
     if (_documentType == null || _documentType!.isEmpty) {
@@ -119,7 +152,7 @@ class DocumentUploadController extends ChangeNotifier {
     return null;
   }
 
-  // ── Submit ───────────────────────────────────────────────────────
+  // ── Submit ────────────────────────────────────────────────────────────────
   Future<bool> submit() async {
     _errorMessage = null;
 
@@ -142,7 +175,8 @@ class DocumentUploadController extends ChangeNotifier {
           .ref()
           .child('event_documents')
           .child(user.uid)
-          .child('${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}');
+          .child(
+              '${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}');
 
       UploadTask uploadTask;
       if (kIsWeb || _pickedFile!.bytes != null) {
@@ -162,9 +196,9 @@ class DocumentUploadController extends ChangeNotifier {
 
       // 2. Save document metadata to Firestore
       await FirebaseFirestore.instance.collection('documents').add({
-        'title': _title.trim(),
-        'organizationType': _organizationType,
-        'organizationName': _organizationName,
+        'title': title.trim(),
+        'organizationType': organizationType,
+        'organizationName': organizationName,
         'documentType': _documentType,
         'remarks': _remarks.trim(),
         'fileUrl': downloadUrl,
@@ -177,6 +211,8 @@ class DocumentUploadController extends ChangeNotifier {
         'reviewedBy': null,
         'adminComment': null,
         'signedDocumentUrl': null,
+        // Link to event if opened from secretary event detail
+        'eventId': _eventId,
       });
 
       _submitted = true;
@@ -184,7 +220,6 @@ class DocumentUploadController extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('UPLOAD ERROR: $e');
       _errorMessage = 'Upload failed: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
@@ -192,8 +227,12 @@ class DocumentUploadController extends ChangeNotifier {
     }
   }
 
-  // ── Reset ────────────────────────────────────────────────────────
+  // ── Reset ─────────────────────────────────────────────────────────────────
   void reset() {
+    _eventId = null;
+    _lockedOrganizationType = null;
+    _lockedOrganizationName = null;
+    _lockedEventTitle = null;
     _organizationType = 'Exco';
     _organizationName = null;
     _title = '';

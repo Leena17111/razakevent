@@ -19,6 +19,8 @@ import 'features/events/presentation/event_details_list_screen.dart';
 import 'features/feedback/presentation/create_feedback_form_screen.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/profile/presentation/manage_profile_screen.dart';
+import 'features/documents/presentation/secretary_proposed_events_screen.dart';
+import 'features/documents/presentation/secretary_event_detail_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
@@ -76,14 +78,16 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.uploadEventDocument:      (_) => const UploadDocumentScreen(),
             AppRoutes.trackEventDocumentStatus: (_) => const DocumentStatusScreen(),
             AppRoutes.documentDetails:          (_) => const DocumentDetailsScreen(),
-           AppRoutes.editDocument:             (_) => const EditDocumentScreen(),
-           AppRoutes.reviewEventDocuments:     (_) => const AdminDocumentDashboardScreen(),
+            AppRoutes.editDocument:             (_) => const EditDocumentScreen(),
+            AppRoutes.reviewEventDocuments:     (_) => const AdminDocumentDashboardScreen(),
             AppRoutes.adminDocumentDashboard:   (_) => const AdminDocumentDashboardScreen(),
             AppRoutes.adminPendingReviews:      (_) => const AdminPendingReviewsScreen(),
             AppRoutes.adminReviewedDocuments: (_) => const AdminReviewedDocumentsScreen(),
             AppRoutes.adminReviewDocument:      (_) => const AdminReviewDocumentScreen(),
             AppRoutes.eventDetailsList:         (_) => const EventDetailsListScreen(),
             AppRoutes.createEventFeedbackForm:  (_) => const CreateFeedbackFormScreen(),
+            AppRoutes.secretaryProposedEvents:  (_) => const SecretaryProposedEventsScreen(),
+            AppRoutes.secretaryEventDetail:     (_) => const SecretaryEventDetailScreen(),
           },
         );
       },

@@ -151,6 +151,25 @@
   "eventDeletedSuccessfully": "Event deleted successfully.",
   "unableToDeleteEvent": "Unable to delete event. Please try again.",
 
+  "secretaryProposedEvents": "Proposed Events",
+  "filterNeedsPaperwork": "Needs Paperwork",
+  "filterSubmitted": "Submitted",
+  "allEvents": "All",
+  "secretaryProposedEventsSubtitle": "Manage event paperwork",
+  "secretaryEventDetail": "Event Detail",
+  "noPaperworkYet": "No paperwork submitted yet.",
+  "createPaperwork": "Create Paperwork",
+  "paperworkStatus": "Paperwork Status",
+  "noProposedEventsYet": "No proposed events yet.",
+  "noProposedEventsSubtitle": "Events added by organizers will appear here.",
+  "paperworkSubmitted": "Paperwork Submitted",
+  "paperworkSubmittedMessage": "Your paperwork has been submitted for admin review.",
+  "eventInfo": "Event Info",
+  "registrationEnabled": "Registration Enabled",
+  "registrationDisabledLabel": "Registration Disabled",
+  "allEventsPaperworkDone": "All events have paperwork submitted.",
+  "noSubmittedPaperworkYet": "No submitted paperwork yet.",
+
   "editDocument": "Edit Document",
   "deleteDocument": "Delete Document",
   "deleteDocumentConfirmation": "Are you sure you want to delete this document? This action cannot be undone.",
@@ -161,25 +180,25 @@
   "cancelReplacement": "Cancel replacement",
   "newFileSelected": "New file selected",
   "adminComment": "Admin Comment",
-"adminCommentHint": "Add your review comments here...",
-"submitReview": "Submit Review",
-"uploadSignedDocument": "Upload Signed Document",
-"signedPdfWithDigitalSignature": "PDF with digital signature",
-"reviewSubmittedSuccessfully": "Review submitted successfully.",
-"documentNotFound": "Document not found.",
-"selectReviewActionError": "Please select a review action.",
-"correctionCommentRequired": "Please provide an admin comment when requesting correction.",
-"rejectionReasonRequired": "Please provide a reason for rejection.",
-"userNotAuthenticated": "User is not authenticated.",
-"unableToReadSelectedPdf": "Unable to read selected PDF file.",
-"submissionFailed": "Submission failed. Please try again.",
-"invalidSignedDocumentFile": "Invalid file. Please upload a PDF document up to 10MB.",
-"fileSizeMustNotExceed10mb": "File size must not exceed 10MB. Your file is {sizeMB}MB.",
-"@fileSizeMustNotExceed10mb": {
-  "placeholders": {
-    "sizeMB": {
-      "type": "String"
+  "adminCommentHint": "Add your review comments here...",
+  "submitReview": "Submit Review",
+  "uploadSignedDocument": "Upload Signed Document",
+  "signedPdfWithDigitalSignature": "PDF with digital signature",
+  "reviewSubmittedSuccessfully": "Review submitted successfully.",
+  "documentNotFound": "Document not found.",
+  "selectReviewActionError": "Please select a review action.",
+  "correctionCommentRequired": "Please provide an admin comment when requesting correction.",
+  "rejectionReasonRequired": "Please provide a reason for rejection.",
+  "userNotAuthenticated": "User is not authenticated.",
+  "unableToReadSelectedPdf": "Unable to read selected PDF file.",
+  "submissionFailed": "Submission failed. Please try again.",
+  "invalidSignedDocumentFile": "Invalid file. Please upload a PDF document up to 10MB.",
+  "fileSizeMustNotExceed10mb": "File size must not exceed 10MB. Your file is {sizeMB}MB.",
+  "@fileSizeMustNotExceed10mb": {
+    "placeholders": {
+      "sizeMB": {
+        "type": "String"
+      }
     }
   }
-}
 }

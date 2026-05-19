@@ -56,7 +56,7 @@ class _DocumentDetailsScreenState extends State<DocumentDetailsScreen> {
     final reviewedBy = data['reviewedBy'] as String?;
     final adminComment = data['adminComment'] as String?;
     final remarks = data['remarks'] as String?;
-    final isPending = status == 'Pending Review';
+    final isPending = status == 'Pending Review' || status == 'Needs Correction';
 
     return Column(
       children: [
