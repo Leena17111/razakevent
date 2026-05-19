@@ -13,17 +13,24 @@ class EditDocumentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final data = args['data'] as Map<String, dynamic>;
+    final hasEventContext = (data['eventId'] as String?) != null &&
+        (data['eventId'] as String).isNotEmpty;
 
     return ChangeNotifierProvider(
-      create: (_) => DocumentEditController()..loadFromData(args['data']),
-      child: _EditDocumentView(docId: args['docId']),
+      create: (_) => DocumentEditController()..loadFromData(data),
+      child: _EditDocumentView(
+        docId: args['docId'],
+        hasEventContext: hasEventContext,
+      ),
     );
   }
 }
 
 class _EditDocumentView extends StatefulWidget {
   final String docId;
-  const _EditDocumentView({required this.docId});
+  final bool hasEventContext;
+  const _EditDocumentView({required this.docId, required this.hasEventContext});
 
   @override
   State<_EditDocumentView> createState() => _EditDocumentViewState();
@@ -49,7 +56,6 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
     final controller = context.watch<DocumentEditController>();
     final l10n = AppLocalizations.of(context)!;
 
-    // Initialize text controllers once with existing values
     if (!_initialized) {
       _titleController = TextEditingController(text: controller.title);
       _remarksController = TextEditingController(text: controller.remarks);
@@ -67,10 +73,15 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildOrganizationTypeToggle(controller, l10n),
-                  const SizedBox(height: 20),
-                  _buildOrganizationNameDropdown(controller, l10n),
-                  const SizedBox(height: 20),
+                  if (widget.hasEventContext) ...[
+                    _buildLockedOrgField(controller, l10n),
+                    const SizedBox(height: 20),
+                  ] else ...[
+                    _buildOrganizationTypeToggle(controller, l10n),
+                    const SizedBox(height: 20),
+                    _buildOrganizationNameDropdown(controller, l10n),
+                    const SizedBox(height: 20),
+                  ],
                   _buildTitleField(controller, l10n),
                   const SizedBox(height: 20),
                   _buildDocumentTypeDropdown(controller, l10n),
@@ -134,6 +145,42 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
           ),
         ],
       ),
+    );
+  }
+
+  // ── Locked Org Field (when event context exists) ──────────────────
+  Widget _buildLockedOrgField(DocumentEditController controller, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label(l10n.organization),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: _inputBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.business_outlined, color: Colors.grey, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '${controller.organizationType} · ${controller.organizationName ?? ''}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Icon(Icons.lock_outline, color: Colors.grey, size: 16),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -286,7 +333,6 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
               const SizedBox(height: 12),
-              // Replace button
               OutlinedButton.icon(
                 onPressed: controller.isLoading ? null : controller.pickNewFile,
                 icon: const Icon(Icons.swap_horiz_rounded, size: 16),
@@ -302,7 +348,8 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
                 TextButton.icon(
                   onPressed: controller.cancelFileReplacement,
                   icon: const Icon(Icons.close, size: 16, color: Colors.red),
-                  label: Text(l10n.cancelReplacement, style: TextStyle(color: Colors.red, fontSize: 13)),
+                  label: Text(l10n.cancelReplacement,
+                      style: const TextStyle(color: Colors.red, fontSize: 13)),
                 ),
               ],
             ],
@@ -366,7 +413,8 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
           const Icon(Icons.error_outline, color: Colors.red, size: 16),
           const SizedBox(width: 6),
           Expanded(
-            child: Text(message, style: const TextStyle(color: Colors.red, fontSize: 13)),
+            child: Text(message,
+                style: const TextStyle(color: Colors.red, fontSize: 13)),
           ),
         ],
       ),
@@ -415,7 +463,7 @@ class _EditDocumentViewState extends State<_EditDocumentView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
-      Navigator.of(context).pop(true); // pop with true = refresh details
+      Navigator.of(context).pop(true);
     }
   }
 
