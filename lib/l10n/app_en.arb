@@ -159,5 +159,27 @@
   "failedToDeleteDocument": "Failed to delete document.",
   "replacePdf": "Replace PDF",
   "cancelReplacement": "Cancel replacement",
-  "newFileSelected": "New file selected"
+  "newFileSelected": "New file selected",
+  "adminComment": "Admin Comment",
+"adminCommentHint": "Add your review comments here...",
+"submitReview": "Submit Review",
+"uploadSignedDocument": "Upload Signed Document",
+"signedPdfWithDigitalSignature": "PDF with digital signature",
+"reviewSubmittedSuccessfully": "Review submitted successfully.",
+"documentNotFound": "Document not found.",
+"selectReviewActionError": "Please select a review action.",
+"correctionCommentRequired": "Please provide an admin comment when requesting correction.",
+"rejectionReasonRequired": "Please provide a reason for rejection.",
+"userNotAuthenticated": "User is not authenticated.",
+"unableToReadSelectedPdf": "Unable to read selected PDF file.",
+"submissionFailed": "Submission failed. Please try again.",
+"invalidSignedDocumentFile": "Invalid file. Please upload a PDF document up to 10MB.",
+"fileSizeMustNotExceed10mb": "File size must not exceed 10MB. Your file is {sizeMB}MB.",
+"@fileSizeMustNotExceed10mb": {
+  "placeholders": {
+    "sizeMB": {
+      "type": "String"
+    }
+  }
+}
 }

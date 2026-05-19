@@ -472,4 +472,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newFileSelected => 'New file selected';
+
+  @override
+  String get adminComment => 'Admin Comment';
+
+  @override
+  String get adminCommentHint => 'Add your review comments here...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get uploadSignedDocument => 'Upload Signed Document';
+
+  @override
+  String get signedPdfWithDigitalSignature => 'PDF with digital signature';
+
+  @override
+  String get reviewSubmittedSuccessfully => 'Review submitted successfully.';
+
+  @override
+  String get documentNotFound => 'Document not found.';
+
+  @override
+  String get selectReviewActionError => 'Please select a review action.';
+
+  @override
+  String get correctionCommentRequired =>
+      'Please provide an admin comment when requesting correction.';
+
+  @override
+  String get rejectionReasonRequired =>
+      'Please provide a reason for rejection.';
+
+  @override
+  String get userNotAuthenticated => 'User is not authenticated.';
+
+  @override
+  String get unableToReadSelectedPdf => 'Unable to read selected PDF file.';
+
+  @override
+  String get submissionFailed => 'Submission failed. Please try again.';
+
+  @override
+  String get invalidSignedDocumentFile =>
+      'Invalid file. Please upload a PDF document up to 10MB.';
+
+  @override
+  String fileSizeMustNotExceed10mb(String sizeMB) {
+    return 'File size must not exceed 10MB. Your file is ${sizeMB}MB.';
+  }
 }
