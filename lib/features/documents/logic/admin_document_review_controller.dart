@@ -97,6 +97,11 @@ class AdminDocumentReviewController extends ChangeNotifier {
       return l10n.selectReviewActionError;
     }
 
+    // Fix 5: Approve requires a signed document upload.
+    if (_selectedAction == actionApprove && _signedFile == null) {
+      return l10n.signedDocumentRequired;
+    }
+
     if (_selectedAction == actionRequestCorrection &&
         _adminComment.trim().isEmpty) {
       return l10n.correctionCommentRequired;
@@ -111,6 +116,34 @@ class AdminDocumentReviewController extends ChangeNotifier {
 
   Future<bool> submitReview(String docId, AppLocalizations l10n) async {
     _errorMessage = null;
+
+    // Fix 4: Prevent duplicate review — check current status before submitting.
+    try {
+      final docSnap = await FirebaseFirestore.instance
+          .collection('documents')
+          .doc(docId)
+          .get();
+
+      if (!docSnap.exists) {
+        _errorMessage = l10n.documentNotFound;
+        notifyListeners();
+        return false;
+      }
+
+      final currentStatus =
+          (docSnap.data() as Map<String, dynamic>)['status'] as String? ?? '';
+
+      if (currentStatus != 'Pending Review') {
+        _errorMessage = l10n.documentAlreadyReviewed;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      debugPrint('STATUS CHECK ERROR: $e');
+      _errorMessage = l10n.submissionFailed;
+      notifyListeners();
+      return false;
+    }
 
     final validationError = validate(l10n);
     if (validationError != null) {
@@ -184,7 +217,7 @@ class AdminDocumentReviewController extends ChangeNotifier {
         signedDocumentStoragePath = ref.fullPath;
       }
 
-      // Keep Firestore status values stable because other screens may depend on them.
+      // Keep Firestore status values stable because other screens depend on them.
       final String status;
 
       switch (_selectedAction) {

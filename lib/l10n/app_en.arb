@@ -200,5 +200,8 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "signedDocumentRequired": "Please upload a signed document before approving.",
+  "documentAlreadyReviewed": "This document has already been reviewed and cannot be submitted again."
 }

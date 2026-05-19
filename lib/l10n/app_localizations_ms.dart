@@ -60,7 +60,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get remarksOptional => 'Catatan (Pilihan)';
 
   @override
-  String get additionalNotesHint => 'Tambah nota atau komen tambahan...';
+  String get additionalNotesHint =>
+      'Tambah sebarang nota atau ulasan tambahan...';
 
   @override
   String get submitDocument => 'Hantar Dokumen';
@@ -90,7 +91,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reviewActions => 'Tindakan Semakan';
 
   @override
-  String get approve => 'Luluskan';
+  String get approve => 'Lulus';
 
   @override
   String get requestCorrection => 'Minta Pembetulan';
@@ -165,10 +166,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get draft => 'Draf';
 
   @override
-  String get open => 'Dibuka';
+  String get open => 'Buka';
 
   @override
-  String get closed => 'Ditutup';
+  String get closed => 'Tutup';
 
   @override
   String get completed => 'Selesai';
@@ -220,11 +221,11 @@ class AppLocalizationsMs extends AppLocalizations {
       'Butiran acara berjaya dikemas kini.';
 
   @override
-  String get addFeedbackForm => 'Cipta Borang Maklum Balas';
+  String get addFeedbackForm => 'Tambah Borang Maklum Balas';
 
   @override
   String get setUpEventFeedbackCollection =>
-      'Sediakan borang maklum balas acara';
+      'Sediakan pengumpulan maklum balas acara';
 
   @override
   String get selectEvent => 'Pilih Acara';
@@ -233,18 +234,17 @@ class AppLocalizationsMs extends AppLocalizations {
   String get chooseEvent => 'Pilih acara';
 
   @override
-  String get noEventsFound =>
-      'Tiada acara dijumpai. Sila cipta acara terlebih dahulu.';
+  String get noEventsFound => 'Tiada acara ditemui. Cipta acara dahulu.';
 
   @override
-  String get builtInQuestions => 'Soalan Terbina Dalam';
+  String get builtInQuestions => 'Soalan Terbina';
 
   @override
   String get satisfactionQuestion =>
-      'Sejauh manakah anda berpuas hati dengan acara ini?';
+      'Sejauh mana anda berpuas hati dengan acara ini?';
 
   @override
-  String get organizedQuestion => 'Adakah acara ini diurus dengan baik?';
+  String get organizedQuestion => 'Adakah acara ini dianjurkan dengan baik?';
 
   @override
   String get recommendQuestion =>
@@ -265,7 +265,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get utmSmartMeritNote =>
-      'RazakEvent hanya memaparkan QR/pautan. UTM Smart mengurus imbasan merit.';
+      'RazakEvent hanya memaparkan QR/pautan. UTM Smart mengendalikan pengimbasan merit.';
 
   @override
   String get uploadQrCode => 'Muat Naik Kod QR';
@@ -317,7 +317,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Muat naik dokumen pertama anda untuk bermula.';
 
   @override
-  String get noResultsFound => 'Tiada keputusan dijumpai';
+  String get noResultsFound => 'Tiada keputusan ditemui';
 
   @override
   String get statusPendingReview => 'Menunggu Semakan';
@@ -357,7 +357,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get documentSubmittedMessage =>
-      'Dokumen anda telah dihantar untuk semakan. Anda boleh semak statusnya di skrin Status Dokumen.';
+      'Dokumen anda telah dihantar untuk semakan. Anda boleh menjejaki statusnya di skrin Status Dokumen.';
 
   @override
   String get uploadAnother => 'Muat Naik Lagi';
@@ -369,7 +369,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get remove => 'Buang';
 
   @override
-  String get registrationDeadline => 'Tarikh Tutup Pendaftaran';
+  String get registrationDeadline => 'Tarikh Akhir Pendaftaran';
 
   @override
   String get participantCapacity => 'Kapasiti Peserta';
@@ -378,7 +378,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get registrationFeeRm => 'Yuran Pendaftaran (RM)';
 
   @override
-  String get contactPerson => 'Pegawai Dihubungi';
+  String get contactPerson => 'Orang Hubungan';
 
   @override
   String get enterName => 'Masukkan nama';
@@ -387,7 +387,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get registered => 'berdaftar';
 
   @override
-  String get registrationDisabled => 'Pendaftaran tidak diaktifkan';
+  String get registrationDisabled => 'Pendaftaran dinyahdayakan';
 
   @override
   String get noEventsYet => 'Tiada acara ditambah lagi.';
@@ -401,7 +401,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get organizationDetailsMissing =>
-      'Sila pastikan akaun mempunyai maklumat organisasi.';
+      'Sila pastikan akaun mempunyai butiran organisasi.';
 
   @override
   String get unableToLoadEvents => 'Tidak dapat memuatkan acara.';
@@ -418,7 +418,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get registrationDeadlineRequired =>
-      'Tarikh tutup pendaftaran diperlukan.';
+      'Tarikh akhir pendaftaran diperlukan.';
 
   @override
   String get fieldRequired => 'Medan ini diperlukan.';
@@ -441,7 +441,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get deleteEventConfirmation =>
-      'Adakah anda pasti mahu memadam acara ini? Tindakan ini tidak boleh dibuat asal.';
+      'Adakah anda pasti mahu memadam acara ini? Tindakan ini tidak boleh dibatalkan.';
 
   @override
   String get eventDeletedSuccessfully => 'Acara berjaya dipadam.';
@@ -457,7 +457,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get filterNeedsPaperwork => 'Perlu Kertas Kerja';
 
   @override
-  String get filterSubmitted => 'Telah Dihantar';
+  String get filterSubmitted => 'Dihantar';
 
   @override
   String get allEvents => 'Semua';
@@ -489,7 +489,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get paperworkSubmittedMessage =>
-      'Kertas kerja anda telah dihantar untuk semakan admin.';
+      'Kertas kerja anda telah dihantar untuk semakan pentadbir.';
 
   @override
   String get eventInfo => 'Maklumat Acara';
@@ -498,11 +498,11 @@ class AppLocalizationsMs extends AppLocalizations {
   String get registrationEnabled => 'Pendaftaran Diaktifkan';
 
   @override
-  String get registrationDisabledLabel => 'Pendaftaran Tidak Diaktifkan';
+  String get registrationDisabledLabel => 'Pendaftaran Dinyahdayakan';
 
   @override
   String get allEventsPaperworkDone =>
-      'Semua acara telah mempunyai kertas kerja.';
+      'Semua acara telah mempunyai kertas kerja yang dihantar.';
 
   @override
   String get noSubmittedPaperworkYet =>
@@ -516,7 +516,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get deleteDocumentConfirmation =>
-      'Adakah anda pasti mahu memadam dokumen ini? Tindakan ini tidak boleh dibuat asal.';
+      'Adakah anda pasti mahu memadam dokumen ini? Tindakan ini tidak boleh dibatalkan.';
 
   @override
   String get documentUpdatedSuccessfully => 'Dokumen berjaya dikemas kini.';
@@ -537,10 +537,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get newFileSelected => 'Fail baharu dipilih';
 
   @override
-  String get adminComment => 'Komen Admin';
+  String get adminComment => 'Ulasan Pentadbir';
 
   @override
-  String get adminCommentHint => 'Tambah komen semakan anda di sini...';
+  String get adminCommentHint => 'Tambah ulasan semakan anda di sini...';
 
   @override
   String get submitReview => 'Hantar Semakan';
@@ -555,14 +555,14 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reviewSubmittedSuccessfully => 'Semakan berjaya dihantar.';
 
   @override
-  String get documentNotFound => 'Dokumen tidak dijumpai.';
+  String get documentNotFound => 'Dokumen tidak ditemui.';
 
   @override
   String get selectReviewActionError => 'Sila pilih tindakan semakan.';
 
   @override
   String get correctionCommentRequired =>
-      'Sila berikan komen admin apabila meminta pembetulan.';
+      'Sila berikan ulasan pentadbir semasa meminta pembetulan.';
 
   @override
   String get rejectionReasonRequired => 'Sila berikan sebab penolakan.';
@@ -585,4 +585,12 @@ class AppLocalizationsMs extends AppLocalizations {
   String fileSizeMustNotExceed10mb(String sizeMB) {
     return 'Saiz fail tidak boleh melebihi 10MB. Fail anda ialah ${sizeMB}MB.';
   }
+
+  @override
+  String get signedDocumentRequired =>
+      'Sila muat naik dokumen bertandatangan sebelum meluluskan.';
+
+  @override
+  String get documentAlreadyReviewed =>
+      'Dokumen ini telah disemak dan tidak boleh dihantar semula.';
 }

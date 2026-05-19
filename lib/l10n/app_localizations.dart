@@ -1201,6 +1201,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'File size must not exceed 10MB. Your file is {sizeMB}MB.'**
   String fileSizeMustNotExceed10mb(String sizeMB);
+
+  /// No description provided for @signedDocumentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a signed document before approving.'**
+  String get signedDocumentRequired;
+
+  /// No description provided for @documentAlreadyReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'This document has already been reviewed and cannot be submitted again.'**
+  String get documentAlreadyReviewed;
 }
 
 class _AppLocalizationsDelegate
