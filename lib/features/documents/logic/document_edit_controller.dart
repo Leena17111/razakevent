@@ -211,6 +211,10 @@ class DocumentEditController extends ChangeNotifier {
         'fileUrl': fileUrl,
         'fileName': fileName,
         'fileSize': fileSize,
+        'status': 'Pending Review',
+        'reviewedAt': null,
+        'reviewedBy': null,
+        'adminComment': null,
       });
 
       _isLoading = false;

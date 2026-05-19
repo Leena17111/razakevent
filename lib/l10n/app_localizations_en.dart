@@ -446,6 +446,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unableToDeleteEvent => 'Unable to delete event. Please try again.';
 
   @override
+  String get secretaryProposedEvents => 'Proposed Events';
+
+  @override
+  String get filterNeedsPaperwork => 'Needs Paperwork';
+
+  @override
+  String get filterSubmitted => 'Submitted';
+
+  @override
+  String get allEvents => 'All';
+
+  @override
+  String get secretaryProposedEventsSubtitle => 'Manage event paperwork';
+
+  @override
+  String get secretaryEventDetail => 'Event Detail';
+
+  @override
+  String get noPaperworkYet => 'No paperwork submitted yet.';
+
+  @override
+  String get createPaperwork => 'Create Paperwork';
+
+  @override
+  String get paperworkStatus => 'Paperwork Status';
+
+  @override
+  String get noProposedEventsYet => 'No proposed events yet.';
+
+  @override
+  String get noProposedEventsSubtitle =>
+      'Events added by organizers will appear here.';
+
+  @override
+  String get paperworkSubmitted => 'Paperwork Submitted';
+
+  @override
+  String get paperworkSubmittedMessage =>
+      'Your paperwork has been submitted for admin review.';
+
+  @override
+  String get eventInfo => 'Event Info';
+
+  @override
+  String get registrationEnabled => 'Registration Enabled';
+
+  @override
+  String get registrationDisabledLabel => 'Registration Disabled';
+
+  @override
+  String get allEventsPaperworkDone => 'All events have paperwork submitted.';
+
+  @override
+  String get noSubmittedPaperworkYet => 'No submitted paperwork yet.';
+
+  @override
   String get editDocument => 'Edit Document';
 
   @override

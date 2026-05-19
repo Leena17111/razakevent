@@ -552,11 +552,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Expanded(
               child: _buildActionCard(
-                title: 'Upload',
-                subtitle: 'Submit event documents',
-                icon: Icons.upload_file_rounded,
+                title: 'Proposed Events',
+                subtitle: 'Manage event paperwork',
+                icon: Icons.event_note_rounded,
                 color: AppColors.communityBadgeText,
-                routeName: AppRoutes.uploadEventDocument,
+                routeName: AppRoutes.secretaryProposedEvents,
                 isCompact: true,
               ),
             ),

@@ -451,6 +451,64 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tidak dapat memadam acara. Sila cuba lagi.';
 
   @override
+  String get secretaryProposedEvents => 'Acara Dicadangkan';
+
+  @override
+  String get filterNeedsPaperwork => 'Perlu Kertas Kerja';
+
+  @override
+  String get filterSubmitted => 'Telah Dihantar';
+
+  @override
+  String get allEvents => 'Semua';
+
+  @override
+  String get secretaryProposedEventsSubtitle => 'Urus kertas kerja acara';
+
+  @override
+  String get secretaryEventDetail => 'Butiran Acara';
+
+  @override
+  String get noPaperworkYet => 'Tiada kertas kerja dihantar lagi.';
+
+  @override
+  String get createPaperwork => 'Cipta Kertas Kerja';
+
+  @override
+  String get paperworkStatus => 'Status Kertas Kerja';
+
+  @override
+  String get noProposedEventsYet => 'Tiada acara dicadangkan lagi.';
+
+  @override
+  String get noProposedEventsSubtitle =>
+      'Acara yang ditambah oleh penganjur akan dipaparkan di sini.';
+
+  @override
+  String get paperworkSubmitted => 'Kertas Kerja Dihantar';
+
+  @override
+  String get paperworkSubmittedMessage =>
+      'Kertas kerja anda telah dihantar untuk semakan admin.';
+
+  @override
+  String get eventInfo => 'Maklumat Acara';
+
+  @override
+  String get registrationEnabled => 'Pendaftaran Diaktifkan';
+
+  @override
+  String get registrationDisabledLabel => 'Pendaftaran Tidak Diaktifkan';
+
+  @override
+  String get allEventsPaperworkDone =>
+      'Semua acara telah mempunyai kertas kerja.';
+
+  @override
+  String get noSubmittedPaperworkYet =>
+      'Tiada kertas kerja yang dihantar lagi.';
+
+  @override
   String get editDocument => 'Edit Dokumen';
 
   @override
