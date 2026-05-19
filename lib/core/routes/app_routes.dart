@@ -17,8 +17,13 @@ class AppRoutes {
   static const String editEventDetails = '/event-details/edit';
   static const String uploadEventDocument = '/documents/upload';
   static const String trackEventDocumentStatus = '/documents/status';
-  static const String reviewEventDocuments = '/documents/review';
+static const String reviewEventDocuments = '/documents/review';
+static const String adminDocumentDashboard = '/documents/admin-dashboard';
+static const String adminPendingReviews = '/documents/admin-pending-reviews';
+static const String adminReviewedDocuments = '/documents/admin-reviewed';
+static const String adminReviewDocument = '/documents/review/detail';
   static const String createEventFeedbackForm = '/feedback/create';
+ 
 
   static const String documentDetails = '/documents/details';
   static const String editDocument = '/documents/edit';

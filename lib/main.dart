@@ -11,6 +11,10 @@ import 'features/documents/presentation/document_details_screen.dart';
 import 'features/documents/presentation/document_status_screen.dart';
 import 'features/documents/presentation/edit_document_screen.dart';
 import 'features/documents/presentation/upload_document_screen.dart';
+import 'features/documents/presentation/admin_document_dashboard_screen.dart';
+import 'features/documents/presentation/admin_pending_reviews_screen.dart';
+import 'features/documents/presentation/admin_review_document_screen.dart';
+import 'features/documents/presentation/admin_reviewed_documents_screen.dart';
 import 'features/events/presentation/event_details_list_screen.dart';
 import 'features/feedback/presentation/create_feedback_form_screen.dart';
 import 'features/home/presentation/home_screen.dart';
@@ -72,7 +76,12 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.uploadEventDocument:      (_) => const UploadDocumentScreen(),
             AppRoutes.trackEventDocumentStatus: (_) => const DocumentStatusScreen(),
             AppRoutes.documentDetails:          (_) => const DocumentDetailsScreen(),
-            AppRoutes.editDocument:             (_) => const EditDocumentScreen(),
+           AppRoutes.editDocument:             (_) => const EditDocumentScreen(),
+           AppRoutes.reviewEventDocuments:     (_) => const AdminDocumentDashboardScreen(),
+            AppRoutes.adminDocumentDashboard:   (_) => const AdminDocumentDashboardScreen(),
+            AppRoutes.adminPendingReviews:      (_) => const AdminPendingReviewsScreen(),
+            AppRoutes.adminReviewedDocuments: (_) => const AdminReviewedDocumentsScreen(),
+            AppRoutes.adminReviewDocument:      (_) => const AdminReviewDocumentScreen(),
             AppRoutes.eventDetailsList:         (_) => const EventDetailsListScreen(),
             AppRoutes.createEventFeedbackForm:  (_) => const CreateFeedbackFormScreen(),
           },
