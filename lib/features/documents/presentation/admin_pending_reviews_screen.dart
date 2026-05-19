@@ -16,7 +16,7 @@ class AdminPendingReviewsScreen extends StatefulWidget {
 class _AdminPendingReviewsScreenState extends State<AdminPendingReviewsScreen> {
   static const Color _navy = Color(0xFF1A237E);
 
-  String _orgType = 'Exco';
+  String _orgType = 'All';
   String? _selectedOrgName;
   String? _selectedDocType;
   String _searchQuery = '';
@@ -243,6 +243,8 @@ class _AdminPendingReviewsScreenState extends State<AdminPendingReviewsScreen> {
                     children: [
                       Row(
                         children: [
+                          _orgTypeButton('All'),
+                          const SizedBox(width: 8),
                           _orgTypeButton('Exco'),
                           const SizedBox(width: 8),
                           _orgTypeButton('Club'),
@@ -618,7 +620,7 @@ class _AdminPendingReviewsScreenState extends State<AdminPendingReviewsScreen> {
       final submittedBy = (data['submittedByName'] as String? ?? '')
           .toLowerCase();
 
-      final matchesOrgType =
+      final matchesOrgType = _orgType == 'All' ||
           orgType.toLowerCase() == _orgType.toLowerCase();
 
       final matchesOrgName =
