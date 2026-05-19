@@ -44,6 +44,8 @@ class _AdminReviewedDocumentsScreenState
             .snapshots(),
         builder: (context, snapshot) {
           final docs = snapshot.data?.docs ?? [];
+
+          // Fix 6: Only include reviewed statuses — Approved, Needs Correction, Rejected.
           final reviewedDocs = docs.where((doc) {
             final data = doc.data() as Map<String, dynamic>;
             final status = data['status'] as String? ?? '';
@@ -64,7 +66,8 @@ class _AdminReviewedDocumentsScreenState
                     : filteredDocs.isEmpty
                         ? _buildEmptyState()
                         : ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                            padding:
+                                const EdgeInsets.fromLTRB(16, 8, 16, 32),
                             itemCount: filteredDocs.length,
                             itemBuilder: (context, index) {
                               return _buildDocumentCard(
@@ -133,7 +136,8 @@ class _AdminReviewedDocumentsScreenState
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
@@ -187,8 +191,10 @@ class _AdminReviewedDocumentsScreenState
             },
             decoration: InputDecoration(
               hintText: 'Search reviewed documents...',
-              hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle:
+                  const TextStyle(color: Colors.grey, fontSize: 13),
+              prefixIcon:
+                  const Icon(Icons.search, color: Colors.grey),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.close, color: Colors.grey),
@@ -206,7 +212,8 @@ class _AdminReviewedDocumentsScreenState
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
           const SizedBox(height: 12),
@@ -231,8 +238,8 @@ class _AdminReviewedDocumentsScreenState
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 12),
             ),
           ),
         ],
@@ -240,7 +247,10 @@ class _AdminReviewedDocumentsScreenState
     );
   }
 
-  Widget _buildDocumentCard(BuildContext context, QueryDocumentSnapshot doc) {
+  // Fix 6: Tapping an archive card opens AdminReviewDocumentScreen,
+  // which automatically renders as read-only because status != 'Pending Review'.
+  Widget _buildDocumentCard(
+      BuildContext context, QueryDocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
     final title = data['title'] as String? ?? '';
@@ -276,11 +286,14 @@ class _AdminReviewedDocumentsScreenState
     }
 
     final chipColor = isClub ? Colors.purple : _navy;
-    final chipBg =
-        isClub ? Colors.purple.withValues(alpha: 0.1) : const Color(0xFFE8EAF6);
+    final chipBg = isClub
+        ? Colors.purple.withValues(alpha: 0.1)
+        : const Color(0xFFE8EAF6);
 
     return GestureDetector(
       onTap: () {
+        // Fix 6: Opens the same review screen; it will be read-only
+        // because the document's status is not 'Pending Review'.
         Navigator.of(context).pushNamed(
           AppRoutes.adminReviewDocument,
           arguments: doc.id,
@@ -364,13 +377,15 @@ class _AdminReviewedDocumentsScreenState
                   const SizedBox(height: 4),
                   Text(
                     '$docType • Submitted ${_formatDate(submittedAt)}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: const TextStyle(
+                        color: Colors.grey, fontSize: 12),
                   ),
                   if (submittedBy.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
                       'By $submittedBy',
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      style: const TextStyle(
+                          color: Colors.grey, fontSize: 12),
                     ),
                   ],
                   const SizedBox(height: 4),
@@ -413,13 +428,16 @@ class _AdminReviewedDocumentsScreenState
     );
   }
 
-  List<QueryDocumentSnapshot> _applyFilters(List<QueryDocumentSnapshot> docs) {
+  List<QueryDocumentSnapshot> _applyFilters(
+      List<QueryDocumentSnapshot> docs) {
     return docs.where((doc) {
       final data = doc.data() as Map<String, dynamic>;
 
       final title = (data['title'] as String? ?? '').toLowerCase();
-      final orgName = (data['organizationName'] as String? ?? '').toLowerCase();
-      final docType = (data['documentType'] as String? ?? '').toLowerCase();
+      final orgName =
+          (data['organizationName'] as String? ?? '').toLowerCase();
+      final docType =
+          (data['documentType'] as String? ?? '').toLowerCase();
       final submittedBy =
           (data['submittedByName'] as String? ?? '').toLowerCase();
       final status = data['status'] as String? ?? '';
@@ -442,18 +460,8 @@ class _AdminReviewedDocumentsScreenState
 
     final date = timestamp.toDate();
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
 
     return '${date.day} ${months[date.month - 1]} ${date.year}';

@@ -578,4 +578,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String fileSizeMustNotExceed10mb(String sizeMB) {
     return 'File size must not exceed 10MB. Your file is ${sizeMB}MB.';
   }
+
+  @override
+  String get signedDocumentRequired =>
+      'Please upload a signed document before approving.';
+
+  @override
+  String get documentAlreadyReviewed =>
+      'This document has already been reviewed and cannot be submitted again.';
 }
