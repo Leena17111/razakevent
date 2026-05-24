@@ -88,7 +88,35 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.createEventFeedbackForm:  (_) => const CreateFeedbackFormScreen(),
             AppRoutes.secretaryProposedEvents:  (_) => const SecretaryProposedEventsScreen(),
             AppRoutes.secretaryEventDetail:     (_) => const SecretaryEventDetailScreen(),
-          },
+            // Sprint 3 — Epic 1: Event Participation & Feedback Module
+
+            // Student Event Participation
+            AppRoutes.browseEvents:           (_) => const Scaffold(body: Center(child: Text('Browse Events'))),
+            AppRoutes.eventDetail:            (_) => const Scaffold(body: Center(child: Text('Event Detail'))),
+            AppRoutes.registerEvent:          (_) => const Scaffold(body: Center(child: Text('Register Event'))),
+            AppRoutes.registrationSuccess:    (_) => const Scaffold(body: Center(child: Text('Registration Success'))),
+            AppRoutes.myRegisteredEvents:     (_) => const Scaffold(body: Center(child: Text('My Registered Events'))),
+
+            // Student Feedback
+            AppRoutes.submitFeedback:         (_) => const Scaffold(body: Center(child: Text('Submit Feedback'))),
+
+            // Organizer Feedback & Registrations
+            AppRoutes.eventResponsesSelect:   (_) => const Scaffold(body: Center(child: Text('Select Event - Responses'))),
+            AppRoutes.eventRegistrants:       (_) => const Scaffold(body: Center(child: Text('Event Registrants'))),
+            AppRoutes.eventFeedbackResponses: (_) => const Scaffold(body: Center(child: Text('Event Feedback Responses'))),
+
+            // Sprint 3 — Epic 2: Volunteer Management Module
+
+            // Student Volunteer
+            AppRoutes.volunteerPositions:     (_) => const Scaffold(body: Center(child: Text('Volunteer Positions'))),
+            AppRoutes.applyVolunteer:         (_) => const Scaffold(body: Center(child: Text('Apply Volunteer'))),
+            AppRoutes.myVolunteerApplications:(_) => const Scaffold(body: Center(child: Text('My Volunteer Applications'))),
+
+            // Organizer Volunteer Management
+            AppRoutes.volunteerManagement:    (_) => const Scaffold(body: Center(child: Text('Volunteer Management'))),
+            AppRoutes.addVolunteerPosition:   (_) => const Scaffold(body: Center(child: Text('Add Volunteer Position'))),
+            AppRoutes.reviewApplications:     (_) => const Scaffold(body: Center(child: Text('Review Applications'))),
+                },
         );
       },
     );

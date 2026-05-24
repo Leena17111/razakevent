@@ -508,44 +508,76 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildRoleActionCards(UserModel user) {
     switch (user.role) {
       case UserRole.organizerHead:
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Documents',
-                    subtitle: 'Track approval status',
-                    icon: Icons.description_rounded,
-                    color: AppColors.communityBadgeText,
-                    routeName: AppRoutes.trackEventDocumentStatus,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Event Details',
-                    subtitle: 'Manage event info',
-                    icon: Icons.event_note_rounded,
-                    color: AppColors.clubBadgeText,
-                    routeName: AppRoutes.eventDetailsList,
-                    isCompact: true,
-                  ),
-                ),
-              ],
+  return Column(
+    children: [
+      Row(
+        children: [
+          Expanded(
+            child: _buildActionCard(
+              title: 'Documents',
+              subtitle: 'Track approval status',
+              icon: Icons.description_rounded,
+              color: AppColors.communityBadgeText,
+              routeName: AppRoutes.trackEventDocumentStatus,
+              isCompact: true,
             ),
-            const SizedBox(height: 14),
-            _buildActionCard(
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildActionCard(
+              title: 'Event Details',
+              subtitle: 'Manage event info',
+              icon: Icons.event_note_rounded,
+              color: AppColors.clubBadgeText,
+              routeName: AppRoutes.eventDetailsList,
+              isCompact: true,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 14),
+      Row(
+        children: [
+          Expanded(
+            child: _buildActionCard(
+              title: 'Feedback & Registrations',
+              subtitle: 'View responses & attendees',
+              icon: Icons.analytics_rounded,
+              color: AppColors.studentBadgeText,
+              routeName: AppRoutes.eventResponsesSelect,
+              isCompact: true,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildActionCard(
+              title: 'Volunteer Positions',
+              subtitle: 'Manage applications',
+              icon: Icons.groups_rounded,
+              color: AppColors.accent,
+              routeName: AppRoutes.volunteerManagement,
+              isCompact: true,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 14),
+      Row(
+        children: [
+          Expanded(
+            child: _buildActionCard(
               title: 'Feedback Form',
               subtitle: 'Set up event feedback',
               icon: Icons.feedback_rounded,
               color: AppColors.accent,
               routeName: AppRoutes.createEventFeedbackForm,
-              isAccentWide: true,
+              isCompact: true,
             ),
-          ],
-        );
+          ),
+        ],
+      ),
+    ],
+  );
 
       case UserRole.secretary:
         return Row(
@@ -602,13 +634,44 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
       case UserRole.student:
-        return _buildActionCard(
-          title: 'Discover Events',
-          subtitle: 'Browse upcoming KTR events and activities.',
-          icon: Icons.event_available_rounded,
-          color: AppColors.studentBadgeText,
-          routeName: '',
-        );
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionCard(
+                  title: 'Events',
+                  subtitle: 'Browse & register',
+                  icon: Icons.event_available_rounded,
+                  color: AppColors.studentBadgeText,
+                  routeName: AppRoutes.browseEvents,
+                  isCompact: true,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionCard(
+                  title: 'Feedback',
+                  subtitle: 'Submit event feedback',
+                  icon: Icons.rate_review_rounded,
+                  color: AppColors.accent,
+                  routeName: AppRoutes.myRegisteredEvents,
+                  isCompact: true,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _buildActionCard(
+          title: 'Volunteer Positions',
+          subtitle: 'Apply for volunteer roles',
+          icon: Icons.groups_rounded,
+          color: AppColors.communityBadgeText,
+          routeName: AppRoutes.volunteerPositions,
+          isAccentWide: false,
+        ),
+        ],
+      );
 
       default:
         return _buildActionCard(
