@@ -406,7 +406,11 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
           onTap: () async {
             final now = DateTime.now();
             final firstDate = DateTime(now.year, now.month, now.day);
-            final lastDate = DateTime(now.year + 1);
+            final lastDate = DateTime(
+            widget.eventDateTime.year,
+            widget.eventDateTime.month,
+            widget.eventDateTime.day,
+          ).subtract(const Duration(days: 1));
 
             final selectedDate = await showDatePicker(
               context: context,
@@ -506,6 +510,14 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
       return;
     }
 
+    if (!_deadline!.isBefore(widget.eventDateTime)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.deadlineMustBeBeforeEvent),
+      ),
+    );
+    return;
+  }
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     final position = VolunteerPositionModel(

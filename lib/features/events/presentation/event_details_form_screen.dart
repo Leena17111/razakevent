@@ -130,18 +130,28 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDateTime,
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+      firstDate: DateTime.now().subtract(
+        const Duration(days: 1),
+      ),
+      lastDate: DateTime.now().add(
+        const Duration(days: 365 * 3),
+      ),
     );
 
-    if (selectedDate == null || !mounted) return;
+    if (selectedDate == null || !mounted) {
+      return;
+    }
 
     final selectedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+      initialTime: TimeOfDay.fromDateTime(
+        _selectedDateTime,
+      ),
     );
 
-    if (selectedTime == null) return;
+    if (selectedTime == null) {
+      return;
+    }
 
     setState(() {
       _selectedDateTime = DateTime(
@@ -153,47 +163,77 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
       );
 
       if (_registrationDeadline != null &&
-          _registrationDeadline!.isAfter(_selectedDateTime)) {
+          !_registrationDeadline!.isBefore(
+            _selectedDateTime,
+          )) {
         _registrationDeadline = null;
       }
     });
   }
 
   Future<void> _pickRegistrationDeadline() async {
-    final now = DateTime.now();
-    final firstDate = DateTime(now.year, now.month, now.day);
-    final lastDate = DateTime.now().add(const Duration(days: 365 * 3));
+  final l10n = AppLocalizations.of(context)!;
 
-    final initialDate = _registrationDeadline ?? firstDate;
+  final now = DateTime.now();
 
-    final selectedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate.isBefore(firstDate) ? firstDate : initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
+  final firstDate = DateTime(
+    now.year,
+    now.month,
+    now.day,
+  );
 
-    if (selectedDate == null || !mounted) return;
+  final lastDate = DateTime(
+  _selectedDateTime.year,
+  _selectedDateTime.month,
+  _selectedDateTime.day,
+).subtract(const Duration(days: 1));
 
-    final selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(
-        _registrationDeadline ?? DateTime.now(),
-      ),
-    );
+  final selectedDate = await showDatePicker(
+    context: context,
+    initialDate:
+        _registrationDeadline ?? firstDate,
+    firstDate: firstDate,
+    lastDate: lastDate,
+  );
 
-    if (selectedTime == null) return;
-
-    setState(() {
-      _registrationDeadline = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime.hour,
-        selectedTime.minute,
-      );
-    });
+  if (selectedDate == null || !mounted) {
+    return;
   }
+
+  final selectedTime = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.fromDateTime(
+      _registrationDeadline ??
+          DateTime.now(),
+    ),
+  );
+
+  if (selectedTime == null) {
+    return;
+  }
+
+  final selectedDeadline = DateTime(
+    selectedDate.year,
+    selectedDate.month,
+    selectedDate.day,
+    selectedTime.hour,
+    selectedTime.minute,
+  );
+
+  if (!selectedDeadline.isBefore(
+    _selectedDateTime,
+  )) {
+    _showError(
+      l10n.deadlineMustBeBeforeEvent,
+    );
+    return;
+  }
+
+  setState(() {
+    _registrationDeadline =
+        selectedDeadline;
+  });
+}
 
   Future<void> _saveEvent() async {
     final l10n = AppLocalizations.of(context)!;
@@ -207,6 +247,17 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
 
     if (_registrationEnabled && _registrationDeadline == null) {
       _showError(l10n.registrationDeadlineRequired);
+      return;
+    }
+
+    if (_registrationEnabled &&
+        _registrationDeadline != null &&
+        !_registrationDeadline!.isBefore(
+          _selectedDateTime,
+        )) {
+      _showError(
+        l10n.deadlineMustBeBeforeEvent,
+      );
       return;
     }
 
