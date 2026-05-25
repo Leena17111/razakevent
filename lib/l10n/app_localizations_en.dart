@@ -586,4 +586,137 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get documentAlreadyReviewed =>
       'This document has already been reviewed and cannot be submitted again.';
+
+  @override
+  String get browseEvents => 'Browse Events';
+
+  @override
+  String get browseEventsSubtitle => 'Discover events at KTR';
+
+  @override
+  String get studentLabel => 'Student';
+
+  @override
+  String get welcomeLabel => 'Welcome';
+
+  @override
+  String get browseTab => 'Browse Events';
+
+  @override
+  String get myRegisteredTab => 'My Registered';
+
+  @override
+  String get searchEvents => 'Search events...';
+
+  @override
+  String get noEventsAvailable => 'No events found';
+
+  @override
+  String get noEventsDesc => 'Try a different search or category';
+
+  @override
+  String get noRegisteredEvents => 'No Registered Events';
+
+  @override
+  String get noRegisteredEventsDesc =>
+      'You have not registered for any events yet';
+
+  @override
+  String get slotsLeft => 'slots left';
+
+  @override
+  String get eventFull => 'Full';
+
+  @override
+  String get freeEvent => 'Free';
+
+  @override
+  String get registeredCount => 'registered';
+
+  @override
+  String get deadlineLabel => 'Deadline';
+
+  @override
+  String get detailsButton => 'Details';
+
+  @override
+  String get errorLoadingEvents => 'Failed to load events';
+
+  @override
+  String get retryButton => 'Retry';
+
+  @override
+  String get navEvents => 'Events';
+
+  @override
+  String get navVolunteer => 'Volunteer';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get categoryAll => 'All';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categoryAcademic => 'Academic';
+
+  @override
+  String get categorySpiritual => 'Spiritual';
+
+  @override
+  String get categoryWelfare => 'Welfare';
+
+  @override
+  String get categoryEntrepreneurship => 'Entrepreneurship';
+
+  @override
+  String get categoryCulture => 'Culture';
+
+  @override
+  String get categoryArtsMedia => 'Arts & Media';
+
+  @override
+  String get categoryFood => 'Food';
+
+  @override
+  String get categorySafety => 'Safety';
+
+  @override
+  String get categoryOthers => 'Others';
+
+  @override
+  String get organizerLabel => 'Organizer';
+
+  @override
+  String get dateTimeLabel => 'Date & Time';
+
+  @override
+  String get venueLabel => 'Venue';
+
+  @override
+  String get capacityLabel => 'Capacity';
+
+  @override
+  String get contactLabel => 'Contact Person';
+
+  @override
+  String get aboutEvent => 'ABOUT THIS EVENT';
+
+  @override
+  String get registrationFeeLabel => 'REGISTRATION FEE';
+
+  @override
+  String get registrationDeadlineLabel => 'REGISTRATION DEADLINE';
+
+  @override
+  String get registerNow => 'Register Now';
+
+  @override
+  String get eventFullMessage => 'Event Full';
+
+  @override
+  String get registrationClosed => 'Registration Closed';
 }

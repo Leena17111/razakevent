@@ -593,4 +593,136 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get documentAlreadyReviewed =>
       'Dokumen ini telah disemak dan tidak boleh dihantar semula.';
+
+  @override
+  String get browseEvents => 'Semak Imbas Acara';
+
+  @override
+  String get browseEventsSubtitle => 'Temui acara di KTR';
+
+  @override
+  String get studentLabel => 'Pelajar';
+
+  @override
+  String get welcomeLabel => 'Selamat datang';
+
+  @override
+  String get browseTab => 'Semak Imbas';
+
+  @override
+  String get myRegisteredTab => 'Acara Saya';
+
+  @override
+  String get searchEvents => 'Cari acara...';
+
+  @override
+  String get noEventsAvailable => 'Tiada acara';
+
+  @override
+  String get noEventsDesc => 'Cuba carian atau kategori lain';
+
+  @override
+  String get noRegisteredEvents => 'Tiada Acara Didaftarkan';
+
+  @override
+  String get noRegisteredEventsDesc => 'Anda belum mendaftar mana-mana acara';
+
+  @override
+  String get slotsLeft => 'slot tinggal';
+
+  @override
+  String get eventFull => 'Penuh';
+
+  @override
+  String get freeEvent => 'Percuma';
+
+  @override
+  String get registeredCount => 'didaftar';
+
+  @override
+  String get deadlineLabel => 'Tarikh Akhir';
+
+  @override
+  String get detailsButton => 'Butiran';
+
+  @override
+  String get errorLoadingEvents => 'Gagal memuatkan acara';
+
+  @override
+  String get retryButton => 'Cuba Lagi';
+
+  @override
+  String get navEvents => 'Acara';
+
+  @override
+  String get navVolunteer => 'Sukarela';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
+  String get categoryAll => 'Semua';
+
+  @override
+  String get categorySports => 'Sukan';
+
+  @override
+  String get categoryAcademic => 'Akademik';
+
+  @override
+  String get categorySpiritual => 'Kerohanian';
+
+  @override
+  String get categoryWelfare => 'Kebajikan';
+
+  @override
+  String get categoryEntrepreneurship => 'Keusahawanan';
+
+  @override
+  String get categoryCulture => 'Kebudayaan';
+
+  @override
+  String get categoryArtsMedia => 'Seni & Media';
+
+  @override
+  String get categoryFood => 'Makanan';
+
+  @override
+  String get categorySafety => 'Keselamatan';
+
+  @override
+  String get categoryOthers => 'Lain-lain';
+
+  @override
+  String get organizerLabel => 'Penganjur';
+
+  @override
+  String get dateTimeLabel => 'Tarikh & Masa';
+
+  @override
+  String get venueLabel => 'Tempat';
+
+  @override
+  String get capacityLabel => 'Kapasiti';
+
+  @override
+  String get contactLabel => 'Orang Hubungan';
+
+  @override
+  String get aboutEvent => 'TENTANG ACARA INI';
+
+  @override
+  String get registrationFeeLabel => 'YURAN PENDAFTARAN';
+
+  @override
+  String get registrationDeadlineLabel => 'TARIKH AKHIR PENDAFTARAN';
+
+  @override
+  String get registerNow => 'Daftar Sekarang';
+
+  @override
+  String get eventFullMessage => 'Acara Penuh';
+
+  @override
+  String get registrationClosed => 'Pendaftaran Ditutup';
 }

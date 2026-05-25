@@ -69,7 +69,7 @@ class EventModel {
       category: data['category'] ?? '',
       description: data['description'] ?? '',
       posterFileName: data['posterFileName'] ?? '',
-      posterUrl: data['posterUrl'] ?? '',
+      posterUrl: (data['posterUrl'] ?? '').toString().replaceAll(RegExp(r'\s+'), ''),
       posterStoragePath: data['posterStoragePath'] ?? '',
       venue: data['venue'] ?? '',
       eventDateTime: _toDateTime(data['eventDateTime']) ?? DateTime.now(),
