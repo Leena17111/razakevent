@@ -719,4 +719,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registrationClosed => 'Registration Closed';
+
+  @override
+  String get volunteerManagement => 'Volunteer Recruitment';
+
+  @override
+  String get addVolunteerPositionsForYourEvent =>
+      'Add volunteer positions for your event';
+
+  @override
+  String get reviewVolunteerApplications => 'Review volunteer applications';
+
+  @override
+  String get organizerHead => 'Organizer Head';
+
+  @override
+  String get noUpcomingEvents => 'No upcoming events';
+
+  @override
+  String get addEventsFirstBeforePositions =>
+      'Only open, upcoming, approved events can be used for volunteer positions.';
+
+  @override
+  String get volunteerPositions => 'Volunteer Positions';
+
+  @override
+  String get addVolunteerPosition => 'Add Volunteer Position';
+
+  @override
+  String get addNewPosition => 'Add New Position';
+
+  @override
+  String get noPositionsYet => 'No positions yet';
+
+  @override
+  String get tapBelowToAddPosition =>
+      'Tap the button below to add your first volunteer position.';
+
+  @override
+  String get roleName => 'Role Name';
+
+  @override
+  String get roleNameHint => 'e.g. Event Marshal';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get describeVolunteerDuties =>
+      'Describe the volunteer duties and responsibilities...';
+
+  @override
+  String get requirements => 'Requirements';
+
+  @override
+  String get listSkillsAvailability =>
+      'List skills, availability, or qualifications needed...';
+
+  @override
+  String get numberOfVolunteersNeeded => 'Number of Volunteers Needed';
+
+  @override
+  String get applicationDeadline => 'Application Deadline';
+
+  @override
+  String get savePosition => 'Save Position';
+
+  @override
+  String get positionAddedSuccessfully => 'Position added successfully!';
+
+  @override
+  String get enterValidVolunteerNumber =>
+      'Enter a valid number greater than 0.';
+
+  @override
+  String get deadlineRequired => 'Application deadline is required.';
+
+  @override
+  String get deadlineMustBeBeforeEvent =>
+      'Application deadline must be before the event date.';
+
+  @override
+  String get failedToSavePosition =>
+      'Failed to save position. Please try again.';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get full => 'Full';
 }
