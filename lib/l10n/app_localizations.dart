@@ -1213,6 +1213,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This document has already been reviewed and cannot be submitted again.'**
   String get documentAlreadyReviewed;
+
+  /// No description provided for @browseEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Events'**
+  String get browseEvents;
+
+  /// No description provided for @browseEventsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover events at KTR'**
+  String get browseEventsSubtitle;
+
+  /// No description provided for @studentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Student'**
+  String get studentLabel;
+
+  /// No description provided for @welcomeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcomeLabel;
+
+  /// No description provided for @browseTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Events'**
+  String get browseTab;
+
+  /// No description provided for @myRegisteredTab.
+  ///
+  /// In en, this message translates to:
+  /// **'My Registered'**
+  String get myRegisteredTab;
+
+  /// No description provided for @searchEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Search events...'**
+  String get searchEvents;
+
+  /// No description provided for @noEventsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No events found'**
+  String get noEventsAvailable;
+
+  /// No description provided for @noEventsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search or category'**
+  String get noEventsDesc;
+
+  /// No description provided for @noRegisteredEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No Registered Events'**
+  String get noRegisteredEvents;
+
+  /// No description provided for @noRegisteredEventsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not registered for any events yet'**
+  String get noRegisteredEventsDesc;
+
+  /// No description provided for @slotsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'slots left'**
+  String get slotsLeft;
+
+  /// No description provided for @eventFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get eventFull;
+
+  /// No description provided for @freeEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get freeEvent;
+
+  /// No description provided for @registeredCount.
+  ///
+  /// In en, this message translates to:
+  /// **'registered'**
+  String get registeredCount;
+
+  /// No description provided for @deadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get deadlineLabel;
+
+  /// No description provided for @detailsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsButton;
+
+  /// No description provided for @errorLoadingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load events'**
+  String get errorLoadingEvents;
+
+  /// No description provided for @retryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryButton;
+
+  /// No description provided for @navEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get navEvents;
+
+  /// No description provided for @navVolunteer.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteer'**
+  String get navVolunteer;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// No description provided for @categoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAll;
+
+  /// No description provided for @categorySports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get categorySports;
+
+  /// No description provided for @categoryAcademic.
+  ///
+  /// In en, this message translates to:
+  /// **'Academic'**
+  String get categoryAcademic;
+
+  /// No description provided for @categorySpiritual.
+  ///
+  /// In en, this message translates to:
+  /// **'Spiritual'**
+  String get categorySpiritual;
+
+  /// No description provided for @categoryWelfare.
+  ///
+  /// In en, this message translates to:
+  /// **'Welfare'**
+  String get categoryWelfare;
+
+  /// No description provided for @categoryEntrepreneurship.
+  ///
+  /// In en, this message translates to:
+  /// **'Entrepreneurship'**
+  String get categoryEntrepreneurship;
+
+  /// No description provided for @categoryCulture.
+  ///
+  /// In en, this message translates to:
+  /// **'Culture'**
+  String get categoryCulture;
+
+  /// No description provided for @categoryArtsMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Arts & Media'**
+  String get categoryArtsMedia;
+
+  /// No description provided for @categoryFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get categoryFood;
+
+  /// No description provided for @categorySafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get categorySafety;
+
+  /// No description provided for @categoryOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get categoryOthers;
+
+  /// No description provided for @organizerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer'**
+  String get organizerLabel;
+
+  /// No description provided for @dateTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateTimeLabel;
+
+  /// No description provided for @venueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get venueLabel;
+
+  /// No description provided for @capacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get capacityLabel;
+
+  /// No description provided for @contactLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Person'**
+  String get contactLabel;
+
+  /// No description provided for @aboutEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'ABOUT THIS EVENT'**
+  String get aboutEvent;
+
+  /// No description provided for @registrationFeeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'REGISTRATION FEE'**
+  String get registrationFeeLabel;
+
+  /// No description provided for @registrationDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'REGISTRATION DEADLINE'**
+  String get registrationDeadlineLabel;
+
+  /// No description provided for @registerNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Now'**
+  String get registerNow;
+
+  /// No description provided for @eventFullMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Full'**
+  String get eventFullMessage;
+
+  /// No description provided for @registrationClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Closed'**
+  String get registrationClosed;
 }
 
 class _AppLocalizationsDelegate

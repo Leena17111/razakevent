@@ -84,35 +84,104 @@ class EventDetailsController {
     required EventDetailsSaveData data,
     required bool isEditMode,
   }) async {
-    final existingEvent = data.event.eventId.isEmpty ? null : data.event;
-
     String posterFileName = data.posterFileName;
     String posterUrl = data.posterUrl;
     String posterStoragePath = data.posterStoragePath;
     String? oldPosterPathToDelete;
 
-    if (data.pickedPosterFile != null) {
-      final uploadResult = await _fileUploadService.uploadPickedFile(
-        file: data.pickedPosterFile!,
-        uploadType: UploadFileType.eventPoster,
-        ownerId: data.event.createdBy,
-        recordId: isEditMode ? data.event.eventId : null,
+    if (isEditMode) {
+      // ── EDIT: upload new poster first (we already have the event ID) ──
+      if (data.pickedPosterFile != null) {
+        final uploadResult = await _fileUploadService.uploadPickedFile(
+          file: data.pickedPosterFile!,
+          uploadType: UploadFileType.eventPoster,
+          ownerId: data.event.createdBy,
+          recordId: data.event.eventId,
+        );
+
+        posterFileName = uploadResult.fileName;
+        posterUrl = uploadResult.downloadUrl;
+        posterStoragePath = uploadResult.storagePath;
+
+        if (data.event.posterStoragePath.isNotEmpty &&
+            data.event.posterStoragePath != posterStoragePath) {
+          oldPosterPathToDelete = data.event.posterStoragePath;
+        }
+      }
+
+      final eventToSave = _buildEvent(
+        data: data,
+        posterFileName: posterFileName,
+        posterUrl: posterUrl,
+        posterStoragePath: posterStoragePath,
+        eventId: data.event.eventId,
       );
 
-      posterFileName = uploadResult.fileName;
-      posterUrl = uploadResult.downloadUrl;
-      posterStoragePath = uploadResult.storagePath;
+      await _eventRepository.updateEvent(eventToSave);
+    } else {
+      // ── CREATE: save event first to get a real Firestore ID ──
+      final tempEvent = _buildEvent(
+        data: data,
+        posterFileName: posterFileName,
+        posterUrl: posterUrl,
+        posterStoragePath: posterStoragePath,
+        eventId: '',
+      );
 
-      if (isEditMode &&
-          existingEvent != null &&
-          existingEvent.posterStoragePath.isNotEmpty &&
-          existingEvent.posterStoragePath != posterStoragePath) {
-        oldPosterPathToDelete = existingEvent.posterStoragePath;
+      final newEventId = await _eventRepository.createEvent(tempEvent);
+
+      // ── Upload poster using the real event ID as its storage folder ──
+      if (data.pickedPosterFile != null) {
+        final uploadResult = await _fileUploadService.uploadPickedFile(
+          file: data.pickedPosterFile!,
+          uploadType: UploadFileType.eventPoster,
+          ownerId: data.event.createdBy,
+          recordId: newEventId, // ← unique per event
+        );
+
+        posterFileName = uploadResult.fileName;
+        posterUrl = uploadResult.downloadUrl;
+        posterStoragePath = uploadResult.storagePath;
+
+        // ── Patch the document with the poster URL now that we have it ──
+        await _firestore.collection('events').doc(newEventId).update({
+          'posterFileName': posterFileName,
+          'posterUrl': posterUrl,
+          'posterStoragePath': posterStoragePath,
+        });
       }
     }
 
-    final eventToSave = EventModel(
-      eventId: data.event.eventId,
+    // ── Clean up old poster from Storage if replaced ──
+    if (oldPosterPathToDelete != null && oldPosterPathToDelete.isNotEmpty) {
+      try {
+        await _fileUploadService.deleteFileByPath(oldPosterPathToDelete);
+      } catch (_) {
+        // Do not fail the save if old poster deletion fails.
+      }
+    }
+  }
+
+  Future<void> deleteEvent(String eventId) {
+    return _eventRepository.deleteEvent(eventId);
+  }
+
+  Future<void> deleteEventPosterByPath(String posterStoragePath) async {
+    if (posterStoragePath.trim().isEmpty) return;
+    await _fileUploadService.deleteFileByPath(posterStoragePath);
+  }
+
+  // ── Helper ────────────────────────────────────────────────────────────────────
+
+  EventModel _buildEvent({
+    required EventDetailsSaveData data,
+    required String posterFileName,
+    required String posterUrl,
+    required String posterStoragePath,
+    required String eventId,
+  }) {
+    return EventModel(
+      eventId: eventId,
       title: data.event.title,
       organizationName: data.event.organizationName,
       organizationType: data.event.organizationType,
@@ -136,28 +205,5 @@ class EventDetailsController {
       createdAt: data.event.createdAt,
       updatedAt: data.event.updatedAt,
     );
-
-    if (isEditMode) {
-      await _eventRepository.updateEvent(eventToSave);
-    } else {
-      await _eventRepository.createEvent(eventToSave);
-    }
-
-    if (oldPosterPathToDelete != null && oldPosterPathToDelete.isNotEmpty) {
-      try {
-        await _fileUploadService.deleteFileByPath(oldPosterPathToDelete);
-      } catch (_) {
-        // Do not fail the event save if old poster deletion fails.
-      }
-    }
-  }
-
-  Future<void> deleteEvent(String eventId) {
-    return _eventRepository.deleteEvent(eventId);
-  }
-
-  Future<void> deleteEventPosterByPath(String posterStoragePath) async {
-    if (posterStoragePath.trim().isEmpty) return;
-    await _fileUploadService.deleteFileByPath(posterStoragePath);
   }
 }
