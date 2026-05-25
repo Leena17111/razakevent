@@ -26,6 +26,7 @@ import 'features/splash/presentation/splash_screen.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'features/events/presentation/event_detail_screen.dart';
+import 'features/volunteer/presentation/volunteer_event_select_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -108,17 +109,23 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.eventRegistrants:       (_) => const Scaffold(body: Center(child: Text('Event Registrants'))),
             AppRoutes.eventFeedbackResponses: (_) => const Scaffold(body: Center(child: Text('Event Feedback Responses'))),
 
-            // Sprint 3 — Epic 2: Volunteer Management Module
+            // Sprint 3 — Epic 2: Volunteer Recruitment Module
 
             // Student Volunteer
             AppRoutes.volunteerPositions:      (_) => const Scaffold(body: Center(child: Text('Volunteer Positions'))),
             AppRoutes.applyVolunteer:          (_) => const Scaffold(body: Center(child: Text('Apply Volunteer'))),
             AppRoutes.myVolunteerApplications: (_) => const Scaffold(body: Center(child: Text('My Volunteer Applications'))),
 
-            // Organizer Volunteer Management
-            AppRoutes.volunteerManagement:    (_) => const Scaffold(body: Center(child: Text('Volunteer Management'))),
-            AppRoutes.addVolunteerPosition:   (_) => const Scaffold(body: Center(child: Text('Add Volunteer Position'))),
-            AppRoutes.reviewApplications:     (_) => const Scaffold(body: Center(child: Text('Review Applications'))),
+            // Organizer Volunteer Recruitment
+           // Organizer Volunteer Recruitment
+            AppRoutes.volunteerManagement: (_) =>
+                const VolunteerEventSelectScreen(mode: 'add'),
+
+            AppRoutes.addVolunteerPosition: (_) =>
+                const VolunteerEventSelectScreen(mode: 'add'),
+
+            AppRoutes.reviewApplications: (_) =>
+                const VolunteerEventSelectScreen(mode: 'review'),
           },
         );
       },

@@ -725,4 +725,92 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get registrationClosed => 'Pendaftaran Ditutup';
+
+  @override
+  String get volunteerManagement => 'Pengambilan Sukarelawan';
+
+  @override
+  String get addVolunteerPositionsForYourEvent =>
+      'Tambah jawatan sukarelawan untuk acara anda';
+
+  @override
+  String get reviewVolunteerApplications => 'Semak permohonan sukarelawan';
+
+  @override
+  String get organizerHead => 'Ketua Penganjur';
+
+  @override
+  String get noUpcomingEvents => 'Tiada acara akan datang';
+
+  @override
+  String get addEventsFirstBeforePositions =>
+      'Hanya acara yang dibuka, akan datang, dan diluluskan boleh digunakan untuk jawatan sukarelawan.';
+
+  @override
+  String get volunteerPositions => 'Jawatan Sukarelawan';
+
+  @override
+  String get addVolunteerPosition => 'Tambah Jawatan Sukarelawan';
+
+  @override
+  String get addNewPosition => 'Tambah Jawatan Baharu';
+
+  @override
+  String get noPositionsYet => 'Tiada jawatan lagi';
+
+  @override
+  String get tapBelowToAddPosition =>
+      'Ketik butang di bawah untuk menambah jawatan sukarelawan pertama anda.';
+
+  @override
+  String get roleName => 'Nama Peranan';
+
+  @override
+  String get roleNameHint => 'cth. Marshal Acara';
+
+  @override
+  String get description => 'Penerangan';
+
+  @override
+  String get describeVolunteerDuties =>
+      'Terangkan tugas dan tanggungjawab sukarelawan...';
+
+  @override
+  String get requirements => 'Keperluan';
+
+  @override
+  String get listSkillsAvailability =>
+      'Senaraikan kemahiran, ketersediaan, atau kelayakan yang diperlukan...';
+
+  @override
+  String get numberOfVolunteersNeeded => 'Bilangan Sukarelawan Diperlukan';
+
+  @override
+  String get applicationDeadline => 'Tarikh Akhir Permohonan';
+
+  @override
+  String get savePosition => 'Simpan Jawatan';
+
+  @override
+  String get positionAddedSuccessfully => 'Jawatan berjaya ditambah!';
+
+  @override
+  String get enterValidVolunteerNumber =>
+      'Masukkan nombor yang sah lebih daripada 0.';
+
+  @override
+  String get deadlineRequired => 'Tarikh akhir permohonan diperlukan.';
+
+  @override
+  String get deadlineMustBeBeforeEvent =>
+      'Tarikh akhir permohonan mesti sebelum tarikh acara.';
+
+  @override
+  String get failedToSavePosition => 'Gagal menyimpan jawatan. Sila cuba lagi.';
+
+  @override
+  String get tryAgain => 'Cuba Lagi';
+
+  @override
+  String get full => 'Penuh';
 }

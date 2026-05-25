@@ -1477,6 +1477,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration Closed'**
   String get registrationClosed;
+
+  /// No description provided for @volunteerManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteer Recruitment'**
+  String get volunteerManagement;
+
+  /// No description provided for @addVolunteerPositionsForYourEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add volunteer positions for your event'**
+  String get addVolunteerPositionsForYourEvent;
+
+  /// No description provided for @reviewVolunteerApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Review volunteer applications'**
+  String get reviewVolunteerApplications;
+
+  /// No description provided for @organizerHead.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer Head'**
+  String get organizerHead;
+
+  /// No description provided for @noUpcomingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming events'**
+  String get noUpcomingEvents;
+
+  /// No description provided for @addEventsFirstBeforePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Only open, upcoming, approved events can be used for volunteer positions.'**
+  String get addEventsFirstBeforePositions;
+
+  /// No description provided for @volunteerPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteer Positions'**
+  String get volunteerPositions;
+
+  /// No description provided for @addVolunteerPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Volunteer Position'**
+  String get addVolunteerPosition;
+
+  /// No description provided for @addNewPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Position'**
+  String get addNewPosition;
+
+  /// No description provided for @noPositionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions yet'**
+  String get noPositionsYet;
+
+  /// No description provided for @tapBelowToAddPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the button below to add your first volunteer position.'**
+  String get tapBelowToAddPosition;
+
+  /// No description provided for @roleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Role Name'**
+  String get roleName;
+
+  /// No description provided for @roleNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Event Marshal'**
+  String get roleNameHint;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @describeVolunteerDuties.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the volunteer duties and responsibilities...'**
+  String get describeVolunteerDuties;
+
+  /// No description provided for @requirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get requirements;
+
+  /// No description provided for @listSkillsAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'List skills, availability, or qualifications needed...'**
+  String get listSkillsAvailability;
+
+  /// No description provided for @numberOfVolunteersNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Volunteers Needed'**
+  String get numberOfVolunteersNeeded;
+
+  /// No description provided for @applicationDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Deadline'**
+  String get applicationDeadline;
+
+  /// No description provided for @savePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Position'**
+  String get savePosition;
+
+  /// No description provided for @positionAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Position added successfully!'**
+  String get positionAddedSuccessfully;
+
+  /// No description provided for @enterValidVolunteerNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number greater than 0.'**
+  String get enterValidVolunteerNumber;
+
+  /// No description provided for @deadlineRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Application deadline is required.'**
+  String get deadlineRequired;
+
+  /// No description provided for @deadlineMustBeBeforeEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Application deadline must be before the event date.'**
+  String get deadlineMustBeBeforeEvent;
+
+  /// No description provided for @failedToSavePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save position. Please try again.'**
+  String get failedToSavePosition;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @full.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get full;
 }
 
 class _AppLocalizationsDelegate
