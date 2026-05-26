@@ -813,4 +813,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get full => 'Penuh';
+
+  @override
+  String get registeredLabel => 'Didaftarkan';
+
+  @override
+  String get registeredOn => 'Didaftarkan pada';
+
+  @override
+  String get paid => 'Dibayar';
 }

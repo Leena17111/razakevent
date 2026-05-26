@@ -1639,6 +1639,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Full'**
   String get full;
+
+  /// No description provided for @registeredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get registeredLabel;
+
+  /// No description provided for @registeredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered on'**
+  String get registeredOn;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
 }
 
 class _AppLocalizationsDelegate

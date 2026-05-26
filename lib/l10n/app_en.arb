@@ -275,5 +275,9 @@
   "deadlineMustBeBeforeEvent": "Application deadline must be before the event date.",
   "failedToSavePosition": "Failed to save position. Please try again.",
   "tryAgain": "Try Again",
-  "full": "Full"
+  "full": "Full",
+
+  "registeredLabel": "Registered",
+  "registeredOn": "Registered on",
+  "paid": "Paid"
 }

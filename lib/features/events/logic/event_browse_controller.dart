@@ -12,7 +12,7 @@ class EventBrowseController extends ChangeNotifier {
   String _selectedCategory = 'All';
   String _searchQuery = '';
 
-  List<EventModel> get filteredEvents => _filteredEvents;
+  List<EventModel> get filteredEvents => List.unmodifiable(_filteredEvents);
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get selectedCategory => _selectedCategory;
@@ -31,13 +31,12 @@ class EventBrowseController extends ChangeNotifier {
     'Others',
   ];
 
-  // Known categories (lowercase for matching) — excludes All and Others
+  /// Known categories (lowercase) — excludes 'All' and 'Others'.
   static final Set<String> _knownCategories = categoryKeys
       .where((k) => k != 'All' && k != 'Others')
       .map((k) => k.toLowerCase())
       .toSet();
 
-  // BM translations map — used by the screen for filter chip labels
   static const Map<String, String> categoryBM = {
     'All': 'Semua',
     'Sports': 'Sukan',
@@ -52,17 +51,9 @@ class EventBrowseController extends ChangeNotifier {
     'Others': 'Lain-lain',
   };
 
-  // Returns display labels based on current language
-  List<String> getCategories(bool isBM) {
-    if (!isBM) return categoryKeys;
-    return categoryKeys.map((k) => categoryBM[k] ?? k).toList();
-  }
-
-  // Returns the selected category display label
-  String getSelectedCategoryLabel(bool isBM) {
-    if (!isBM) return _selectedCategory;
-    return categoryBM[_selectedCategory] ?? _selectedCategory;
-  }
+  // ---------------------------------------------------------------------------
+  // Public API
+  // ---------------------------------------------------------------------------
 
   Future<void> loadEvents() async {
     _isLoading = true;
@@ -70,49 +61,43 @@ class EventBrowseController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Step 1: Get all approved document eventIds
+      // Step 1: Collect all eventIds whose documents are Approved.
       final approvedDocs = await _firestore
           .collection('documents')
           .where('status', isEqualTo: 'Approved')
           .get();
 
       final approvedEventIds = approvedDocs.docs
-          .map((doc) {
-            final data = doc.data();
-            return data['eventId'] as String?;
-          })
+          .map((doc) => doc.data()['eventId'] as String?)
           .whereType<String>()
           .toSet();
 
       if (approvedEventIds.isEmpty) {
         _allEvents = [];
         _applyFilters();
-        _isLoading = false;
-        notifyListeners();
         return;
       }
 
-      // Step 2: Fetch all Open + registrationEnabled events
+      // Step 2: Fetch events that are Open and have registration enabled.
       final snapshot = await _firestore
           .collection('events')
           .where('status', isEqualTo: 'Open')
           .where('registrationEnabled', isEqualTo: true)
           .get();
 
-      // Step 3: Client-side filter
+      // Step 3: Client-side filter — must be approved AND deadline not passed.
+      final now = DateTime.now();
       _allEvents = snapshot.docs
           .map((doc) => EventModel.fromFirestore(doc))
           .where((event) {
             if (!approvedEventIds.contains(event.eventId)) return false;
             if (event.registrationDeadline != null) {
-              return event.registrationDeadline!.isAfter(DateTime.now());
+              return event.registrationDeadline!.isAfter(now);
             }
             return true;
           })
-          .toList();
-
-      _allEvents.sort(
-          (a, b) => a.eventDateTime.compareTo(b.eventDateTime));
+          .toList()
+        ..sort((a, b) => a.eventDateTime.compareTo(b.eventDateTime));
 
       _applyFilters();
     } catch (e) {
@@ -124,16 +109,23 @@ class EventBrowseController extends ChangeNotifier {
   }
 
   void setCategory(String categoryKey) {
+    if (_selectedCategory == categoryKey) return;
     _selectedCategory = categoryKey;
     _applyFilters();
     notifyListeners();
   }
 
   void setSearchQuery(String query) {
-    _searchQuery = query.trim();
+    final trimmed = query.trim();
+    if (_searchQuery == trimmed) return;
+    _searchQuery = trimmed;
     _applyFilters();
     notifyListeners();
   }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
 
   void _applyFilters() {
     _filteredEvents = _allEvents.where((event) {
@@ -146,25 +138,20 @@ class EventBrowseController extends ChangeNotifier {
     }).toList();
   }
 
-  // ── FIX: normalizes "Other" → "Others" and catches anything
-  // not in the known list under the "Others" filter chip ──
+  /// Normalises "Other" (legacy) → "Others" and buckets anything not in the
+  /// known list under the "Others" filter chip.
   bool _matchesCategory(EventModel event) {
     if (_selectedCategory == 'All') return true;
 
-    // Normalize stored value — "Other" (old) treated same as "Others" (new)
-    final eventCat = event.category.trim() == 'Other'
-        ? 'Others'
-        : event.category.trim();
+    final raw = event.category.trim();
+    final eventCat = raw == 'Other' ? 'Others' : raw;
 
     if (_selectedCategory == 'Others') {
-      // Catches "Other", "Others", and anything else not in known list
       return eventCat == 'Others' ||
           !_knownCategories.contains(eventCat.toLowerCase());
     }
 
-    // Case-insensitive exact match for all other categories
-    return eventCat.toLowerCase() ==
-        _selectedCategory.trim().toLowerCase();
+    return eventCat.toLowerCase() == _selectedCategory.trim().toLowerCase();
   }
 
   bool isEventFull(EventModel event) {
@@ -178,12 +165,9 @@ class EventBrowseController extends ChangeNotifier {
   }
 
   double getRegistrationProgress(EventModel event) {
-    if (event.participantCapacity == null ||
-        event.participantCapacity == 0) {
-      return 0.0;
-    }
-    return (event.registeredCount / event.participantCapacity!)
-        .clamp(0.0, 1.0);
+    final cap = event.participantCapacity;
+    if (cap == null || cap == 0) return 0.0;
+    return (event.registeredCount / cap).clamp(0.0, 1.0);
   }
 
   int getRemainingSlots(EventModel event) {
