@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 enum RegistrationStep { form, payment, success }
 
@@ -83,7 +85,7 @@ class EventRegistrationController extends ChangeNotifier {
   /// Called when the user taps the primary button on the form step.
   ///
   /// • Free event  → validate → save to Firestore → show success.
-  /// • Paid event  → validate → advance to payment step (Stripe, TBD).
+  /// • Paid event  → validate → advance to payment step (Stripe).
   Future<void> proceedFromForm({
     required bool isFreeEvent,
     required bool isEn,
@@ -170,25 +172,93 @@ class EventRegistrationController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // Paid registration — Stripe (to be implemented).
+  // Paid registration — Stripe.
   // ---------------------------------------------------------------------------
 
-  /// Placeholder for the Stripe Cloud Function call.
-  /// The UI navigates to the payment step; this method is called when the user
-  /// taps "Pay with Stripe" inside the payment step.
-  Future<void> initiateStripePayment({required String eventId}) async {
+  /// Calls the Firebase Cloud Function to create a Stripe PaymentIntent,
+  /// presents the Stripe payment sheet, then writes the registration to
+  /// Firestore on success.
+  Future<void> initiateStripePayment({
+    required String eventId,
+    required double feeInRinggit,
+  }) async {
     _setLoading(true);
+    _errorMessage = null;
+    notifyListeners();
 
     try {
-      // TODO: Replace with real Stripe + Cloud Function call.
-      // See STRIPE_SETUP.md for full instructions.
-      await Future.delayed(const Duration(seconds: 2));
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) throw Exception('Not authenticated');
+
+      // 1. Call Cloud Function to create a PaymentIntent on Stripe's server.
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('createPaymentIntent');
+
+      final result = await callable.call({
+        'eventId': eventId,
+        'amountInCents': (feeInRinggit * 100).toInt(),
+        'currency': 'myr',
+      });
+
+      final clientSecret = result.data['clientSecret'] as String;
+
+      // 2. Initialize the Stripe payment sheet.
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'RazakEvent',
+          style: ThemeMode.light,
+          billingDetailsCollectionConfiguration:
+              const BillingDetailsCollectionConfiguration(
+            address: AddressCollectionMode.never,
+          ),
+        ),
+      );
+
+      // 3. Present the sheet — throws StripeException if user cancels.
+      await Stripe.instance.presentPaymentSheet();
+
+      // 4. Payment succeeded — write registration to Firestore.
+      await _savePaymentRegistration(eventId: eventId);
+
       _step = RegistrationStep.success;
+
+    } on StripeException catch (e) {
+      // User cancelled or card was declined — show a friendly message.
+      _errorMessage = e.error.localizedMessage ?? 'Payment cancelled.';
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _setLoading(false);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Paid registration — writes to Firestore atomically after Stripe succeeds.
+  // ---------------------------------------------------------------------------
+
+  Future<void> _savePaymentRegistration({required String eventId}) async {
+    final uid = _auth.currentUser!.uid;
+
+    final batch = _firestore.batch();
+
+    final regRef = _firestore.collection('eventRegistrations').doc();
+    batch.set(regRef, {
+      'eventId': eventId,
+      'userId': uid,
+      'fullName': _userName,
+      'matricNumber': _userMatric,
+      'phoneNumber': _userPhone,
+      'faculty': _selectedFaculty,
+      'paymentStatus': 'paid',
+      'registeredAt': FieldValue.serverTimestamp(),
+    });
+
+    batch.update(_firestore.collection('events').doc(eventId), {
+      'registeredCount': FieldValue.increment(1),
+    });
+
+    await batch.commit();
   }
 
   // ---------------------------------------------------------------------------

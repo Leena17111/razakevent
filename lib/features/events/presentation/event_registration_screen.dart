@@ -6,6 +6,10 @@ import '../../../core/localization/locale_controller.dart';
 import '../../../data/models/event_model.dart';
 import '../logic/event_registration_controller.dart';
 
+// NOTE: The full-screen zoomable poster viewer has been moved to
+// event_details_screen.dart where the poster actually lives.
+// This file only handles the registration form and payment flow.
+
 const List<String> _kFaculties = [
   'Azman Hashim International Business School (AHIBS)',
   'Faculty of Built Environment and Surveying',
@@ -29,8 +33,7 @@ class EventRegistrationScreen extends StatefulWidget {
       _EventRegistrationScreenState();
 }
 
-class _EventRegistrationScreenState
-    extends State<EventRegistrationScreen> {
+class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
   late final EventRegistrationController _ctrl;
   late final EventModel _event;
   bool _eventLoaded = false;
@@ -45,8 +48,7 @@ class _EventRegistrationScreenState
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_eventLoaded) {
-      _event =
-          ModalRoute.of(context)!.settings.arguments as EventModel;
+      _event = ModalRoute.of(context)!.settings.arguments as EventModel;
       _eventLoaded = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _ctrl.loadUserProfile();
@@ -217,6 +219,8 @@ class _Header extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              // No poster thumbnail here — the poster and zoom viewer
+              // belong on the Event Details page, not the registration form.
               if (!isFree) ...[
                 const SizedBox(height: 14),
                 Row(
@@ -506,6 +510,128 @@ class _PaymentStep extends StatelessWidget {
     required this.isEn,
   });
 
+  // FIX 3 — Confirmation dialog before proceeding to Stripe.
+  // This is correctly placed HERE on the registration/payment screen.
+  Future<void> _confirmAndPay(BuildContext context) async {
+    final fee = event.registrationFee;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.payment_rounded,
+                color: Color(0xFF635BFF), size: 22),
+            const SizedBox(width: 8),
+            Text(
+              isEn ? 'Confirm Payment' : 'Sahkan Pembayaran',
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isEn
+                  ? 'You are about to pay for:'
+                  : 'Anda akan membuat pembayaran untuk:',
+              style: const TextStyle(
+                  fontSize: 13, color: Color(0xFF6B7280)),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F6FA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1C1C1E),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isEn
+                            ? 'Registration Fee'
+                            : 'Yuran Pendaftaran',
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280)),
+                      ),
+                      Text(
+                        'RM ${fee.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A237E),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              isEn
+                  ? 'This action cannot be undone once payment is completed.'
+                  : 'Tindakan ini tidak boleh dibatalkan setelah pembayaran selesai.',
+              style: const TextStyle(
+                  fontSize: 11, color: Color(0xFF9CA3AF)),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(
+              isEn ? 'Cancel' : 'Batal',
+              style: const TextStyle(color: Color(0xFF6B7280)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFC8102E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(
+              isEn ? 'Confirm & Pay' : 'Sahkan & Bayar',
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      ctrl.initiateStripePayment(
+        eventId: event.eventId,
+        feeInRinggit: fee,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final fee = event.registrationFee;
@@ -677,14 +803,14 @@ class _PaymentStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        // FIX 3 — tapping this shows the confirmation dialog first.
         _PrimaryButton(
           label: ctrl.isLoading
               ? (isEn ? 'Processing...' : 'Memproses...')
               : '${isEn ? 'Pay with Stripe' : 'Bayar dengan Stripe'} — RM ${fee.toStringAsFixed(2)}',
           isLoading: ctrl.isLoading,
           icon: Icons.credit_card,
-          onPressed: () =>
-              ctrl.initiateStripePayment(eventId: event.eventId),
+          onPressed: () => _confirmAndPay(context),
         ),
       ],
     );

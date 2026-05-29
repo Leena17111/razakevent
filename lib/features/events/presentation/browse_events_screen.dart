@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shimmer/shimmer.dart';
@@ -9,8 +11,6 @@ import '../../../core/routes/app_routes.dart';
 import '../../../data/models/event_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../logic/event_browse_controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class BrowseEventsScreen extends StatefulWidget {
   const BrowseEventsScreen({super.key});
@@ -25,6 +25,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   final TextEditingController _searchController = TextEditingController();
   late EventBrowseController _controller;
 
+  // Cache of eventIds the current user has already registered for.
+  Set<String> _registeredEventIds = {};
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,23 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     _controller.loadEvents();
     _searchController.addListener(() {
       _controller.setSearchQuery(_searchController.text);
+    });
+    _loadRegisteredEventIds();
+  }
+
+  /// Fetches all eventIds the current user has registered for so we can
+  /// disable the "Details" button / show a badge on already-registered events.
+  Future<void> _loadRegisteredEventIds() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    final snap = await FirebaseFirestore.instance
+        .collection('eventRegistrations')
+        .where('userId', isEqualTo: uid)
+        .get();
+    if (!mounted) return;
+    setState(() {
+      _registeredEventIds =
+          snap.docs.map((d) => d.data()['eventId'] as String).toSet();
     });
   }
 
@@ -206,6 +226,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
+  // FIX 2 ── Tab bar: both selected and unselected labels are white;
+  // the active tab gets a white pill background with primary-coloured text.
   Widget _buildTabBar(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
@@ -215,16 +237,20 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       padding: const EdgeInsets.all(2),
       child: TabBar(
         controller: _tabController,
+        // White pill for the active tab
         indicator: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
         ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        // Active label: primary colour (readable on white pill)
         labelColor: AppColors.primary,
-        unselectedLabelColor: Colors.white,
         labelStyle:
             const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        // Inactive label: white (readable on translucent dark background)
+        unselectedLabelColor: Colors.white,
         unselectedLabelStyle: const TextStyle(fontSize: 11),
-        dividerColor: Colors.transparent,
         tabs: [
           Tab(text: l10n.browseTab),
           Tab(text: l10n.myRegisteredTab),
@@ -358,7 +384,10 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     if (controller.filteredEvents.isEmpty) return _buildEmptyState(l10n);
 
     return RefreshIndicator(
-      onRefresh: controller.loadEvents,
+      onRefresh: () async {
+        await controller.loadEvents();
+        await _loadRegisteredEventIds();
+      },
       color: AppColors.primary,
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),
@@ -388,8 +417,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     }
 
     return StreamBuilder<QuerySnapshot>(
-      // FIX: Removed .orderBy('registeredAt') to avoid requiring a composite
-      // Firestore index. Sorting is done client-side below instead.
       stream: FirebaseFirestore.instance
           .collection('eventRegistrations')
           .where('userId', isEqualTo: uid)
@@ -438,7 +465,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           );
         }
 
-        // FIX: Client-side sort by registeredAt descending.
         final registrations = List<QueryDocumentSnapshot>.from(
           regSnapshot.data!.docs,
         )..sort((a, b) {
@@ -497,7 +523,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               );
             }
 
-            // Preserve order from registrations list.
             final eventMap = {for (final e in events) e.eventId: e};
             final orderedEvents = eventIds
                 .map((id) => eventMap[id])
@@ -533,13 +558,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // FIX: Removed the bad cast `d as DocumentSnapshot<Map<String, dynamic>>`.
-  // QueryDocumentSnapshot from a collection query is already compatible with
-  // EventModel.fromFirestore — just pass `d` directly.
   Stream<List<EventModel>> _streamEventsByIds(List<String> eventIds) {
     if (eventIds.isEmpty) return Stream.value([]);
 
-    // Firestore `whereIn` supports max 10 items per query, so chunk them.
     final chunks = <List<String>>[];
     for (var i = 0; i < eventIds.length; i += 10) {
       final end = (i + 10 > eventIds.length) ? eventIds.length : i + 10;
@@ -562,7 +583,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
 
     if (streams.length == 1) return streams.first;
 
-    // Merge multiple chunk streams into one combined list.
     return streams.fold<Stream<List<EventModel>>>(
       streams.first,
       (combined, next) => combined.asyncMap((a) async {
@@ -605,7 +625,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Poster ────────────────────────────────────────────────────────
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
@@ -667,7 +686,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 ),
               ),
             ),
-            // ── Body ──────────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -775,6 +793,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     final categoryColor = _getCategoryColor(event.category);
     final isFree = event.registrationFee == 0;
 
+    // FIX 1 ── Check if the current user is already registered for this event.
+    final alreadyRegistered = _registeredEventIds.contains(event.eventId);
+
     return GestureDetector(
       onTap: () => Navigator.pushNamed(
         context,
@@ -798,8 +819,10 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCardImage(
-                event, isFull, isFree, remaining, categoryColor, l10n),
-            _buildCardBody(event, progress, isFree, l10n),
+                event, isFull, isFree, remaining, categoryColor, l10n,
+                alreadyRegistered: alreadyRegistered),
+            _buildCardBody(event, progress, isFree, l10n,
+                alreadyRegistered: alreadyRegistered),
           ],
         ),
       ),
@@ -814,8 +837,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     bool isFree,
     int remaining,
     Map<String, Color> categoryColor,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    bool alreadyRegistered = false,
+  }) {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       child: SizedBox(
@@ -862,7 +886,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 ),
               ),
             ),
-            if (isFree)
+            // FIX 1 ── Show "Registered" badge instead of Free/slots badge
+            // when the user has already registered.
+            if (alreadyRegistered)
               Positioned(
                 top: 8,
                 right: 8,
@@ -873,8 +899,62 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     color: Colors.green.shade600,
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check_circle,
+                          size: 10, color: Colors.white),
+                      const SizedBox(width: 3),
+                      Text(
+                        l10n.registeredLabel,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else ...[
+              if (isFree)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade600,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      l10n.freeEvent,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: isFull
+                        ? Colors.red.withOpacity(0.9)
+                        : Colors.green.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Text(
-                    l10n.freeEvent,
+                    isFull
+                        ? l10n.eventFull
+                        : '$remaining ${l10n.slotsLeft}',
                     style: const TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -883,30 +963,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   ),
                 ),
               ),
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isFull
-                      ? Colors.red.withOpacity(0.9)
-                      : Colors.green.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  isFull
-                      ? l10n.eventFull
-                      : '$remaining ${l10n.slotsLeft}',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            ],
           ],
         ),
       ),
@@ -978,8 +1035,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     EventModel event,
     double progress,
     bool isFree,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    bool alreadyRegistered = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -1087,25 +1145,54 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 )
               else
                 const SizedBox(),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.eventDetail,
-                  arguments: event,
-                ),
-                child: Row(children: [
-                  Text(
-                    l10n.detailsButton,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+              // FIX 1 ── Show "Already Registered" label instead of Details
+              // when the user has already registered for this event.
+              if (alreadyRegistered)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.shade300),
                   ),
-                  Icon(Icons.chevron_right,
-                      size: 14, color: AppColors.primary),
-                ]),
-              ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check_circle_outline,
+                          size: 11, color: Colors.green.shade700),
+                      const SizedBox(width: 4),
+                      Text(
+                        l10n.registeredLabel,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.eventDetail,
+                    arguments: event,
+                  ),
+                  child: Row(children: [
+                    Text(
+                      l10n.detailsButton,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    Icon(Icons.chevron_right,
+                        size: 14, color: AppColors.primary),
+                  ]),
+                ),
             ],
           ),
         ],

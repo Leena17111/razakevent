@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart'; // Stripe: initialize before runApp
 import 'core/constants/app_colors.dart';
 import 'core/localization/locale_controller.dart';
 import 'core/routes/app_routes.dart';
@@ -31,6 +32,14 @@ import 'features/events/presentation/event_registration_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Stripe: only initialize on mobile — flutter_stripe does not support web.
+  // On web, the payment button will show a message directing users to the app.
+  if (!kIsWeb) {
+    Stripe.publishableKey = 'pk_test_51Ta6LqJCG09jyIk1UrF7IMTwCppku8SkbAbE9kspuX1jCTVUZe4JviBF95E0ilZQ9heGKSmk8AQiuJZlBOaB2QoB00qJkpXxyd';
+    await Stripe.instance.applySettings();
+  }
+
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
