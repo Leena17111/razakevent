@@ -280,4 +280,23 @@
   "registeredLabel": "Didaftarkan",
   "registeredOn": "Didaftarkan pada",
   "paid": "Dibayar"
+
+
+
+  ,
+"volunteerPositions": "Jawatan Sukarelawan",
+"openPositions": "Jawatan Dibuka",
+"myApplications": "Permohonan Saya",
+"applyForPosition": "Mohon Jawatan",
+"fullName": "Nama Penuh",
+"phone": "Telefon",
+"faculty": "Fakulti",
+"selectFaculty": "Pilih fakulti",
+"previousExperience": "Pengalaman Terdahulu",
+"submitApplication": "Hantar Permohonan",
+"cancel": "Batal",
+"confirmAvailability": "Saya mengesahkan ketersediaan saya untuk jawatan sukarelawan ini",
+"noOpenPositions": "Tiada jawatan dibuka",
+"noApplicationsYet": "Tiada permohonan lagi",
+"applicationSubmittedSuccessfully": "Permohonan berjaya dihantar."
 }

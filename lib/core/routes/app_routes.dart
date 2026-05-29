@@ -59,4 +59,5 @@ class AppRoutes {
   static const String volunteerManagement = '/volunteer/management';
   static const String addVolunteerPosition = '/volunteer/add-position';
   static const String reviewApplications = '/volunteer/review-applications';
+  static const String studentVolunteerPositions = '/student-volunteer-positions';
 }

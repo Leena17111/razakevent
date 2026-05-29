@@ -280,4 +280,22 @@
   "registeredLabel": "Registered",
   "registeredOn": "Registered on",
   "paid": "Paid"
+
+
+  ,
+"volunteerPositions": "Volunteer Positions",
+"openPositions": "Open Positions",
+"myApplications": "My Applications",
+"applyForPosition": "Apply for Position",
+"fullName": "Full Name",
+"phone": "Phone",
+"faculty": "Faculty",
+"selectFaculty": "Select faculty",
+"previousExperience": "Previous Experience",
+"submitApplication": "Submit Application",
+"cancel": "Cancel",
+"confirmAvailability": "I confirm my availability for this volunteer position",
+"noOpenPositions": "No open positions",
+"noApplicationsYet": "No applications yet",
+"applicationSubmittedSuccessfully": "Application submitted successfully."
 }

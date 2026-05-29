@@ -29,6 +29,7 @@ import 'l10n/app_localizations.dart';
 import 'features/events/presentation/event_detail_screen.dart';
 import 'features/volunteer/presentation/volunteer_event_select_screen.dart';
 import 'features/events/presentation/event_registration_screen.dart';
+import 'features/volunteer/presentation/student_volunteer_positions_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -122,7 +123,7 @@ class RazakEventApp extends StatelessWidget {
             // Sprint 3 — Epic 2: Volunteer Recruitment Module
 
             // Student Volunteer
-            AppRoutes.volunteerPositions:      (_) => const Scaffold(body: Center(child: Text('Volunteer Positions'))),
+          AppRoutes.volunteerPositions: (_) => const StudentVolunteerPositionsScreen(),
             AppRoutes.applyVolunteer:          (_) => const Scaffold(body: Center(child: Text('Apply Volunteer'))),
             AppRoutes.myVolunteerApplications: (_) => const Scaffold(body: Center(child: Text('My Volunteer Applications'))),
 
@@ -136,6 +137,7 @@ class RazakEventApp extends StatelessWidget {
 
             AppRoutes.reviewApplications: (_) =>
                 const VolunteerEventSelectScreen(mode: 'review'),
+                AppRoutes.studentVolunteerPositions: (_) => const StudentVolunteerPositionsScreen(),
           },
         );
       },
