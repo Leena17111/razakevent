@@ -2,28 +2,187 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/locale_controller.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../data/models/event_model.dart';
 import '../../../l10n/app_localizations.dart';
 
-class EventDetailScreen extends StatelessWidget {
-  const EventDetailScreen({super.key});
+// ─────────────────────────────────────────────────────────────────────────────
+// Full-screen zoomable image viewer
+// ─────────────────────────────────────────────────────────────────────────────
+
+void _showFullScreenImage(BuildContext context, String imageUrl) {
+  if (imageUrl.trim().isEmpty) return;
+  Navigator.of(context).push(
+    PageRouteBuilder<void>(
+      opaque: false,
+      barrierColor: Colors.black87,
+      pageBuilder: (_, __, ___) =>
+          _FullScreenImageViewer(imageUrl: imageUrl.trim()),
+      transitionsBuilder: (_, animation, __, child) =>
+          FadeTransition(opacity: animation, child: child),
+    ),
+  );
+}
+
+class _FullScreenImageViewer extends StatefulWidget {
+  final String imageUrl;
+  const _FullScreenImageViewer({required this.imageUrl});
+
+  @override
+  State<_FullScreenImageViewer> createState() =>
+      _FullScreenImageViewerState();
+}
+
+class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
+  final TransformationController _transformController =
+      TransformationController();
+
+  @override
+  void dispose() {
+    _transformController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final event =
-        ModalRoute.of(context)!.settings.arguments as EventModel;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Tap background to dismiss
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(color: Colors.black87),
+          ),
+          // Zoomable image
+          Center(
+            child: InteractiveViewer(
+              transformationController: _transformController,
+              minScale: 0.8,
+              maxScale: 5.0,
+              child: Image.network(
+                widget.imageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.broken_image_outlined,
+                  color: Colors.white54,
+                  size: 64,
+                ),
+              ),
+            ),
+          ),
+          // Close button (top-right)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            right: 12,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child:
+                    const Icon(Icons.close, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+          // Double-tap to reset hint (bottom)
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 16,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onDoubleTap: () =>
+                    _transformController.value = Matrix4.identity(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Pinch to zoom  •  Double-tap to reset',
+                    style:
+                        TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EventDetailScreen
+// ─────────────────────────────────────────────────────────────────────────────
+
+class EventDetailScreen extends StatefulWidget {
+  const EventDetailScreen({super.key});
+
+  @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  bool _alreadyRegistered = false;
+  bool _checkingRegistration = true;
+  late EventModel _event;
+  bool _eventLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_eventLoaded) {
+      _event =
+          ModalRoute.of(context)!.settings.arguments as EventModel;
+      _eventLoaded = true;
+      _checkAlreadyRegistered();
+    }
+  }
+
+  Future<void> _checkAlreadyRegistered() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() => _checkingRegistration = false);
+      return;
+    }
+    final snap = await FirebaseFirestore.instance
+        .collection('eventRegistrations')
+        .where('eventId', isEqualTo: _event.eventId)
+        .where('userId', isEqualTo: uid)
+        .limit(1)
+        .get();
+    if (mounted) {
+      setState(() {
+        _alreadyRegistered = snap.docs.isNotEmpty;
+        _checkingRegistration = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isBM = Localizations.localeOf(context).languageCode == 'ms';
-    final categoryColor = _getCategoryColor(event.category);
-    final isFull = event.participantCapacity != null &&
-        event.registeredCount >= event.participantCapacity!;
-    final isDeadlinePassed = event.registrationDeadline != null &&
-        event.registrationDeadline!.isBefore(DateTime.now());
+    final categoryColor = _getCategoryColor(_event.category);
+    final isFull = _event.participantCapacity != null &&
+        _event.registeredCount >= _event.participantCapacity!;
+    final isDeadlinePassed = _event.registrationDeadline != null &&
+        _event.registrationDeadline!.isBefore(DateTime.now());
     final canRegister = !isFull && !isDeadlinePassed;
-    final isFree = event.registrationFee == 0;
+    final isFree = _event.registrationFee == 0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
@@ -32,24 +191,24 @@ class EventDetailScreen extends StatelessWidget {
           CustomScrollView(
             slivers: [
               _buildSliverAppBar(
-                  context, event, l10n, isBM, categoryColor),
+                  context, _event, l10n, isBM, categoryColor),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildInfoCard(event, l10n)
+                      _buildInfoCard(_event, l10n)
                           .animate()
                           .fadeIn(delay: 100.ms)
                           .slideY(begin: 0.1),
                       const SizedBox(height: 14),
-                      _buildAboutCard(event, l10n)
+                      _buildAboutCard(_event, l10n)
                           .animate()
                           .fadeIn(delay: 200.ms)
                           .slideY(begin: 0.1),
                       const SizedBox(height: 14),
-                      _buildFeeCard(event, l10n, isFull,
+                      _buildFeeCard(_event, l10n, isFull,
                               isDeadlinePassed, isFree)
                           .animate()
                           .fadeIn(delay: 300.ms)
@@ -64,7 +223,7 @@ class EventDetailScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: _buildRegisterButton(context, event, l10n,
+            child: _buildRegisterButton(context, _event, l10n,
                     canRegister, isFull, isDeadlinePassed)
                 .animate()
                 .fadeIn(delay: 400.ms)
@@ -75,7 +234,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── Sliver App Bar ────────────────────────────────────────────────────────────
+  // ── Sliver App Bar ──────────────────────────────────────────────────────────
 
   Widget _buildSliverAppBar(
     BuildContext context,
@@ -118,21 +277,28 @@ class EventDetailScreen extends StatelessWidget {
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.pin,
+        // FIX 1 — CollapseMode.none stops FlexibleSpaceBar from
+        // intercepting touch events meant for the poster GestureDetector.
+        collapseMode: CollapseMode.none,
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Poster: Hero wraps only the image, not the entire stack ──
-            // FIX: alignment topCenter so portrait posters crop from the
-            // bottom instead of slicing through the middle of the subject.
-            Hero(
-              tag: 'event-poster-${event.eventId}',
+            // FIX 2 — onTapUp is more reliable than onTap inside a
+            // CustomScrollView because it wins the gesture arena before
+            // the scroll view can claim a drag. HitTestBehavior.opaque
+            // ensures the full poster area is always hittable.
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapUp: (_) {
+                final url = event.posterUrl.trim();
+                if (url.isNotEmpty) {
+                  _showFullScreenImage(context, url);
+                }
+              },
               child: _buildPosterImage(event),
             ),
 
-            // ── Gradient: bottom-heavy so it darkens just the text zone ──
-            // FIX: reduced opacity (0.7 → 0.55) and starts later (0.45)
-            // so it doesn't wash the whole image in darkness.
+            // Gradient overlay
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -147,7 +313,35 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
 
-            // ── Category + title at bottom ──
+            // "Tap to zoom" hint badge
+            if (event.posterUrl.trim().isNotEmpty)
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.zoom_in,
+                          color: Colors.white70, size: 13),
+                      SizedBox(width: 4),
+                      Text(
+                        'Tap to zoom',
+                        style: TextStyle(
+                            color: Colors.white70, fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Category + title at bottom
             Positioned(
               bottom: 16,
               left: 16,
@@ -189,11 +383,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── Poster ────────────────────────────────────────────────────────────────────
-  // FIX: alignment: Alignment.topCenter — crops from the bottom of portrait
-  // posters rather than the center, keeping faces and titles visible.
-  // The image now fills its parent via width/height: double.infinity so
-  // StackFit.expand on the parent doesn't need to stretch it unnaturally.
+  // ── Poster ──────────────────────────────────────────────────────────────────
 
   Widget _buildPosterImage(EventModel event) {
     final url = event.posterUrl.trim();
@@ -201,7 +391,7 @@ class EventDetailScreen extends StatelessWidget {
       return Image.network(
         url,
         fit: BoxFit.cover,
-        alignment: Alignment.topCenter, // ← KEY FIX
+        alignment: Alignment.topCenter,
         width: double.infinity,
         height: double.infinity,
         loadingBuilder: (context, child, loadingProgress) {
@@ -255,7 +445,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── Info Card ─────────────────────────────────────────────────────────────────
+  // ── Info Card ───────────────────────────────────────────────────────────────
 
   Widget _buildInfoCard(EventModel event, AppLocalizations l10n) {
     return Container(
@@ -338,7 +528,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── About Card ────────────────────────────────────────────────────────────────
+  // ── About Card ──────────────────────────────────────────────────────────────
 
   Widget _buildAboutCard(EventModel event, AppLocalizations l10n) {
     return Container(
@@ -378,7 +568,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── Fee Card ──────────────────────────────────────────────────────────────────
+  // ── Fee Card ────────────────────────────────────────────────────────────────
 
   Widget _buildFeeCard(
     EventModel event,
@@ -477,7 +667,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  // ── Register Button ───────────────────────────────────────────────────────────
+  // ── Register Button ─────────────────────────────────────────────────────────
 
   Widget _buildRegisterButton(
     BuildContext context,
@@ -502,41 +692,78 @@ class EventDetailScreen extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 52,
-        child: ElevatedButton(
-          onPressed: canRegister
-              ? () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.registerEvent,
-                    arguments: event,
+        child: _checkingRegistration
+            ? ElevatedButton(
+                onPressed: null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
+                ),
+              )
+            : _alreadyRegistered
+                ? ElevatedButton.icon(
+                    onPressed: null,
+                    icon: const Icon(Icons.check_circle_outline,
+                        size: 18, color: Colors.white),
+                    label: Text(
+                      Localizations.localeOf(context).languageCode ==
+                              'ms'
+                          ? 'Anda sudah mendaftar untuk acara ini'
+                          : 'You are already registered for this event',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green.shade600,
+                      disabledBackgroundColor: Colors.green.shade600,
+                      disabledForegroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
+                    ),
                   )
-              : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: canRegister
-                ? const Color(0xFFC8102E)
-                : Colors.grey.shade300,
-            foregroundColor: Colors.white,
-            elevation: canRegister ? 4 : 0,
-            shadowColor: const Color(0xFFC8102E).withOpacity(0.4),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
-          ),
-          child: Text(
-            isFull
-                ? l10n.eventFullMessage
-                : isDeadlinePassed
-                    ? l10n.registrationClosed
-                    : l10n.registerNow,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+                : ElevatedButton(
+                    onPressed: canRegister
+                        ? () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.registerEvent,
+                              arguments: event,
+                            )
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: canRegister
+                          ? const Color(0xFFC8102E)
+                          : Colors.grey.shade300,
+                      foregroundColor: Colors.white,
+                      elevation: canRegister ? 4 : 0,
+                      shadowColor:
+                          const Color(0xFFC8102E).withOpacity(0.4),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
+                    ),
+                    child: Text(
+                      isFull
+                          ? l10n.eventFullMessage
+                          : isDeadlinePassed
+                              ? l10n.registrationClosed
+                              : l10n.registerNow,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
       ),
     );
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────────
+  // ── Helpers ─────────────────────────────────────────────────────────────────
 
   Map<String, Color> _getCategoryColor(String category) {
     const colors = {
