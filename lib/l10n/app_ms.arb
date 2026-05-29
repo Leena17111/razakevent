@@ -275,5 +275,9 @@
   "deadlineMustBeBeforeEvent": "Tarikh akhir permohonan mesti sebelum tarikh acara.",
   "failedToSavePosition": "Gagal menyimpan jawatan. Sila cuba lagi.",
   "tryAgain": "Cuba Lagi",
-  "full": "Penuh"
+  "full": "Penuh",
+
+  "registeredLabel": "Didaftarkan",
+  "registeredOn": "Didaftarkan pada",
+  "paid": "Dibayar"
 }

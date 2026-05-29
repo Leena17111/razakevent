@@ -27,6 +27,7 @@ import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'features/events/presentation/event_detail_screen.dart';
 import 'features/volunteer/presentation/volunteer_event_select_screen.dart';
+import 'features/events/presentation/event_registration_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,7 +98,7 @@ class RazakEventApp extends StatelessWidget {
             // Student Event Participation
             AppRoutes.browseEvents:           (_) => const BrowseEventsScreen(),
             AppRoutes.eventDetail: (_) => const EventDetailScreen(),
-            AppRoutes.registerEvent:          (_) => const Scaffold(body: Center(child: Text('Register Event'))),
+            AppRoutes.registerEvent: (_) => const EventRegistrationScreen(),
             AppRoutes.registrationSuccess:    (_) => const Scaffold(body: Center(child: Text('Registration Success'))),
             AppRoutes.myRegisteredEvents:     (_) => const Scaffold(body: Center(child: Text('My Registered Events'))),
 

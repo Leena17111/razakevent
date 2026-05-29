@@ -9,6 +9,8 @@ import '../../../core/routes/app_routes.dart';
 import '../../../data/models/event_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../logic/event_browse_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class BrowseEventsScreen extends StatefulWidget {
   const BrowseEventsScreen({super.key});
@@ -38,6 +40,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -76,8 +79,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           localeController.value = Locale(label == 'EN' ? 'en' : 'ms'),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
           color: isActive ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -117,7 +119,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────────────────
+  // ── Header ──────────────────────────────────────────────────────────────────
 
   Widget _buildHeader(AppLocalizations l10n) {
     return Container(
@@ -136,7 +138,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Back button + Language toggle row ──
           ValueListenableBuilder<Locale>(
             valueListenable: localeController,
             builder: (context, locale, _) {
@@ -177,7 +178,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               );
             },
           ),
-          // ── Title + subtitle ──
           Padding(
             padding: const EdgeInsets.only(left: 16),
             child: Column(
@@ -194,8 +194,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 const SizedBox(height: 4),
                 Text(
                   l10n.browseEventsSubtitle,
-                  style: const TextStyle(
-                      color: Colors.white70, fontSize: 12),
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ).animate().fadeIn(delay: 200.ms),
                 const SizedBox(height: 14),
                 _buildTabBar(l10n),
@@ -234,7 +233,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Search ────────────────────────────────────────────────────────────────────
+  // ── Search ──────────────────────────────────────────────────────────────────
 
   Widget _buildSearchBar(AppLocalizations l10n) {
     return Container(
@@ -255,30 +254,26 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         style: const TextStyle(fontSize: 13),
         decoration: InputDecoration(
           hintText: l10n.searchEvents,
-          hintStyle:
-              const TextStyle(color: Colors.grey, fontSize: 13),
-          prefixIcon:
-              const Icon(Icons.search, size: 20, color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
+          prefixIcon: const Icon(Icons.search, size: 20, color: Colors.grey),
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
             valueListenable: _searchController,
             builder: (context, value, _) {
               if (value.text.isEmpty) return const SizedBox.shrink();
               return GestureDetector(
                 onTap: () => _searchController.clear(),
-                child: const Icon(
-                    Icons.close, size: 18, color: Colors.grey),
+                child: const Icon(Icons.close, size: 18, color: Colors.grey),
               );
             },
           ),
           border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
     ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1);
   }
 
-  // ── Category Filters ──────────────────────────────────────────────────────────
+  // ── Category Filters ────────────────────────────────────────────────────────
 
   Widget _buildCategoryFilters(AppLocalizations l10n) {
     return Consumer<EventBrowseController>(
@@ -304,8 +299,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 4),
                   decoration: BoxDecoration(
-                    color:
-                        isActive ? AppColors.primary : Colors.white,
+                    color: isActive ? AppColors.primary : Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isActive
@@ -315,8 +309,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     boxShadow: isActive
                         ? [
                             BoxShadow(
-                              color:
-                                  AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withOpacity(0.3),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             )
@@ -328,9 +321,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: isActive
-                          ? Colors.white
-                          : Colors.grey.shade600,
+                      color: isActive ? Colors.white : Colors.grey.shade600,
                     ),
                   ),
                 ),
@@ -342,7 +333,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Events List ───────────────────────────────────────────────────────────────
+  // ── Events List ─────────────────────────────────────────────────────────────
 
   Widget _buildEventsList(AppLocalizations l10n) {
     return Consumer<EventBrowseController>(
@@ -361,10 +352,10 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   Widget _buildBrowseTab(
       EventBrowseController controller, AppLocalizations l10n) {
     if (controller.isLoading) return _buildShimmerList();
-    if (controller.error != null)
+    if (controller.error != null) {
       return _buildErrorState(controller, l10n);
-    if (controller.filteredEvents.isEmpty)
-      return _buildEmptyState(l10n);
+    }
+    if (controller.filteredEvents.isEmpty) return _buildEmptyState(l10n);
 
     return RefreshIndicator(
       onRefresh: controller.loadEvents,
@@ -383,38 +374,394 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
+  // ── Registered Tab ──────────────────────────────────────────────────────────
+
   Widget _buildRegisteredTab(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.event_available_outlined,
-                  size: 56, color: Colors.grey.shade300)
-              .animate()
-              .fadeIn()
-              .scale(),
-          const SizedBox(height: 12),
-          Text(
-            l10n.noRegisteredEvents,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      return Center(
+        child: Text(
+          l10n.noRegisteredEvents,
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+        ),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      // FIX: Removed .orderBy('registeredAt') to avoid requiring a composite
+      // Firestore index. Sorting is done client-side below instead.
+      stream: FirebaseFirestore.instance
+          .collection('eventRegistrations')
+          .where('userId', isEqualTo: uid)
+          .snapshots(),
+      builder: (context, regSnapshot) {
+        if (regSnapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerList();
+        }
+
+        if (regSnapshot.hasError) {
+          return Center(
+            child: Text(
+              l10n.errorLoadingEvents,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.noRegisteredEventsDesc,
-            style: TextStyle(
-                fontSize: 12, color: Colors.grey.shade500),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          );
+        }
+
+        if (!regSnapshot.hasData || regSnapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.event_available_outlined,
+                        size: 56, color: Colors.grey.shade300)
+                    .animate()
+                    .fadeIn()
+                    .scale(),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.noRegisteredEvents,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.noRegisteredEventsDesc,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        // FIX: Client-side sort by registeredAt descending.
+        final registrations = List<QueryDocumentSnapshot>.from(
+          regSnapshot.data!.docs,
+        )..sort((a, b) {
+            final aData = a.data() as Map<String, dynamic>;
+            final bData = b.data() as Map<String, dynamic>;
+            final aTime =
+                (aData['registeredAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+                    0;
+            final bTime =
+                (bData['registeredAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+                    0;
+            return bTime.compareTo(aTime);
+          });
+
+        final eventIds = registrations
+            .map((d) =>
+                (d.data() as Map<String, dynamic>)['eventId'] as String?)
+            .whereType<String>()
+            .toList();
+
+        if (eventIds.isEmpty) {
+          return Center(
+            child: Text(
+              l10n.noRegisteredEvents,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+            ),
+          );
+        }
+
+        return StreamBuilder<List<EventModel>>(
+          stream: _streamEventsByIds(eventIds),
+          builder: (context, eventSnapshot) {
+            if (eventSnapshot.connectionState == ConnectionState.waiting) {
+              return _buildShimmerList();
+            }
+
+            if (eventSnapshot.hasError) {
+              return Center(
+                child: Text(
+                  l10n.errorLoadingEvents,
+                  style:
+                      TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
+              );
+            }
+
+            final events = eventSnapshot.data ?? [];
+
+            if (events.isEmpty) {
+              return Center(
+                child: Text(
+                  l10n.noRegisteredEvents,
+                  style:
+                      TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                ),
+              );
+            }
+
+            // Preserve order from registrations list.
+            final eventMap = {for (final e in events) e.eventId: e};
+            final orderedEvents = eventIds
+                .map((id) => eventMap[id])
+                .whereType<EventModel>()
+                .toList();
+
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),
+              itemCount: orderedEvents.length,
+              itemBuilder: (context, index) {
+                final event = orderedEvents[index];
+                final reg = registrations.firstWhere(
+                  (d) =>
+                      (d.data() as Map<String, dynamic>)['eventId'] ==
+                      event.eventId,
+                );
+                final regData = reg.data() as Map<String, dynamic>;
+                final paymentStatus =
+                    regData['paymentStatus'] as String? ?? 'free';
+                final registeredAt =
+                    (regData['registeredAt'] as Timestamp?)?.toDate();
+
+                return _buildRegisteredCard(
+                        event, paymentStatus, registeredAt, l10n, index)
+                    .animate()
+                    .fadeIn(delay: (index * 60).ms, duration: 400.ms)
+                    .slideY(begin: 0.15, curve: Curves.easeOut);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // FIX: Removed the bad cast `d as DocumentSnapshot<Map<String, dynamic>>`.
+  // QueryDocumentSnapshot from a collection query is already compatible with
+  // EventModel.fromFirestore — just pass `d` directly.
+  Stream<List<EventModel>> _streamEventsByIds(List<String> eventIds) {
+    if (eventIds.isEmpty) return Stream.value([]);
+
+    // Firestore `whereIn` supports max 10 items per query, so chunk them.
+    final chunks = <List<String>>[];
+    for (var i = 0; i < eventIds.length; i += 10) {
+      final end = (i + 10 > eventIds.length) ? eventIds.length : i + 10;
+      chunks.add(eventIds.sublist(i, end));
+    }
+
+    final streams = chunks
+        .map(
+          (chunk) => FirebaseFirestore.instance
+              .collection('events')
+              .where(FieldPath.documentId, whereIn: chunk)
+              .snapshots()
+              .map(
+                (snap) => snap.docs
+                    .map((d) => EventModel.fromFirestore(d))
+                    .toList(),
+              ),
+        )
+        .toList();
+
+    if (streams.length == 1) return streams.first;
+
+    // Merge multiple chunk streams into one combined list.
+    return streams.fold<Stream<List<EventModel>>>(
+      streams.first,
+      (combined, next) => combined.asyncMap((a) async {
+        final b = await next.first;
+        return [...a, ...b];
+      }),
+    );
+  }
+
+  Widget _buildRegisteredCard(
+    EventModel event,
+    String paymentStatus,
+    DateTime? registeredAt,
+    AppLocalizations l10n,
+    int index,
+  ) {
+    final isFree = event.registrationFee == 0;
+    final isPaid = paymentStatus == 'paid';
+    final categoryColor = _getCategoryColor(event.category);
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRoutes.eventDetail,
+        arguments: event,
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1A237E).withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Poster ────────────────────────────────────────────────────────
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: SizedBox(
+                height: 140,
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    Positioned.fill(child: _buildPosterImage(event)),
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: categoryColor['bg'],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          event.category,
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: categoryColor['text'],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade600,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.check_circle,
+                                size: 10, color: Colors.white),
+                            const SizedBox(width: 3),
+                            Text(
+                              l10n.registeredLabel,
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // ── Body ──────────────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1C1C1E),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    event.organizationName,
+                    style:
+                        TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(children: [
+                    Icon(Icons.calendar_today_outlined,
+                        size: 11, color: Colors.grey.shade500),
+                    const SizedBox(width: 4),
+                    Text(
+                      DateFormat('d MMM yyyy • h:mm a')
+                          .format(event.eventDateTime),
+                      style: TextStyle(
+                          fontSize: 10, color: Colors.grey.shade500),
+                    ),
+                  ]),
+                  const SizedBox(height: 3),
+                  Row(children: [
+                    Icon(Icons.location_on_outlined,
+                        size: 11, color: Colors.grey.shade500),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        event.venue,
+                        style: TextStyle(
+                            fontSize: 10, color: Colors.grey.shade500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: isFree
+                              ? const Color(0xFFDBEAFE)
+                              : const Color(0xFFDCFCE7),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          isFree
+                              ? l10n.freeEvent
+                              : isPaid
+                                  ? l10n.paid
+                                  : 'RM ${event.registrationFee.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: isFree
+                                ? const Color(0xFF1D4ED8)
+                                : const Color(0xFF15803D),
+                          ),
+                        ),
+                      ),
+                      if (registeredAt != null)
+                        Text(
+                          '${l10n.registeredOn} ${DateFormat('d MMM yyyy').format(registeredAt)}',
+                          style: TextStyle(
+                              fontSize: 10, color: Colors.grey.shade400),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // ── Event Card ────────────────────────────────────────────────────────────────
+  // ── Event Card ──────────────────────────────────────────────────────────────
 
   Widget _buildEventCard(
     EventModel event,
@@ -459,7 +806,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Card Image ────────────────────────────────────────────────────────────────
+  // ── Card Image ──────────────────────────────────────────────────────────────
 
   Widget _buildCardImage(
     EventModel event,
@@ -470,16 +817,13 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     AppLocalizations l10n,
   ) {
     return ClipRRect(
-      borderRadius:
-          const BorderRadius.vertical(top: Radius.circular(16)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       child: SizedBox(
-        height: 200, // ── TALLER POSTER ──
+        height: 200,
         width: double.infinity,
         child: Stack(
           children: [
-            Positioned.fill(
-              child: _buildPosterImage(event),
-            ),
+            Positioned.fill(child: _buildPosterImage(event)),
             Positioned(
               bottom: 0,
               left: 0,
@@ -569,7 +913,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Poster ────────────────────────────────────────────────────────────────────
+  // ── Poster ──────────────────────────────────────────────────────────────────
 
   Widget _buildPosterImage(EventModel event) {
     final url = event.posterUrl.trim();
@@ -592,8 +936,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             ),
           );
         },
-        errorBuilder: (context, error, stackTrace) =>
-            _posterPlaceholder(),
+        errorBuilder: (context, error, stackTrace) => _posterPlaceholder(),
       );
     }
     return _posterPlaceholder();
@@ -617,21 +960,19 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.image_outlined,
-              size: 36,
-              color: AppColors.primary.withOpacity(0.3)),
+              size: 36, color: AppColors.primary.withOpacity(0.3)),
           const SizedBox(height: 4),
           Text(
             'No poster',
             style: TextStyle(
-                fontSize: 10,
-                color: AppColors.primary.withOpacity(0.3)),
+                fontSize: 10, color: AppColors.primary.withOpacity(0.3)),
           ),
         ],
       ),
     );
   }
 
-  // ── Card Body ─────────────────────────────────────────────────────────────────
+  // ── Card Body ────────────────────────────────────────────────────────────────
 
   Widget _buildCardBody(
     EventModel event,
@@ -656,18 +997,15 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           ),
           const SizedBox(height: 2),
           Text(event.organizationName,
-              style: TextStyle(
-                  fontSize: 10, color: Colors.grey.shade500)),
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
           const SizedBox(height: 6),
           Row(children: [
             Icon(Icons.calendar_today_outlined,
                 size: 11, color: Colors.grey.shade500),
             const SizedBox(width: 4),
             Text(
-              DateFormat('d MMM yyyy • h:mm a')
-                  .format(event.eventDateTime),
-              style: TextStyle(
-                  fontSize: 10, color: Colors.grey.shade500),
+              DateFormat('d MMM yyyy • h:mm a').format(event.eventDateTime),
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
             ),
           ]),
           const SizedBox(height: 3),
@@ -678,8 +1016,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             Expanded(
               child: Text(
                 event.venue,
-                style: TextStyle(
-                    fontSize: 10, color: Colors.grey.shade500),
+                style:
+                    TextStyle(fontSize: 10, color: Colors.grey.shade500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -692,8 +1030,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               children: [
                 Text(
                   '${event.registeredCount} / ${event.participantCapacity} ${l10n.registeredCount}',
-                  style: TextStyle(
-                      fontSize: 10, color: Colors.grey.shade500),
+                  style:
+                      TextStyle(fontSize: 10, color: Colors.grey.shade500),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -775,7 +1113,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── States ────────────────────────────────────────────────────────────────────
+  // ── States ──────────────────────────────────────────────────────────────────
 
   Widget _buildShimmerList() {
     return ListView.builder(
@@ -792,11 +1130,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           ),
           child: Column(children: [
             Container(
-              height: 200, // ── TALLER SHIMMER ──
+              height: 200,
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(16)),
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(16)),
               ),
             ),
             Padding(
@@ -809,8 +1147,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                       width: double.infinity,
                       color: Colors.white),
                   const SizedBox(height: 6),
-                  Container(
-                      height: 10, width: 120, color: Colors.white),
+                  Container(height: 10, width: 120, color: Colors.white),
                   const SizedBox(height: 8),
                   Container(
                       height: 10,
@@ -841,20 +1178,19 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               .fadeIn()
               .scale(begin: const Offset(0.8, 0.8)),
           const SizedBox(height: 12),
-          Text(l10n.noEventsAvailable,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade600,
-                  ))
-              .animate()
-              .fadeIn(delay: 100.ms),
+          Text(
+            l10n.noEventsAvailable,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade600,
+            ),
+          ).animate().fadeIn(delay: 100.ms),
           const SizedBox(height: 4),
-          Text(l10n.noEventsDesc,
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.grey.shade500))
-              .animate()
-              .fadeIn(delay: 150.ms),
+          Text(
+            l10n.noEventsDesc,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          ).animate().fadeIn(delay: 150.ms),
         ],
       ),
     );
@@ -866,15 +1202,15 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.wifi_off_rounded,
-                  size: 56, color: Colors.grey.shade300)
+          Icon(Icons.wifi_off_rounded, size: 56, color: Colors.grey.shade300)
               .animate()
               .fadeIn()
               .shake(),
           const SizedBox(height: 12),
-          Text(l10n.errorLoadingEvents,
-              style: TextStyle(
-                  fontSize: 13, color: Colors.grey.shade600)),
+          Text(
+            l10n.errorLoadingEvents,
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+          ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: controller.loadEvents,
@@ -892,14 +1228,13 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Bottom Nav ────────────────────────────────────────────────────────────────
+  // ── Bottom Nav ──────────────────────────────────────────────────────────────
 
   Widget _buildBottomNav(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border:
-            Border(top: BorderSide(color: Colors.grey.shade200)),
+        border: Border(top: BorderSide(color: Colors.grey.shade200)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -926,8 +1261,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 Icons.person_outline,
                 l10n.navProfile,
                 false,
-                () =>
-                    Navigator.pushNamed(context, AppRoutes.profile),
+                () => Navigator.pushNamed(context, AppRoutes.profile),
               ),
             ],
           ),
@@ -945,18 +1279,16 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         children: [
           Icon(icon,
               size: 22,
-              color: isActive
-                  ? AppColors.primary
-                  : Colors.grey.shade400),
+              color: isActive ? AppColors.primary : Colors.grey.shade400),
           const SizedBox(height: 3),
-          Text(label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: isActive
-                    ? AppColors.primary
-                    : Colors.grey.shade400,
-              )),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: isActive ? AppColors.primary : Colors.grey.shade400,
+            ),
+          ),
           if (isActive)
             Container(
               margin: const EdgeInsets.only(top: 3),
@@ -972,44 +1304,26 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────────────────
 
   Map<String, Color> _getCategoryColor(String category) {
     const colors = {
       'Sports': {'bg': Color(0xFFDBEAFE), 'text': Color(0xFF1D4ED8)},
-      'Academic': {
-        'bg': Color(0xFFD1FAE5),
-        'text': Color(0xFF059669)
-      },
-      'Spiritual': {
-        'bg': Color(0xFFE0E7FF),
-        'text': Color(0xFF6366F1)
-      },
-      'Welfare': {
-        'bg': Color(0xFFFCE7F3),
-        'text': Color(0xFFDB2777)
-      },
+      'Academic': {'bg': Color(0xFFD1FAE5), 'text': Color(0xFF059669)},
+      'Spiritual': {'bg': Color(0xFFE0E7FF), 'text': Color(0xFF6366F1)},
+      'Welfare': {'bg': Color(0xFFFCE7F3), 'text': Color(0xFFDB2777)},
       'Entrepreneurship': {
         'bg': Color(0xFFFEF3C7),
         'text': Color(0xFFD97706),
       },
-      'Culture': {
-        'bg': Color(0xFFEDE9FE),
-        'text': Color(0xFF7C3AED)
-      },
+      'Culture': {'bg': Color(0xFFEDE9FE), 'text': Color(0xFF7C3AED)},
       'Arts & Media': {
         'bg': Color(0xFFFFE4E6),
         'text': Color(0xFFE11D48),
       },
       'Food': {'bg': Color(0xFFD1FAE5), 'text': Color(0xFF10B981)},
-      'Safety': {
-        'bg': Color(0xFFFEE2E2),
-        'text': Color(0xFFDC2626)
-      },
-      'Others': {
-        'bg': Color(0xFFF5F6FA),
-        'text': Color(0xFF6B7280)
-      },
+      'Safety': {'bg': Color(0xFFFEE2E2), 'text': Color(0xFFDC2626)},
+      'Others': {'bg': Color(0xFFF5F6FA), 'text': Color(0xFF6B7280)},
     };
     return {
       'bg': colors[category]?['bg'] ?? const Color(0xFFF5F6FA),

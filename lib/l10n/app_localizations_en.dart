@@ -808,4 +808,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get full => 'Full';
+
+  @override
+  String get registeredLabel => 'Registered';
+
+  @override
+  String get registeredOn => 'Registered on';
+
+  @override
+  String get paid => 'Paid';
 }
