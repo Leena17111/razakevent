@@ -858,4 +858,110 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get applicationSubmittedSuccessfully =>
       'Application submitted successfully.';
+
+  @override
+  String get eventFeedback => 'Event Feedback';
+
+  @override
+  String get shareYourExperience => 'Share your experience';
+
+  @override
+  String get pendingFeedback => 'PENDING FEEDBACK';
+
+  @override
+  String get noFeedbackPending => 'No pending feedback';
+
+  @override
+  String get noFeedbackPendingDesc => 'You have no events awaiting feedback.';
+
+  @override
+  String get feedbackFormTitle => 'Event Feedback';
+
+  @override
+  String get builtInQuestionsSection => 'BUILT-IN QUESTIONS';
+
+  @override
+  String get additionalQuestionsSection => 'ADDITIONAL QUESTIONS';
+
+  @override
+  String get commentsAndSuggestions => 'COMMENTS & SUGGESTIONS';
+
+  @override
+  String get commentsHint => 'Tell us more about your experience...';
+
+  @override
+  String get submitFeedback => 'Submit Feedback';
+
+  @override
+  String get feedbackSubmitted => 'Feedback Submitted!';
+
+  @override
+  String get feedbackSubmittedDesc =>
+      'Thank you for your feedback. Your response helps us improve future events.';
+
+  @override
+  String get backToList => 'Back to List';
+
+  @override
+  String get overallSatisfaction => 'Overall Satisfaction';
+
+  @override
+  String get eventOrganization => 'Event Organization';
+
+  @override
+  String get likelihoodToRecommend => 'Likelihood to Recommend';
+
+  @override
+  String get overallExperience => 'Overall Experience';
+
+  @override
+  String get feedbackAlreadySubmitted =>
+      'You have already submitted feedback for this event.';
+
+  @override
+  String get feedbackSubmitError =>
+      'Failed to submit feedback. Please try again.';
+
+  @override
+  String get ratingRequired => 'Please rate all questions before submitting.';
+
+  @override
+  String get registrationsAndFeedback => 'Registrations & Feedback';
+
+  @override
+  String get selectEventToView => 'Select an event to view';
+
+  @override
+  String get noRegistrantsYet => 'No registrants yet';
+
+  @override
+  String get noFeedbackYet => 'No feedback yet';
+
+  @override
+  String get totalRegistrants => 'Total Registrants';
+
+  @override
+  String get totalResponses => 'Total\nResponses';
+
+  @override
+  String get avgRating => 'Avg Rating';
+
+  @override
+  String get responseRate => 'Response\nRate';
+
+  @override
+  String get groqAiSummary => 'Groq AI Summary';
+
+  @override
+  String get groqRefresh => 'Refresh';
+
+  @override
+  String get groqTapToGenerate =>
+      'Tap Refresh to generate an AI summary of the feedback.';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get noEventsFoundOrganizer => 'No events found';
 }

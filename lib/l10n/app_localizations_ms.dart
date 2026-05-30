@@ -862,4 +862,113 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get applicationSubmittedSuccessfully => 'Permohonan berjaya dihantar.';
+
+  @override
+  String get eventFeedback => 'Maklum Balas Acara';
+
+  @override
+  String get shareYourExperience => 'Kongsikan pengalaman anda';
+
+  @override
+  String get pendingFeedback => 'MAKLUM BALAS TERTANGGUH';
+
+  @override
+  String get noFeedbackPending => 'Tiada maklum balas tertangguh';
+
+  @override
+  String get noFeedbackPendingDesc =>
+      'Tiada acara yang memerlukan maklum balas anda.';
+
+  @override
+  String get feedbackFormTitle => 'Maklum Balas Acara';
+
+  @override
+  String get builtInQuestionsSection => 'SOALAN TERBINA';
+
+  @override
+  String get additionalQuestionsSection => 'SOALAN TAMBAHAN';
+
+  @override
+  String get commentsAndSuggestions => 'KOMEN & CADANGAN';
+
+  @override
+  String get commentsHint =>
+      'Ceritakan lebih lanjut tentang pengalaman anda...';
+
+  @override
+  String get submitFeedback => 'Hantar Maklum Balas';
+
+  @override
+  String get feedbackSubmitted => 'Maklum Balas Dihantar!';
+
+  @override
+  String get feedbackSubmittedDesc =>
+      'Terima kasih atas maklum balas anda. Respons anda membantu kami meningkatkan acara masa hadapan.';
+
+  @override
+  String get backToList => 'Kembali ke Senarai';
+
+  @override
+  String get overallSatisfaction => 'Kepuasan Keseluruhan';
+
+  @override
+  String get eventOrganization => 'Organisasi Acara';
+
+  @override
+  String get likelihoodToRecommend => 'Kemungkinan Mengesyorkan';
+
+  @override
+  String get overallExperience => 'Pengalaman Keseluruhan';
+
+  @override
+  String get feedbackAlreadySubmitted =>
+      'Anda telah menghantar maklum balas untuk acara ini.';
+
+  @override
+  String get feedbackSubmitError =>
+      'Gagal menghantar maklum balas. Sila cuba lagi.';
+
+  @override
+  String get ratingRequired =>
+      'Sila beri penilaian untuk semua soalan sebelum menghantar.';
+
+  @override
+  String get registrationsAndFeedback => 'Pendaftaran & Maklum Balas';
+
+  @override
+  String get selectEventToView => 'Pilih acara untuk lihat';
+
+  @override
+  String get noRegistrantsYet => 'Tiada pendaftar lagi';
+
+  @override
+  String get noFeedbackYet => 'Tiada maklum balas lagi';
+
+  @override
+  String get totalRegistrants => 'Jumlah Pendaftar';
+
+  @override
+  String get totalResponses => 'Jumlah\nRespons';
+
+  @override
+  String get avgRating => 'Penilaian Purata';
+
+  @override
+  String get responseRate => 'Kadar\nRespons';
+
+  @override
+  String get groqAiSummary => 'Ringkasan AI Groq';
+
+  @override
+  String get groqRefresh => 'Muat Semula';
+
+  @override
+  String get groqTapToGenerate =>
+      'Ketik Muat Semula untuk jana ringkasan AI maklum balas.';
+
+  @override
+  String get comment => 'Komen';
+
+  @override
+  String get noEventsFoundOrganizer => 'Tiada acara ditemui';
 }

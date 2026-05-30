@@ -655,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: 'Submit event feedback',
                   icon: Icons.rate_review_rounded,
                   color: AppColors.accent,
-                  routeName: AppRoutes.myRegisteredEvents,
+                  routeName: AppRoutes.submitFeedback,
                   isCompact: true,
                 ),
               ),

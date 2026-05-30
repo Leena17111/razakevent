@@ -1735,6 +1735,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Application submitted successfully.'**
   String get applicationSubmittedSuccessfully;
+
+  /// No description provided for @eventFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Feedback'**
+  String get eventFeedback;
+
+  /// No description provided for @shareYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience'**
+  String get shareYourExperience;
+
+  /// No description provided for @pendingFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING FEEDBACK'**
+  String get pendingFeedback;
+
+  /// No description provided for @noFeedbackPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending feedback'**
+  String get noFeedbackPending;
+
+  /// No description provided for @noFeedbackPendingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no events awaiting feedback.'**
+  String get noFeedbackPendingDesc;
+
+  /// No description provided for @feedbackFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Feedback'**
+  String get feedbackFormTitle;
+
+  /// No description provided for @builtInQuestionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'BUILT-IN QUESTIONS'**
+  String get builtInQuestionsSection;
+
+  /// No description provided for @additionalQuestionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'ADDITIONAL QUESTIONS'**
+  String get additionalQuestionsSection;
+
+  /// No description provided for @commentsAndSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'COMMENTS & SUGGESTIONS'**
+  String get commentsAndSuggestions;
+
+  /// No description provided for @commentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more about your experience...'**
+  String get commentsHint;
+
+  /// No description provided for @submitFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Feedback'**
+  String get submitFeedback;
+
+  /// No description provided for @feedbackSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Submitted!'**
+  String get feedbackSubmitted;
+
+  /// No description provided for @feedbackSubmittedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your feedback. Your response helps us improve future events.'**
+  String get feedbackSubmittedDesc;
+
+  /// No description provided for @backToList.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to List'**
+  String get backToList;
+
+  /// No description provided for @overallSatisfaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Satisfaction'**
+  String get overallSatisfaction;
+
+  /// No description provided for @eventOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Organization'**
+  String get eventOrganization;
+
+  /// No description provided for @likelihoodToRecommend.
+  ///
+  /// In en, this message translates to:
+  /// **'Likelihood to Recommend'**
+  String get likelihoodToRecommend;
+
+  /// No description provided for @overallExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Experience'**
+  String get overallExperience;
+
+  /// No description provided for @feedbackAlreadySubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already submitted feedback for this event.'**
+  String get feedbackAlreadySubmitted;
+
+  /// No description provided for @feedbackSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit feedback. Please try again.'**
+  String get feedbackSubmitError;
+
+  /// No description provided for @ratingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate all questions before submitting.'**
+  String get ratingRequired;
+
+  /// No description provided for @registrationsAndFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Registrations & Feedback'**
+  String get registrationsAndFeedback;
+
+  /// No description provided for @selectEventToView.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an event to view'**
+  String get selectEventToView;
+
+  /// No description provided for @noRegistrantsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No registrants yet'**
+  String get noRegistrantsYet;
+
+  /// No description provided for @noFeedbackYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No feedback yet'**
+  String get noFeedbackYet;
+
+  /// No description provided for @totalRegistrants.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Registrants'**
+  String get totalRegistrants;
+
+  /// No description provided for @totalResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total\nResponses'**
+  String get totalResponses;
+
+  /// No description provided for @avgRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Rating'**
+  String get avgRating;
+
+  /// No description provided for @responseRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Response\nRate'**
+  String get responseRate;
+
+  /// No description provided for @groqAiSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Groq AI Summary'**
+  String get groqAiSummary;
+
+  /// No description provided for @groqRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get groqRefresh;
+
+  /// No description provided for @groqTapToGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Refresh to generate an AI summary of the feedback.'**
+  String get groqTapToGenerate;
+
+  /// No description provided for @comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get comment;
+
+  /// No description provided for @noEventsFoundOrganizer.
+  ///
+  /// In en, this message translates to:
+  /// **'No events found'**
+  String get noEventsFoundOrganizer;
 }
 
 class _AppLocalizationsDelegate
