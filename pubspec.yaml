@@ -57,6 +57,7 @@ dependencies:
   # PayPal payment integration
   # flutter_paypal_payment: opens a PayPal/card payment page inside the app.
   # Supports PayPal accounts and direct Visa/Mastercard (no PayPal account needed).
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

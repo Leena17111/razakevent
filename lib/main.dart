@@ -19,6 +19,8 @@ import 'features/documents/presentation/admin_reviewed_documents_screen.dart';
 import 'features/events/presentation/event_details_list_screen.dart';
 import 'features/events/presentation/browse_events_screen.dart';
 import 'features/feedback/presentation/create_feedback_form_screen.dart';
+import 'features/feedback/presentation/organizer_event_select_screen.dart';
+import 'features/feedback/presentation/feedback_list_screen.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/profile/presentation/manage_profile_screen.dart';
 import 'features/documents/presentation/secretary_proposed_events_screen.dart';
@@ -113,10 +115,10 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.myRegisteredEvents:     (_) => const Scaffold(body: Center(child: Text('My Registered Events'))),
 
             // Student Feedback
-            AppRoutes.submitFeedback:         (_) => const Scaffold(body: Center(child: Text('Submit Feedback'))),
+            AppRoutes.submitFeedback:         (_) => const FeedbackListScreen(),
 
             // Organizer Feedback & Registrations
-            AppRoutes.eventResponsesSelect:   (_) => const Scaffold(body: Center(child: Text('Select Event - Responses'))),
+            AppRoutes.eventResponsesSelect:   (_) => const OrganizerEventSelectScreen(),
             AppRoutes.eventRegistrants:       (_) => const Scaffold(body: Center(child: Text('Event Registrants'))),
             AppRoutes.eventFeedbackResponses: (_) => const Scaffold(body: Center(child: Text('Event Feedback Responses'))),
 
