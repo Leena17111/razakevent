@@ -62,11 +62,21 @@ class _StudentVolunteerPositionsScreenState
 
       if (!mounted) return;
 
-      setState(() {
-        _positions = positions;
-        _applications = applications;
-        _isLoading = false;
-      });
+      final appliedPositionIds = applications
+    .map((application) => application.positionId)
+    .toSet();
+
+final availablePositions = positions
+    .where(
+      (position) => !appliedPositionIds.contains(position.positionId),
+    )
+    .toList();
+
+setState(() {
+  _positions = availablePositions;
+  _applications = applications;
+  _isLoading = false;
+});
     } catch (e) {
       if (!mounted) return;
 
@@ -104,10 +114,7 @@ class _StudentVolunteerPositionsScreenState
     }
   }
 
-  void _toggleLanguage() {
-    localeController.toggleLocale();
-    setState(() {});
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -119,17 +126,8 @@ class _StudentVolunteerPositionsScreenState
         title: Text(l10n.volunteerPositions),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        actions: [
-          TextButton(
-            onPressed: _toggleLanguage,
-            child: Text(
-              localeController.value.languageCode == 'en' ? 'BM' : 'EN',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+         actions: [
+          _buildLanguageToggle(),
         ],
       ),
       body: _isLoading
@@ -258,4 +256,50 @@ class _StudentVolunteerPositionsScreenState
       },
     );
   }
+  Widget _buildLanguageToggle() {
+  final isBM = localeController.value.languageCode == 'ms';
+
+  return Container(
+    margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    padding: const EdgeInsets.all(2),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _langButton(isBM, 'EN'),
+        _langButton(isBM, 'BM'),
+      ],
+    ),
+  );
+}
+
+Widget _langButton(bool isBM, String label) {
+  final isActive = (label == 'BM' && isBM) || (label == 'EN' && !isBM);
+
+  return GestureDetector(
+    onTap: () {
+      localeController.value = Locale(label == 'EN' ? 'en' : 'ms');
+      setState(() {});
+    },
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: isActive ? AppColors.primary : Colors.white,
+        ),
+      ),
+    ),
+  );
+}
 }

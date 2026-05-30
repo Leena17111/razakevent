@@ -37,21 +37,27 @@ class VolunteerPositionModel {
     required this.createdAt,
   });
 
-  bool get isFull => approvedCount >= volunteersNeeded;
-  int get availableSlots => volunteersNeeded - approvedCount;
+  int get maxApplications => volunteersNeeded + 5;
+
+bool get isFull => volunteersNeeded > 0 && approvedCount >= volunteersNeeded;
+
+bool get hasReachedApplicationLimit =>
+    totalApplications >= maxApplications;
+
+int get availableSlots => volunteersNeeded - approvedCount;
 
 double get fillRatio {
-  if (volunteersNeeded <= 0) return 0.0;
-  return (approvedCount / volunteersNeeded).clamp(0.0, 1.0);
+  if (maxApplications <= 0) return 0.0;
+  return (totalApplications / maxApplications).clamp(0.0, 1.0);
 }
 
-bool get isOpen => status.toLowerCase() == 'open' && !isFull;
-
-  bool get isAcceptingApplications =>
-    status == 'open' &&
+bool get isOpen =>
+    status.toLowerCase() == 'open' &&
     DateTime.now().isBefore(applicationDeadline) &&
     !isFull &&
-    totalApplications < volunteersNeeded + 5;
+    !hasReachedApplicationLimit;
+
+bool get isAcceptingApplications => isOpen;
 
   factory VolunteerPositionModel.fromMap(
     Map<String, dynamic> map,

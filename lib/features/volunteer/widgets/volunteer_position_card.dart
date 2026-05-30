@@ -62,13 +62,7 @@ class VolunteerPositionCard extends StatelessWidget {
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      Text(
-                        position.organizerId,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 12,
-                          color: AppColors.textMuted,
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ),
@@ -128,38 +122,53 @@ class VolunteerPositionCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              children: [
-                const Icon(
-                  Icons.people_alt_rounded,
-                  size: 15,
-                  color: AppColors.textMuted,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  '${position.approvedCount}/${position.volunteersNeeded} slots',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                const Icon(
-                  Icons.schedule_rounded,
-                  size: 15,
-                  color: AppColors.textMuted,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  DateFormat('d MMM yyyy').format(position.applicationDeadline),
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
+  children: [
+    const Icon(
+      Icons.people_alt_rounded,
+      size: 15,
+      color: AppColors.textMuted,
+    ),
+    const SizedBox(width: 5),
+    Text(
+      '${position.totalApplications}/${position.maxApplications} applications',
+      style: AppTextStyles.caption.copyWith(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+      ),
+    ),
+    const SizedBox(width: 14),
+    const Icon(
+      Icons.volunteer_activism_rounded,
+      size: 15,
+      color: AppColors.textMuted,
+    ),
+    const SizedBox(width: 5),
+    Text(
+      '${position.volunteersNeeded} needed',
+      style: AppTextStyles.caption.copyWith(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+      ),
+    ),
+    const SizedBox(width: 14),
+    const Icon(
+      Icons.schedule_rounded,
+      size: 15,
+      color: AppColors.textMuted,
+    ),
+    const SizedBox(width: 5),
+    Text(
+      DateFormat('d MMM yyyy').format(position.applicationDeadline),
+      style: AppTextStyles.caption.copyWith(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+      ),
+    ),
+  ],
+),
             const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
