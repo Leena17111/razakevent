@@ -1657,6 +1657,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paid'**
   String get paid;
+
+  /// No description provided for @openPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Positions'**
+  String get openPositions;
+
+  /// No description provided for @myApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'My Applications'**
+  String get myApplications;
+
+  /// No description provided for @applyForPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply for Position'**
+  String get applyForPosition;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @faculty.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty'**
+  String get faculty;
+
+  /// No description provided for @selectFaculty.
+  ///
+  /// In en, this message translates to:
+  /// **'Select faculty'**
+  String get selectFaculty;
+
+  /// No description provided for @previousExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Experience'**
+  String get previousExperience;
+
+  /// No description provided for @submitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Application'**
+  String get submitApplication;
+
+  /// No description provided for @confirmAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm my availability for this volunteer position'**
+  String get confirmAvailability;
+
+  /// No description provided for @noOpenPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'No open positions'**
+  String get noOpenPositions;
+
+  /// No description provided for @noApplicationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications yet'**
+  String get noApplicationsYet;
+
+  /// No description provided for @applicationSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Application submitted successfully.'**
+  String get applicationSubmittedSuccessfully;
 }
 
 class _AppLocalizationsDelegate
