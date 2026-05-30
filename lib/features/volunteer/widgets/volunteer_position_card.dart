@@ -1,14 +1,9 @@
-// lib/features/volunteer/presentation/widgets/volunteer_position_card.dart
-//
-// Reusable card widget for a single volunteer position.
-// Matches the Figma design: white rounded card, slot progress bar,
-// status badge, Apply button.
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../data/volunteer_position_model.dart';
+import '../../../data/models/volunteer_position_model.dart';
 
 class VolunteerPositionCard extends StatelessWidget {
   final VolunteerPositionModel position;
@@ -22,6 +17,8 @@ class VolunteerPositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = position.status.toLowerCase();
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -40,7 +37,6 @@ class VolunteerPositionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header row ──────────────────────────────────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -67,7 +63,7 @@ class VolunteerPositionCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        position.organizationName,
+                        position.organizerId,
                         style: AppTextStyles.caption.copyWith(
                           fontSize: 12,
                           color: AppColors.textMuted,
@@ -77,13 +73,13 @@ class VolunteerPositionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                _StatusBadge(status: position.status, isFull: position.isFull),
+                _StatusBadge(
+                  status: position.status,
+                  isFull: position.isFull,
+                ),
               ],
             ),
-
             const SizedBox(height: 12),
-
-            // ── Description ─────────────────────────────────────────────────
             Text(
               position.description,
               maxLines: 3,
@@ -95,10 +91,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 height: 1.45,
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // ── Requirements chip ───────────────────────────────────────────
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -133,10 +126,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // ── Slots + deadline row ────────────────────────────────────────
             Row(
               children: [
                 const Icon(
@@ -146,7 +136,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  '${position.filledSlots}/${position.totalSlots} slots',
+                  '${position.approvedCount}/${position.volunteersNeeded} slots',
                   style: AppTextStyles.caption.copyWith(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
@@ -170,10 +160,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 8),
-
-            // ── Slot progress bar ───────────────────────────────────────────
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
@@ -185,10 +172,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 minHeight: 7,
               ),
             ),
-
             const SizedBox(height: 14),
-
-            // ── Apply button ────────────────────────────────────────────────
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -207,7 +191,7 @@ class VolunteerPositionCard extends StatelessWidget {
                 child: Text(
                   position.isFull
                       ? 'Full'
-                      : position.status == VolunteerPositionStatus.closed
+                      : status == 'closed'
                           ? 'Closed'
                           : 'Apply',
                   style: AppTextStyles.button.copyWith(
@@ -226,26 +210,28 @@ class VolunteerPositionCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Status badge
-// ─────────────────────────────────────────────────────────────────────────────
 class _StatusBadge extends StatelessWidget {
   final String status;
   final bool isFull;
 
-  const _StatusBadge({required this.status, required this.isFull});
+  const _StatusBadge({
+    required this.status,
+    required this.isFull,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final normalizedStatus = status.toLowerCase();
+
     final Color bg;
     final Color textColor;
     final String label;
 
-    if (isFull || status == VolunteerPositionStatus.full) {
+    if (isFull || normalizedStatus == 'full') {
       bg = AppColors.adminBadgeBg;
       textColor = AppColors.adminBadgeText;
       label = 'Full';
-    } else if (status == VolunteerPositionStatus.closed) {
+    } else if (normalizedStatus == 'closed') {
       bg = AppColors.surfaceSoft;
       textColor = AppColors.textMuted;
       label = 'Closed';

@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../data/models/volunteer_application_model.dart';
 import '../../../l10n/app_localizations.dart';
-import '../data/volunteer_application_model.dart';
 
 class VolunteerApplicationStatusCard extends StatefulWidget {
   final VolunteerApplicationModel application;

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/locale_controller.dart';
 import '../../../data/models/user_model.dart';
+import '../../../data/models/volunteer_position_model.dart';
+import '../../../data/repository/volunteer_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../data/volunteer_position_model.dart';
-import '../data/volunteer_repository.dart';
 
 class ApplyVolunteerPositionScreen extends StatefulWidget {
   final VolunteerPositionModel position;
@@ -209,7 +209,7 @@ class _ApplyVolunteerPositionScreenState
           ),
           const SizedBox(height: 4),
           Text(
-            '${widget.position.eventTitle} • ${widget.position.organizationName}',
+            widget.position.eventTitle,
             style: const TextStyle(color: Colors.white70),
           ),
         ],
