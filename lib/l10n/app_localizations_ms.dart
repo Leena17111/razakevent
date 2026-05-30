@@ -822,4 +822,44 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get paid => 'Dibayar';
+
+  @override
+  String get openPositions => 'Jawatan Dibuka';
+
+  @override
+  String get myApplications => 'Permohonan Saya';
+
+  @override
+  String get applyForPosition => 'Mohon Jawatan';
+
+  @override
+  String get fullName => 'Nama Penuh';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get faculty => 'Fakulti';
+
+  @override
+  String get selectFaculty => 'Pilih fakulti';
+
+  @override
+  String get previousExperience => 'Pengalaman Terdahulu';
+
+  @override
+  String get submitApplication => 'Hantar Permohonan';
+
+  @override
+  String get confirmAvailability =>
+      'Saya mengesahkan ketersediaan saya untuk jawatan sukarelawan ini';
+
+  @override
+  String get noOpenPositions => 'Tiada jawatan dibuka';
+
+  @override
+  String get noApplicationsYet => 'Tiada permohonan lagi';
+
+  @override
+  String get applicationSubmittedSuccessfully => 'Permohonan berjaya dihantar.';
 }

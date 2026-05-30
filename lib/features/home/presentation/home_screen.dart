@@ -667,7 +667,7 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: 'Apply for volunteer roles',
           icon: Icons.groups_rounded,
           color: AppColors.communityBadgeText,
-          routeName: AppRoutes.volunteerPositions,
+          routeName: AppRoutes.studentVolunteerPositions,
           isAccentWide: false,
         ),
         ],

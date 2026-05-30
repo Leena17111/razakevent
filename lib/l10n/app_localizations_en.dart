@@ -817,4 +817,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paid => 'Paid';
+
+  @override
+  String get openPositions => 'Open Positions';
+
+  @override
+  String get myApplications => 'My Applications';
+
+  @override
+  String get applyForPosition => 'Apply for Position';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get faculty => 'Faculty';
+
+  @override
+  String get selectFaculty => 'Select faculty';
+
+  @override
+  String get previousExperience => 'Previous Experience';
+
+  @override
+  String get submitApplication => 'Submit Application';
+
+  @override
+  String get confirmAvailability =>
+      'I confirm my availability for this volunteer position';
+
+  @override
+  String get noOpenPositions => 'No open positions';
+
+  @override
+  String get noApplicationsYet => 'No applications yet';
+
+  @override
+  String get applicationSubmittedSuccessfully =>
+      'Application submitted successfully.';
 }

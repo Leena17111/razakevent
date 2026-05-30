@@ -38,6 +38,14 @@ class VolunteerPositionModel {
   });
 
   bool get isFull => approvedCount >= volunteersNeeded;
+  int get availableSlots => volunteersNeeded - approvedCount;
+
+double get fillRatio {
+  if (volunteersNeeded <= 0) return 0.0;
+  return (approvedCount / volunteersNeeded).clamp(0.0, 1.0);
+}
+
+bool get isOpen => status.toLowerCase() == 'open' && !isFull;
 
   bool get isAcceptingApplications =>
     status == 'open' &&

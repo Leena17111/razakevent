@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/event_model.dart';
 import '../models/volunteer_position_model.dart';
+import '../models/volunteer_application_model.dart';
 
 class VolunteerRepository {
   final FirebaseFirestore _firestore =
@@ -101,4 +102,81 @@ class VolunteerRepository {
       'createdAt': Timestamp.now(),
     });
   }
+    Future<List<VolunteerPositionModel>> fetchOpenPositions() async {
+    final snapshot = await _firestore.collection('volunteerPositions').get();
+
+    final positions = snapshot.docs
+        .map((doc) => VolunteerPositionModel.fromMap(doc.data(), doc.id))
+        .where((position) => position.status.toLowerCase() == 'open')
+        .toList();
+
+    positions.sort(
+      (a, b) => a.applicationDeadline.compareTo(b.applicationDeadline),
+    );
+
+    return positions;
+  }
+
+  Future<String> submitApplicationFromForm({
+    required VolunteerPositionModel position,
+    required String studentUid,
+    required String fullName,
+    required String phoneNumber,
+    required String faculty,
+    required String previousExperience,
+  }) async {
+    final applicationsRef = _firestore.collection('volunteerApplications');
+
+    final existing = await applicationsRef
+        .where('studentUid', isEqualTo: studentUid)
+        .where('positionId', isEqualTo: position.positionId)
+        .limit(1)
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      throw Exception('You have already applied for this position.');
+    }
+
+    final docRef = applicationsRef.doc();
+
+    await docRef.set({
+      'applicationId': docRef.id,
+      'positionId': position.positionId,
+      'positionRoleName': position.roleName,
+      'eventId': position.eventId,
+      'eventTitle': position.eventTitle,
+      'organizationName': '',
+      'studentUid': studentUid,
+      'fullName': fullName,
+      'phoneNumber': phoneNumber,
+      'faculty': faculty,
+      'previousExperience': previousExperience,
+      'status': VolunteerApplicationStatus.pending,
+      'appliedAt': FieldValue.serverTimestamp(),
+    });
+
+    return docRef.id;
+  }
+
+  Future<List<VolunteerApplicationModel>> fetchMyApplications(
+    String studentUid,
+  ) async {
+    final snapshot = await _firestore
+        .collection('volunteerApplications')
+        .where('studentUid', isEqualTo: studentUid)
+        .get();
+
+    final applications = snapshot.docs
+        .map((doc) => VolunteerApplicationModel.fromMap(doc.data(), doc.id))
+        .toList();
+
+    applications.sort((a, b) {
+      final aDate = a.appliedAt ?? DateTime(2000);
+      final bDate = b.appliedAt ?? DateTime(2000);
+      return bDate.compareTo(aDate);
+    });
+
+    return applications;
+  }
 }
+
