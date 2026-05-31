@@ -103,48 +103,78 @@ class VolunteerRepository {
     });
   }
     Future<List<VolunteerPositionModel>> fetchOpenPositions() async {
-    final snapshot = await _firestore.collection('volunteerPositions').get();
+  final snapshot = await _firestore.collection('volunteerPositions').get();
 
-    final positions = snapshot.docs
-        .map((doc) => VolunteerPositionModel.fromMap(doc.data(), doc.id))
-        .where((position) => position.status.toLowerCase() == 'open')
-        .toList();
+  final positions = snapshot.docs
+      .map((doc) => VolunteerPositionModel.fromMap(doc.data(), doc.id))
+      .where((position) => position.isAcceptingApplications)
+      .toList();
 
-    positions.sort(
-      (a, b) => a.applicationDeadline.compareTo(b.applicationDeadline),
-    );
+  positions.sort(
+    (a, b) => a.applicationDeadline.compareTo(b.applicationDeadline),
+  );
 
-    return positions;
-  }
+  return positions;
+}
+Future<String> submitApplicationFromForm({
+  required VolunteerPositionModel position,
+  required String studentUid,
+  required String fullName,
+  required String phoneNumber,
+  required String faculty,
+  required String previousExperience,
+}) async {
+  final positionRef =
+      _firestore.collection('volunteerPositions').doc(position.positionId);
 
-  Future<String> submitApplicationFromForm({
-    required VolunteerPositionModel position,
-    required String studentUid,
-    required String fullName,
-    required String phoneNumber,
-    required String faculty,
-    required String previousExperience,
-  }) async {
-    final applicationsRef = _firestore.collection('volunteerApplications');
+  final applicationRef = _firestore
+      .collection('volunteerApplications')
+      .doc('${position.positionId}_$studentUid');
 
-    final existing = await applicationsRef
-        .where('studentUid', isEqualTo: studentUid)
-        .where('positionId', isEqualTo: position.positionId)
-        .limit(1)
-        .get();
+  return _firestore.runTransaction<String>((transaction) async {
+    final positionSnapshot = await transaction.get(positionRef);
+    final applicationSnapshot = await transaction.get(applicationRef);
 
-    if (existing.docs.isNotEmpty) {
+    if (!positionSnapshot.exists) {
+      throw Exception('Volunteer position no longer exists.');
+    }
+
+    if (applicationSnapshot.exists) {
       throw Exception('You have already applied for this position.');
     }
 
-    final docRef = applicationsRef.doc();
+    final currentPosition = VolunteerPositionModel.fromMap(
+      positionSnapshot.data() as Map<String, dynamic>,
+      positionSnapshot.id,
+    );
 
-    await docRef.set({
-      'applicationId': docRef.id,
-      'positionId': position.positionId,
-      'positionRoleName': position.roleName,
-      'eventId': position.eventId,
-      'eventTitle': position.eventTitle,
+    final maxApplications = currentPosition.maxApplications;
+
+    if (currentPosition.status.toLowerCase() != 'open') {
+      throw Exception('This volunteer position is no longer open.');
+    }
+
+    if (DateTime.now().isAfter(currentPosition.applicationDeadline)) {
+      throw Exception('The application deadline has passed.');
+    }
+
+    if (currentPosition.isFull) {
+      throw Exception('This volunteer position is already full.');
+    }
+
+    if (currentPosition.totalApplications >= maxApplications) {
+      transaction.update(positionRef, {'status': 'closed'});
+      throw Exception('Application limit reached for this position.');
+    }
+
+    final newTotalApplications = currentPosition.totalApplications + 1;
+
+    transaction.set(applicationRef, {
+      'applicationId': applicationRef.id,
+      'positionId': currentPosition.positionId,
+      'positionRoleName': currentPosition.roleName,
+      'eventId': currentPosition.eventId,
+      'eventTitle': currentPosition.eventTitle,
       'organizationName': '',
       'studentUid': studentUid,
       'fullName': fullName,
@@ -155,9 +185,15 @@ class VolunteerRepository {
       'appliedAt': FieldValue.serverTimestamp(),
     });
 
-    return docRef.id;
-  }
+    transaction.update(positionRef, {
+      'totalApplications': newTotalApplications,
+      if (newTotalApplications >= maxApplications) 'status': 'closed',
+    });
 
+    return applicationRef.id;
+  });
+}
+  
   Future<List<VolunteerApplicationModel>> fetchMyApplications(
     String studentUid,
   ) async {
