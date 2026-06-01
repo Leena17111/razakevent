@@ -63,20 +63,20 @@ class _StudentVolunteerPositionsScreenState
       if (!mounted) return;
 
       final appliedPositionIds = applications
-    .map((application) => application.positionId)
-    .toSet();
+          .map((application) => application.positionId)
+          .toSet();
 
-final availablePositions = positions
-    .where(
-      (position) => !appliedPositionIds.contains(position.positionId),
-    )
-    .toList();
+      final availablePositions = positions
+          .where(
+            (position) => !appliedPositionIds.contains(position.positionId),
+          )
+          .toList();
 
-setState(() {
-  _positions = availablePositions;
-  _applications = applications;
-  _isLoading = false;
-});
+      setState(() {
+        _positions = availablePositions;
+        _applications = applications;
+        _isLoading = false;
+      });
     } catch (e) {
       if (!mounted) return;
 
@@ -114,8 +114,6 @@ setState(() {
     }
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -126,7 +124,7 @@ setState(() {
         title: Text(l10n.volunteerPositions),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-         actions: [
+        actions: [
           _buildLanguageToggle(),
         ],
       ),
@@ -224,7 +222,13 @@ setState(() {
 
   Widget _buildOpenPositions(AppLocalizations l10n) {
     if (_positions.isEmpty) {
-      return Center(child: Text(l10n.noOpenPositions));
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 220),
+          Center(child: Text(l10n.noOpenPositions)),
+        ],
+      );
     }
 
     return ListView.builder(
@@ -243,7 +247,13 @@ setState(() {
 
   Widget _buildMyApplications(AppLocalizations l10n) {
     if (_applications.isEmpty) {
-      return Center(child: Text(l10n.noApplicationsYet));
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 220),
+          Center(child: Text(l10n.noApplicationsYet)),
+        ],
+      );
     }
 
     return ListView.builder(
@@ -256,50 +266,51 @@ setState(() {
       },
     );
   }
+
   Widget _buildLanguageToggle() {
-  final isBM = localeController.value.languageCode == 'ms';
+    final isBM = localeController.value.languageCode == 'ms';
 
-  return Container(
-    margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
-    decoration: BoxDecoration(
-      color: Colors.black.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(20),
-    ),
-    padding: const EdgeInsets.all(2),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _langButton(isBM, 'EN'),
-        _langButton(isBM, 'BM'),
-      ],
-    ),
-  );
-}
-
-Widget _langButton(bool isBM, String label) {
-  final isActive = (label == 'BM' && isBM) || (label == 'EN' && !isBM);
-
-  return GestureDetector(
-    onTap: () {
-      localeController.value = Locale(label == 'EN' ? 'en' : 'ms');
-      setState(() {});
-    },
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+    return Container(
+      margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.black.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: isActive ? AppColors.primary : Colors.white,
+      padding: const EdgeInsets.all(2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _langButton(isBM, 'EN'),
+          _langButton(isBM, 'BM'),
+        ],
+      ),
+    );
+  }
+
+  Widget _langButton(bool isBM, String label) {
+    final isActive = (label == 'BM' && isBM) || (label == 'EN' && !isBM);
+
+    return GestureDetector(
+      onTap: () {
+        localeController.value = Locale(label == 'EN' ? 'en' : 'ms');
+        setState(() {});
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        decoration: BoxDecoration(
+          color: isActive ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: isActive ? AppColors.primary : Colors.white,
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

@@ -28,6 +28,10 @@ class _VolunteerApplicationStatusCardState
     final l10n = AppLocalizations.of(context)!;
     final app = widget.application;
 
+    final hasOrganizationName = app.organizationName.trim().isNotEmpty;
+    final hasRejectionReason = app.rejectionReason != null &&
+        app.rejectionReason!.trim().isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
@@ -71,13 +75,14 @@ class _VolunteerApplicationStatusCardState
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      Text(
-                        app.organizationName,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 12,
-                          color: AppColors.textMuted,
+                      if (hasOrganizationName)
+                        Text(
+                          app.organizationName,
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textMuted,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -94,9 +99,8 @@ class _VolunteerApplicationStatusCardState
                   color: AppColors.textMuted,
                 ),
               ),
-            if (app.status == VolunteerApplicationStatus.rejected &&
-                app.rejectionReason != null) ...[
-              const SizedBox(height: 8),
+            if (app.status == VolunteerApplicationStatus.rejected) ...[
+              const SizedBox(height: 10),
               GestureDetector(
                 onTap: () => setState(
                   () => _showRejectionReason = !_showRejectionReason,
@@ -129,16 +133,18 @@ class _VolunteerApplicationStatusCardState
                 ),
               ),
               if (_showRejectionReason) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.accentSoft,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    app.rejectionReason!,
+                    hasRejectionReason
+                        ? app.rejectionReason!.trim()
+                        : 'No rejection reason provided.',
                     style: AppTextStyles.body.copyWith(
                       fontSize: 12.5,
                       color: AppColors.accent,
