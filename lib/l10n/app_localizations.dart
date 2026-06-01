@@ -1939,6 +1939,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No events found'**
   String get noEventsFoundOrganizer;
+
+  /// No description provided for @positions.
+  ///
+  /// In en, this message translates to:
+  /// **'positions'**
+  String get positions;
+
+  /// No description provided for @applications.
+  ///
+  /// In en, this message translates to:
+  /// **'applications'**
+  String get applications;
+
+  /// No description provided for @approvedLower.
+  ///
+  /// In en, this message translates to:
+  /// **'approved'**
+  String get approvedLower;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approved;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @rejectApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Application'**
+  String get rejectApplication;
+
+  /// No description provided for @rejectionReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. All slots have been filled. Thank you for your interest.'**
+  String get rejectionReasonHint;
+
+  /// No description provided for @confirmReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Reject'**
+  String get confirmReject;
+
+  /// No description provided for @applicationApprovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Application approved successfully.'**
+  String get applicationApprovedSuccessfully;
+
+  /// No description provided for @applicationRejectedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Application rejected successfully.'**
+  String get applicationRejectedSuccessfully;
+
+  /// No description provided for @failedToApproveApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to approve application.'**
+  String get failedToApproveApplication;
+
+  /// No description provided for @failedToRejectApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject application.'**
+  String get failedToRejectApplication;
+
+  /// No description provided for @noVolunteerPositionsForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'No volunteer positions available for review.'**
+  String get noVolunteerPositionsForReview;
+
+  /// No description provided for @unableToLoadOrganizerAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load organizer account.'**
+  String get unableToLoadOrganizerAccount;
+
+  /// No description provided for @volunteerSlotsFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteer slots are already full.'**
+  String get volunteerSlotsFull;
+
+  /// No description provided for @applicationAlreadyReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'This application has already been reviewed.'**
+  String get applicationAlreadyReviewed;
+
+  /// No description provided for @applicationOrPositionNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Application or position not found.'**
+  String get applicationOrPositionNotFound;
+
+  /// No description provided for @confirmApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Approve'**
+  String get confirmApprove;
+
+  /// No description provided for @approveApplicationQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to approve this application? If this approval fills all volunteer slots, all remaining pending applications for this position will be automatically rejected.'**
+  String get approveApplicationQuestion;
+
+  /// No description provided for @noExperienceProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No experience provided'**
+  String get noExperienceProvided;
+
+  /// No description provided for @experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get experience;
+
+  /// No description provided for @reviewEventApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Event Applications'**
+  String get reviewEventApplications;
+
+  /// No description provided for @availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get availability;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get applied;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 }
 
 class _AppLocalizationsDelegate

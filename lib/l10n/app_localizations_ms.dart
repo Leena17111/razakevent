@@ -971,4 +971,91 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get noEventsFoundOrganizer => 'Tiada acara ditemui';
+
+  @override
+  String get positions => 'jawatan';
+
+  @override
+  String get applications => 'permohonan';
+
+  @override
+  String get approvedLower => 'diluluskan';
+
+  @override
+  String get pending => 'Menunggu';
+
+  @override
+  String get approved => 'Diluluskan';
+
+  @override
+  String get rejected => 'Ditolak';
+
+  @override
+  String get rejectApplication => 'Tolak Permohonan';
+
+  @override
+  String get rejectionReasonHint =>
+      'cth. Semua slot telah dipenuhi. Terima kasih atas minat anda.';
+
+  @override
+  String get confirmReject => 'Sahkan Tolak';
+
+  @override
+  String get applicationApprovedSuccessfully =>
+      'Permohonan berjaya diluluskan.';
+
+  @override
+  String get applicationRejectedSuccessfully => 'Permohonan berjaya ditolak.';
+
+  @override
+  String get failedToApproveApplication => 'Gagal meluluskan permohonan.';
+
+  @override
+  String get failedToRejectApplication => 'Gagal menolak permohonan.';
+
+  @override
+  String get noVolunteerPositionsForReview =>
+      'Tiada jawatan sukarelawan untuk disemak.';
+
+  @override
+  String get unableToLoadOrganizerAccount =>
+      'Akaun penganjur tidak dapat dimuatkan.';
+
+  @override
+  String get volunteerSlotsFull => 'Slot sukarelawan telah penuh.';
+
+  @override
+  String get applicationAlreadyReviewed => 'Permohonan ini telah disemak.';
+
+  @override
+  String get applicationOrPositionNotFound =>
+      'Permohonan atau jawatan tidak dijumpai.';
+
+  @override
+  String get confirmApprove => 'Sahkan Lulus';
+
+  @override
+  String get approveApplicationQuestion =>
+      'Adakah anda pasti ingin meluluskan permohonan ini? Jika kelulusan ini memenuhi semua kekosongan sukarelawan yang diperlukan, semua permohonan yang masih berstatus Pending untuk jawatan ini akan ditolak secara automatik.';
+
+  @override
+  String get noExperienceProvided => 'Tiada pengalaman diberikan';
+
+  @override
+  String get experience => 'Pengalaman';
+
+  @override
+  String get reviewEventApplications => 'Semak Permohonan Acara';
+
+  @override
+  String get availability => 'Ketersediaan';
+
+  @override
+  String get available => 'Tersedia';
+
+  @override
+  String get applied => 'Dimohon';
+
+  @override
+  String get all => 'Semua';
 }

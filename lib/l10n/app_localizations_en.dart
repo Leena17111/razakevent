@@ -964,4 +964,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noEventsFoundOrganizer => 'No events found';
+
+  @override
+  String get positions => 'positions';
+
+  @override
+  String get applications => 'applications';
+
+  @override
+  String get approvedLower => 'approved';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get approved => 'Approved';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get rejectApplication => 'Reject Application';
+
+  @override
+  String get rejectionReasonHint =>
+      'e.g. All slots have been filled. Thank you for your interest.';
+
+  @override
+  String get confirmReject => 'Confirm Reject';
+
+  @override
+  String get applicationApprovedSuccessfully =>
+      'Application approved successfully.';
+
+  @override
+  String get applicationRejectedSuccessfully =>
+      'Application rejected successfully.';
+
+  @override
+  String get failedToApproveApplication => 'Failed to approve application.';
+
+  @override
+  String get failedToRejectApplication => 'Failed to reject application.';
+
+  @override
+  String get noVolunteerPositionsForReview =>
+      'No volunteer positions available for review.';
+
+  @override
+  String get unableToLoadOrganizerAccount =>
+      'Unable to load organizer account.';
+
+  @override
+  String get volunteerSlotsFull => 'Volunteer slots are already full.';
+
+  @override
+  String get applicationAlreadyReviewed =>
+      'This application has already been reviewed.';
+
+  @override
+  String get applicationOrPositionNotFound =>
+      'Application or position not found.';
+
+  @override
+  String get confirmApprove => 'Confirm Approve';
+
+  @override
+  String get approveApplicationQuestion =>
+      'Are you sure you want to approve this application? If this approval fills all volunteer slots, all remaining pending applications for this position will be automatically rejected.';
+
+  @override
+  String get noExperienceProvided => 'No experience provided';
+
+  @override
+  String get experience => 'Experience';
+
+  @override
+  String get reviewEventApplications => 'Review Event Applications';
+
+  @override
+  String get availability => 'Availability';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get applied => 'Applied';
+
+  @override
+  String get all => 'All';
 }

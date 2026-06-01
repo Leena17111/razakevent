@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/localization/locale_controller.dart';
 import '../../../core/widgets/language_toggle.dart';
-import '../../../data/models/event_model.dart';
+import '../../../data/models/volunteer_position_model.dart';
+import '../../../l10n/app_localizations.dart';
+import '../logic/review_applications_controller.dart';
 import '../logic/volunteer_position_controller.dart';
+import 'review_applications_screen.dart';
 import 'volunteer_positions_screen.dart';
 
 class VolunteerEventSelectScreen extends StatefulWidget {
@@ -22,8 +25,13 @@ class VolunteerEventSelectScreen extends StatefulWidget {
       _VolunteerEventSelectScreenState();
 }
 
-class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen> {
-  final VolunteerPositionController _controller = VolunteerPositionController();
+class _VolunteerEventSelectScreenState
+    extends State<VolunteerEventSelectScreen> {
+  final VolunteerPositionController _controller =
+      VolunteerPositionController();
+
+  final ReviewApplicationsController _reviewController =
+      ReviewApplicationsController();
 
   String? _organizerId;
   late String _selectedTab;
@@ -42,6 +50,7 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
   @override
   void dispose() {
     _controller.dispose();
+    _reviewController.dispose();
     super.dispose();
   }
 
@@ -76,7 +85,7 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
   Widget _buildHeader(AppLocalizations l10n, Locale currentLocale) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -86,18 +95,25 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
             AppColors.primary,
           ],
         ),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(24),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              GestureDetector(
+              InkWell(
+                borderRadius: BorderRadius.circular(999),
                 onTap: () => Navigator.pop(context),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: AppColors.textWhite,
-                  size: 20,
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.textWhite,
+                    size: 20,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -109,115 +125,136 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE89A24).withOpacity(0.18),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            l10n.organizerHead,
-            style: AppTextStyles.label.copyWith(
-              color: const Color(0xFFE89A24),
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE89A24).withOpacity(0.18),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              l10n.organizerHead,
+              style: AppTextStyles.label.copyWith(
+                color: const Color(0xFFE89A24),
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
-        ),
           const SizedBox(height: 14),
           Text(
-            'Volunteer Recruitment',
+            l10n.volunteerManagement,
             style: AppTextStyles.heading.copyWith(
               color: AppColors.textWhite,
-              fontSize: 26,
+              fontSize: 27,
               fontWeight: FontWeight.w900,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 5),
           Text(
             _selectedTab == 'add'
                 ? l10n.addVolunteerPositionsForYourEvent
                 : l10n.reviewVolunteerApplications,
             style: AppTextStyles.body.copyWith(
-              color: AppColors.textWhite.withOpacity(0.85),
+              color: AppColors.textWhite.withOpacity(0.86),
               fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 16),
-          _buildTabs(),
+          const SizedBox(height: 18),
+          _buildTabs(l10n),
         ],
       ),
     );
   }
 
-  Widget _buildTabs() {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: AppColors.textWhite.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          _buildTabButton(
-            label: 'Add Positions',
-            icon: Icons.add_rounded,
-            isActive: _selectedTab == 'add',
-            onTap: () => _setTab('add'),
-          ),
-          _buildTabButton(
-            label: 'Review Applications',
-            icon: Icons.groups_rounded,
-            isActive: _selectedTab == 'review',
-            onTap: () => _setTab('review'),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildTabs(AppLocalizations l10n) {
+  return Container(
+    height: 50,
+    padding: const EdgeInsets.all(5),
+    decoration: BoxDecoration(
+      color: AppColors.textWhite.withOpacity(0.14),
+      borderRadius: BorderRadius.circular(18),
+    ),
+    child: Row(
+      children: [
+        _buildTabButton(
+          label: l10n.addVolunteerPosition,
+          icon: Icons.add_rounded,
+          isActive: _selectedTab == 'add',
+          onTap: () => _setTab('add'),
+        ),
+        const SizedBox(width: 6),
+        _buildTabButton(
+          label: l10n.reviewVolunteerApplications,
+          icon: Icons.groups_rounded,
+          isActive: _selectedTab == 'review',
+          onTap: () => _setTab('review'),
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget _buildTabButton({
-    required String label,
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isActive ? AppColors.textWhite : Colors.transparent,
-            borderRadius: BorderRadius.circular(13),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 15,
-                color: isActive ? AppColors.primary : AppColors.textWhite,
-              ),
-              const SizedBox(width: 6),
-              Text(
+Widget _buildTabButton({
+  required String label,
+  required IconData icon,
+  required bool isActive,
+  required VoidCallback onTap,
+}) {
+  return Expanded(
+    child: InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        height: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.textWhite : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : [],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 15,
+              color: isActive ? AppColors.primary : AppColors.textWhite,
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
                 label,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.label.copyWith(
                   color: isActive ? AppColors.primary : AppColors.textWhite,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w900,
                   fontSize: 11,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildAddPositionsTab(AppLocalizations l10n) {
+    if (_organizerId == null) {
+      return _buildEmptyReviewState(l10n.unableToLoadOrganizerAccount);
+    }
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (_, __) {
@@ -235,23 +272,55 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
           return _buildEmptyState(l10n);
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: _controller.organizerEvents.length + 1,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Text(
-                l10n.selectEvent,
-                style: AppTextStyles.subtitle.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              );
-            }
+        return StreamBuilder<List<VolunteerPositionModel>>(
+          stream: _reviewController.streamOrganizerVolunteerPositions(
+            _organizerId!,
+          ),
+          builder: (context, snapshot) {
+            final allPositions = snapshot.data ?? [];
 
-            final event = _controller.organizerEvents[index - 1];
-            return _buildEventCard(event);
+            return ListView.separated(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+              itemCount: _controller.organizerEvents.length + 1,
+              separatorBuilder: (_, __) => const SizedBox(height: 13),
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _buildSectionTitle(l10n.selectEvent);
+                }
+
+                final event = _controller.organizerEvents[index - 1];
+
+                final eventPositions = allPositions
+                    .where((position) => position.eventId == event.eventId)
+                    .toList();
+
+                final applicationCount = eventPositions.fold<int>(
+                  0,
+                  (sum, position) => sum + position.totalApplications,
+                );
+
+                return _buildEventCard(
+                  icon: Icons.event_rounded,
+                  title: event.title,
+                  date: event.eventDateTime,
+                  positionCount: eventPositions.length,
+                  applicationCount: applicationCount,
+                  l10n: l10n,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => VolunteerPositionsScreen(
+                          eventId: event.eventId,
+                          eventTitle: event.title,
+                          eventDateTime: event.eventDateTime,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
           },
         );
       },
@@ -259,67 +328,120 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
   }
 
   Widget _buildReviewApplicationsTab(AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.groups_rounded,
-                size: 54,
-                color: AppColors.primary.withOpacity(0.6),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Review Applications',
-                style: AppTextStyles.subtitle.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'This section will be used later to approve or reject volunteer applications.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.body.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
+    if (_organizerId == null) {
+      return _buildEmptyReviewState(l10n.unableToLoadOrganizerAccount);
+    }
+
+    return StreamBuilder<List<VolunteerPositionModel>>(
+      stream: _reviewController.streamOrganizerVolunteerPositions(
+        _organizerId!,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        }
+
+        final positions = snapshot.data ?? [];
+
+        if (positions.isEmpty) {
+          return _buildEmptyReviewState(l10n.noVolunteerPositionsForReview);
+        }
+
+        final groupedByEvent = <String, List<VolunteerPositionModel>>{};
+
+        for (final position in positions) {
+          groupedByEvent.putIfAbsent(position.eventId, () => []);
+          groupedByEvent[position.eventId]!.add(position);
+        }
+
+        final eventGroups = groupedByEvent.values.toList()
+          ..sort(
+            (a, b) => a.first.eventTitle.compareTo(b.first.eventTitle),
+          );
+
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+          itemCount: eventGroups.length + 1,
+          separatorBuilder: (_, __) => const SizedBox(height: 13),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return _buildSectionTitle(l10n.reviewVolunteerApplications);
+            }
+
+            final eventPositions = eventGroups[index - 1];
+            return _buildReviewEventCard(eventPositions, l10n);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 2, bottom: 2),
+      child: Text(
+        title,
+        style: AppTextStyles.subtitle.copyWith(
+          fontWeight: FontWeight.w900,
+          color: AppColors.textPrimary,
+          fontSize: 16,
         ),
       ),
     );
   }
 
-  Widget _buildEventCard(EventModel event) {
+  Widget _buildReviewEventCard(
+    List<VolunteerPositionModel> eventPositions,
+    AppLocalizations l10n,
+  ) {
+    final eventTitle = eventPositions.first.eventTitle;
+    final eventDateTime = eventPositions.first.eventDateTime;
+
+    final positionCount = eventPositions.length;
+    final applicationCount = eventPositions.fold<int>(
+      0,
+      (sum, position) => sum + position.totalApplications,
+    );
+
+    return _buildEventCard(
+      icon: Icons.event_available_rounded,
+      title: eventTitle,
+      date: eventDateTime,
+      positionCount: positionCount,
+      applicationCount: applicationCount,
+      l10n: l10n,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReviewApplicationsScreen(
+              eventTitle: eventTitle,
+              positions: eventPositions,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEventCard({
+    required IconData icon,
+    required String title,
+    required DateTime date,
+    required int positionCount,
+    required int applicationCount,
+    required AppLocalizations l10n,
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => VolunteerPositionsScreen(
-                eventId: event.eventId,
-                eventTitle: event.title,
-                eventDateTime: event.eventDateTime,
-              ),
-            ),
-          );
-        },
+        onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
@@ -327,7 +449,7 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
+                blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -335,15 +457,16 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
                   color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(
-                  Icons.event_rounded,
+                child: Icon(
+                  icon,
                   color: AppColors.primary,
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 14),
@@ -352,36 +475,58 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      event.title,
+                      title,
                       style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         fontSize: 14,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
                     Row(
                       children: [
                         const Icon(
                           Icons.calendar_today_rounded,
-                          size: 12,
+                          size: 11,
                           color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _formatDate(event.eventDateTime),
+                          _formatDate(date),
                           style: AppTextStyles.label.copyWith(
                             color: AppColors.textSecondary,
-                            fontSize: 12,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
                           ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _statItem(
+                          icon: Icons.groups_rounded,
+                          value: '$positionCount',
+                          label: l10n.positions,
+                          color: const Color(0xFFE89A24),
+                        ),
+                        const SizedBox(width: 16),
+                        _statItem(
+                          icon: Icons.assignment_rounded,
+                          value: '$applicationCount',
+                          label: l10n.applications,
+                          color: const Color(0xFF19A7A8),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               const Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textMuted,
+                size: 24,
               ),
             ],
           ),
@@ -390,15 +535,52 @@ class _VolunteerEventSelectScreenState extends State<VolunteerEventSelectScreen>
     );
   }
 
+  Widget _statItem({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: color),
+        const SizedBox(width: 4),
+        Text(
+          value,
+          style: AppTextStyles.label.copyWith(
+            color: AppColors.textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          label,
+          style: AppTextStyles.label.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildEmptyState(AppLocalizations l10n) {
+    return _buildEmptyReviewState(l10n.addEventsFirstBeforePositions);
+  }
+
+  Widget _buildEmptyReviewState(String message) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Text(
-          l10n.addEventsFirstBeforePositions,
+          message,
           textAlign: TextAlign.center,
           style: AppTextStyles.body.copyWith(
             color: AppColors.textSecondary,
+            fontSize: 13,
           ),
         ),
       ),
