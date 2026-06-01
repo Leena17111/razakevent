@@ -30,6 +30,10 @@ class _VolunteerPositionsScreenState extends State<VolunteerPositionsScreen> {
   final VolunteerPositionController _controller =
       VolunteerPositionController();
 
+  static const Color _openColor = Color(0xFF2E7D32);
+  static const Color _fullColor = Color(0xFFB3261E);
+  static const Color _closedColor = Color(0xFF6B7280);
+
   @override
   void dispose() {
     _controller.dispose();
@@ -177,18 +181,21 @@ class _VolunteerPositionsScreenState extends State<VolunteerPositionsScreen> {
         : (position.approvedCount / position.volunteersNeeded).clamp(0.0, 1.0);
 
     final isFull = position.approvedCount >= position.volunteersNeeded;
+    final statusValue = position.status.toLowerCase();
 
-    final statusColor = isFull
-    ? AppColors.error
-    : position.status == 'open'
-        ? AppColors.primary
-        : AppColors.textMuted;
+    final Color statusColor;
+    final String statusLabel;
 
-    final statusLabel = isFull
-        ? l10n.full
-        : position.status == 'open'
-            ? l10n.open
-            : l10n.closed;
+    if (isFull || statusValue == 'full') {
+      statusColor = _fullColor;
+      statusLabel = l10n.full;
+    } else if (statusValue == 'open') {
+      statusColor = _openColor;
+      statusLabel = l10n.open;
+    } else {
+      statusColor = _closedColor;
+      statusLabel = l10n.closed;
+    }
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -248,7 +255,7 @@ class _VolunteerPositionsScreenState extends State<VolunteerPositionsScreen> {
               ),
               const SizedBox(width: 6),
               Text(
-                '${position.totalApplications} applications',
+                '${position.totalApplications} ${l10n.applications}',
                 style: AppTextStyles.label.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 10,
