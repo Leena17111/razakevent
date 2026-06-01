@@ -8,6 +8,7 @@ class FeedbackModel {
   final String studentName;
   final Map<String, int> builtInRatings;
   final Map<String, int> additionalRatings;
+  final Map<String, String> customResponses;
   final String comments;
   final DateTime submittedAt;
 
@@ -19,6 +20,7 @@ class FeedbackModel {
     required this.studentName,
     required this.builtInRatings,
     required this.additionalRatings,
+    this.customResponses = const {},
     required this.comments,
     required this.submittedAt,
   });
@@ -31,6 +33,7 @@ class FeedbackModel {
       'studentName': studentName,
       'builtInRatings': builtInRatings,
       'additionalRatings': additionalRatings,
+      'customResponses': customResponses,
       'comments': comments,
       'submittedAt': Timestamp.fromDate(submittedAt),
     };
@@ -45,6 +48,7 @@ class FeedbackModel {
       studentName: map['studentName'] ?? '',
       builtInRatings: Map<String, int>.from(map['builtInRatings'] ?? {}),
       additionalRatings: Map<String, int>.from(map['additionalRatings'] ?? {}),
+      customResponses: Map<String, String>.from(map['customResponses'] ?? {}),
       comments: map['comments'] ?? '',
       submittedAt: (map['submittedAt'] as Timestamp).toDate(),
     );
