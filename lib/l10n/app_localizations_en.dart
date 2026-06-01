@@ -1053,4 +1053,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get confirmCreatePosition => 'Confirm Position Creation';
+
+  @override
+  String get createPositionConfirmation =>
+      'Please make sure all volunteer position information is correct before submitting. Volunteer positions cannot be edited or deleted after creation.';
 }

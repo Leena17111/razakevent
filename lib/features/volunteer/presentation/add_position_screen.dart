@@ -218,22 +218,12 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_today_rounded,
-                      size: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      _formatDate(widget.eventDateTime),
-                      style: AppTextStyles.label.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                Text(
+                  _formatDate(widget.eventDateTime),
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -265,7 +255,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             controller: _roleController,
             label: l10n.roleName,
             hint: l10n.roleNameHint,
-            prefixIcon: Icons.badge_rounded,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return l10n.fieldRequired;
@@ -278,7 +267,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             controller: _descriptionController,
             label: l10n.description,
             hint: l10n.describeVolunteerDuties,
-            prefixIcon: Icons.notes_rounded,
             maxLines: 4,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -292,7 +280,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             controller: _requirementsController,
             label: l10n.requirements,
             hint: l10n.listSkillsAvailability,
-            prefixIcon: Icons.checklist_rounded,
             maxLines: 4,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -306,7 +293,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             controller: _volunteersController,
             label: l10n.numberOfVolunteersNeeded,
             hint: 'e.g. 10',
-            prefixIcon: Icons.groups_rounded,
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -333,7 +319,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
     required TextEditingController controller,
     required String label,
     required String hint,
-    required IconData prefixIcon,
     int maxLines = 1,
     TextInputType? keyboardType,
     required String? Function(String?) validator,
@@ -356,13 +341,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: maxLines == 1
-                ? Icon(
-                    prefixIcon,
-                    color: AppColors.primary,
-                    size: 20,
-                  )
-                : null,
             filled: true,
             fillColor: const Color(0xFFF9FAFB),
             contentPadding: const EdgeInsets.symmetric(
@@ -407,10 +385,10 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             final now = DateTime.now();
             final firstDate = DateTime(now.year, now.month, now.day);
             final lastDate = DateTime(
-            widget.eventDateTime.year,
-            widget.eventDateTime.month,
-            widget.eventDateTime.day,
-          ).subtract(const Duration(days: 1));
+              widget.eventDateTime.year,
+              widget.eventDateTime.month,
+              widget.eventDateTime.day,
+            ).subtract(const Duration(days: 1));
 
             final selectedDate = await showDatePicker(
               context: context,
@@ -453,20 +431,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.calendar_month_rounded,
-                    color: AppColors.primary,
-                    size: 19,
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     _deadline == null
@@ -511,13 +475,14 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
     }
 
     if (!_deadline!.isBefore(widget.eventDateTime)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.deadlineMustBeBeforeEvent),
-      ),
-    );
-    return;
-  }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.deadlineMustBeBeforeEvent),
+        ),
+      );
+      return;
+    }
+
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     final position = VolunteerPositionModel(
@@ -536,6 +501,72 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
       status: 'open',
       createdAt: DateTime.now(),
     );
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          title: Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFEAEA),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFB3261E),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.confirmCreatePosition,
+                  style: AppTextStyles.subtitle.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            l10n.createPositionConfirmation,
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.35,
+            ),
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.textWhite,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+              ),
+              child: Text(l10n.savePosition),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true) return;
 
     await _controller.addPosition(position);
 
@@ -562,10 +593,10 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
     }
   }
 
- String _formatDate(DateTime date) {
-  final hour = date.hour.toString().padLeft(2, '0');
-  final minute = date.minute.toString().padLeft(2, '0');
+  String _formatDate(DateTime date) {
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
 
-  return '${date.day}/${date.month}/${date.year} • $hour:$minute';
-}
+    return '${date.day}/${date.month}/${date.year} • $hour:$minute';
+  }
 }
