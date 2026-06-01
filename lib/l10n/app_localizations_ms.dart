@@ -1058,4 +1058,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get all => 'Semua';
+
+  @override
+  String get confirmCreatePosition => 'Sahkan Penciptaan Jawatan';
+
+  @override
+  String get createPositionConfirmation =>
+      'Sila pastikan semua maklumat jawatan sukarelawan adalah betul sebelum dihantar. Jawatan sukarelawan tidak boleh diedit atau dipadam selepas dicipta.';
 }

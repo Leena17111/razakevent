@@ -357,5 +357,7 @@
   "availability": "Availability",
   "available": "Available",
   "applied": "Applied",
-  "all": "All"
+  "all": "All",
+  "confirmCreatePosition": "Confirm Position Creation",
+  "createPositionConfirmation": "Please make sure all volunteer position information is correct before submitting. Volunteer positions cannot be edited or deleted after creation."
 }

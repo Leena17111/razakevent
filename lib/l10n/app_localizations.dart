@@ -2101,6 +2101,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @confirmCreatePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Position Creation'**
+  String get confirmCreatePosition;
+
+  /// No description provided for @createPositionConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please make sure all volunteer position information is correct before submitting. Volunteer positions cannot be edited or deleted after creation.'**
+  String get createPositionConfirmation;
 }
 
 class _AppLocalizationsDelegate

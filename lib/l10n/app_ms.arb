@@ -357,5 +357,7 @@
   "availability": "Ketersediaan",
   "available": "Tersedia",
   "applied": "Dimohon",
-  "all": "Semua"
+  "all": "Semua",
+  "confirmCreatePosition": "Sahkan Penciptaan Jawatan",
+  "createPositionConfirmation": "Sila pastikan semua maklumat jawatan sukarelawan adalah betul sebelum dihantar. Jawatan sukarelawan tidak boleh diedit atau dipadam selepas dicipta."
 }
