@@ -214,5 +214,157 @@ Future<String> submitApplicationFromForm({
 
     return applications;
   }
+
+  Stream<List<VolunteerPositionModel>> getOrganizerVolunteerPositions(
+  String organizerId,
+) {
+  return _firestore
+      .collection('volunteerPositions')
+      .where('organizerId', isEqualTo: organizerId)
+      .snapshots()
+      .map((snapshot) {
+    final positions = snapshot.docs
+        .map((doc) => VolunteerPositionModel.fromMap(doc.data(), doc.id))
+        .toList();
+
+    positions.sort((a, b) => a.eventTitle.compareTo(b.eventTitle));
+    return positions;
+  });
+}
+
+Stream<List<VolunteerApplicationModel>> getApplicationsForPosition(
+  String positionId,
+) {
+  return _firestore
+      .collection('volunteerApplications')
+      .where('positionId', isEqualTo: positionId)
+      .snapshots()
+      .map((snapshot) {
+    final applications = snapshot.docs
+        .map((doc) => VolunteerApplicationModel.fromMap(doc.data(), doc.id))
+        .toList();
+
+    applications.sort((a, b) {
+      final aDate = a.appliedAt ?? DateTime(2000);
+      final bDate = b.appliedAt ?? DateTime(2000);
+      return bDate.compareTo(aDate);
+    });
+
+    return applications;
+  });
+}
+
+Future<void> approveVolunteerApplication({
+  required String applicationId,
+  required String positionId,
+  required String reviewerUid,
+}) async {
+  final appRef =
+      _firestore.collection('volunteerApplications').doc(applicationId);
+  final positionRef =
+      _firestore.collection('volunteerPositions').doc(positionId);
+
+  bool shouldRejectRemainingPending = false;
+
+  await _firestore.runTransaction((transaction) async {
+    final appSnap = await transaction.get(appRef);
+    final positionSnap = await transaction.get(positionRef);
+
+    if (!appSnap.exists || !positionSnap.exists) {
+      throw Exception('applicationOrPositionNotFound');
+    }
+
+    final appData = appSnap.data() as Map<String, dynamic>;
+    final currentStatus =
+        appData['status'] as String? ?? VolunteerApplicationStatus.pending;
+
+    if (currentStatus != VolunteerApplicationStatus.pending) {
+      throw Exception('applicationAlreadyReviewed');
+    }
+
+    final position = VolunteerPositionModel.fromMap(
+      positionSnap.data() as Map<String, dynamic>,
+      positionSnap.id,
+    );
+
+    if (position.approvedCount >= position.volunteersNeeded) {
+      throw Exception('volunteerSlotsFull');
+    }
+
+    final newApprovedCount = position.approvedCount + 1;
+    shouldRejectRemainingPending =
+        newApprovedCount >= position.volunteersNeeded;
+
+    transaction.update(appRef, {
+      'status': VolunteerApplicationStatus.approved,
+      'reviewedAt': FieldValue.serverTimestamp(),
+      'reviewedByUid': reviewerUid,
+      'rejectionReason': FieldValue.delete(),
+    });
+
+    transaction.update(positionRef, {
+      'approvedCount': newApprovedCount,
+      if (shouldRejectRemainingPending) 'status': 'full',
+    });
+  });
+
+  if (!shouldRejectRemainingPending) return;
+
+  final remainingPendingSnapshot = await _firestore
+      .collection('volunteerApplications')
+      .where('positionId', isEqualTo: positionId)
+      .where('status', isEqualTo: VolunteerApplicationStatus.pending)
+      .get();
+
+  if (remainingPendingSnapshot.docs.isEmpty) return;
+
+  final batch = _firestore.batch();
+
+  for (final doc in remainingPendingSnapshot.docs) {
+    if (doc.id == applicationId) continue;
+
+    batch.update(doc.reference, {
+      'status': VolunteerApplicationStatus.rejected,
+      'rejectionReason':
+          'Volunteer slots are full. Another applicant was approved.',
+      'reviewedAt': FieldValue.serverTimestamp(),
+      'reviewedByUid': reviewerUid,
+    });
+  }
+
+  await batch.commit();
+}
+
+Future<void> rejectVolunteerApplication({
+  required String applicationId,
+  required String reviewerUid,
+  required String rejectionReason,
+}) async {
+  if (rejectionReason.trim().isEmpty) {
+    throw Exception('rejectionReasonRequired');
+  }
+
+  await _firestore.collection('volunteerApplications').doc(applicationId).update({
+    'status': VolunteerApplicationStatus.rejected,
+    'rejectionReason': rejectionReason.trim(),
+    'reviewedAt': FieldValue.serverTimestamp(),
+    'reviewedByUid': reviewerUid,
+  });
+}
+
+Stream<VolunteerPositionModel?> getPositionById(String positionId) {
+  return _firestore
+      .collection('volunteerPositions')
+      .doc(positionId)
+      .snapshots()
+      .map((doc) {
+    if (!doc.exists || doc.data() == null) return null;
+
+    return VolunteerPositionModel.fromMap(
+      doc.data() as Map<String, dynamic>,
+      doc.id,
+    );
+  });
+}
 }
 
