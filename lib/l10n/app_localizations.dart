@@ -1784,12 +1784,6 @@ abstract class AppLocalizations {
   /// **'ADDITIONAL QUESTIONS'**
   String get additionalQuestionsSection;
 
-  /// No description provided for @commentsAndSuggestions.
-  ///
-  /// In en, this message translates to:
-  /// **'COMMENTS & SUGGESTIONS'**
-  String get commentsAndSuggestions;
-
   /// No description provided for @commentsHint.
   ///
   /// In en, this message translates to:
@@ -1861,6 +1855,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please rate all questions before submitting.'**
   String get ratingRequired;
+
+  /// No description provided for @openFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Open for'**
+  String get openFor;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get hours;
+
+  /// No description provided for @hour.
+  ///
+  /// In en, this message translates to:
+  /// **'hour'**
+  String get hour;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'remaining'**
+  String get remaining;
+
+  /// No description provided for @filter3DaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'3 days left'**
+  String get filter3DaysLeft;
+
+  /// No description provided for @filter2DaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days left'**
+  String get filter2DaysLeft;
+
+  /// No description provided for @filterLessThanDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than a day'**
+  String get filterLessThanDay;
+
+  /// No description provided for @filterDaysRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'days remaining'**
+  String get filterDaysRemaining;
+
+  /// No description provided for @filterDayRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'day remaining'**
+  String get filterDayRemaining;
+
+  /// No description provided for @filterHoursRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'hours remaining'**
+  String get filterHoursRemaining;
 
   /// No description provided for @registrationsAndFeedback.
   ///
