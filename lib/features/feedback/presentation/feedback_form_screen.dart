@@ -136,7 +136,7 @@ class _FeedbackFormScreenState extends State<FeedbackFormScreen> {
         builtInRatings: _builtInRatings,
         additionalRatings: const {},
         customResponses: customResponses,
-        comments: _commentsCtrl.text.trim(),
+        comments: '',
         submittedAt: DateTime.now(),
       );
       await _repo.submitFeedback(feedback);
@@ -248,7 +248,6 @@ class _FeedbackFormScreenState extends State<FeedbackFormScreen> {
                         ],
 
                         // Comments
-                        _buildCommentsCard(l10n),
                         const SizedBox(height: 24),
 
                         // Submit button
@@ -569,63 +568,6 @@ class _FeedbackFormScreenState extends State<FeedbackFormScreen> {
             style: GoogleFonts.poppins(fontSize: 13),
             decoration: InputDecoration(
               hintText: 'Your answer...',
-              hintStyle: GoogleFonts.poppins(
-                fontSize: 13,
-                color: AppColors.textMuted,
-              ),
-              filled: true,
-              fillColor: AppColors.surfaceSoft,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                    color: AppColors.primary, width: 1.5),
-              ),
-              contentPadding: const EdgeInsets.all(14),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentsCard(AppLocalizations l10n) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowDark,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.commentsAndSuggestions,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _commentsCtrl,
-            maxLines: 4,
-            style: GoogleFonts.poppins(fontSize: 13),
-            decoration: InputDecoration(
-              hintText: l10n.commentsHint,
               hintStyle: GoogleFonts.poppins(
                 fontSize: 13,
                 color: AppColors.textMuted,
