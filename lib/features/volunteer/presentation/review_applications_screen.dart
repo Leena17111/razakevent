@@ -993,7 +993,9 @@ Future<void> _showRejectDialog(
     },
   );
 
-  reasonController.dispose();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    reasonController.dispose();
+  });
 
   if (reason == null || reason.isEmpty) return;
 
