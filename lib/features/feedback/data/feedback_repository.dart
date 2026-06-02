@@ -75,11 +75,15 @@ class FeedbackRepository {
 
       final eventData = eventDoc.data()!;
 
-      // Only show if event date has passed but within 3 days
+      // Only show if event has ended AND within 3-day feedback window
       final eventDateTime = (eventData['eventDateTime'] as Timestamp?)?.toDate();
       if (eventDateTime == null || eventDateTime.isAfter(now)) continue;
-      final daysSinceEvent = now.difference(eventDateTime).inDays;
-      if (daysSinceEvent > 3) continue;
+
+      // Calculate deadline (3 days after event ends)
+      final feedbackDeadline = eventDateTime.add(const Duration(days: 3));
+
+      // Skip if deadline has passed
+      if (now.isAfter(feedbackDeadline)) continue;
 
       // Check if feedback form exists for this event
       final form = await getFeedbackForm(eventId);
@@ -91,6 +95,7 @@ class FeedbackRepository {
         'organizationName': eventData['organizationName'] ?? '',
         'eventDate': eventData['eventDateTime'],
         'formId': form['id'],
+        'feedbackDeadline': eventDateTime.add(const Duration(days: 3)),  // NEW LINE
       });
     }
 
