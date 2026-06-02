@@ -780,242 +780,246 @@ class _ReviewApplicationsScreenState extends State<ReviewApplicationsScreen> {
   }
 
   Future<void> _showApproveDialog(
-    VolunteerApplicationModel application,
-    AppLocalizations l10n,
-  ) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: AppColors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          title: Text(
-            l10n.confirmApprove,
-            style: AppTextStyles.subtitle.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          content: Text(
-            l10n.approveApplicationQuestion,
-            style: AppTextStyles.body.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          actionsPadding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(l10n.cancel),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF49B95F),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(13),
-                ),
-              ),
-              child: Text(l10n.approve),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirm != true) return;
-
-    final success = await _controller.approveApplication(
-      applicationId: application.id,
-      positionId: application.positionId,
-      reviewerUid: _reviewerUid,
-    );
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          success
-              ? l10n.applicationApprovedSuccessfully
-              : _errorMessage(
-                  l10n,
-                  _controller.errorKey,
-                  l10n.failedToApproveApplication,
-                ),
+  VolunteerApplicationModel application,
+  AppLocalizations l10n,
+) async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) {
+      return AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
         ),
-      ),
-    );
-  }
-
-  Future<void> _showRejectDialog(
-    VolunteerApplicationModel application,
-    AppLocalizations l10n,
-  ) async {
-    final reasonController = TextEditingController();
-    String? errorText;
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: AppColors.surface,
+        title: Text(
+          l10n.confirmApprove,
+          style: AppTextStyles.subtitle.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: Text(
+          l10n.approveApplicationQuestion,
+          style: AppTextStyles.body.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF49B95F),
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(13),
               ),
-              titlePadding: const EdgeInsets.fromLTRB(22, 20, 16, 0),
-              contentPadding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
-              actionsPadding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
-              title: Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFEAEA),
-                      borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(l10n.approve),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (confirm != true) return;
+
+  final success = await _controller.approveApplication(
+    applicationId: application.id,
+    positionId: application.positionId,
+    reviewerUid: _reviewerUid,
+  );
+
+  if (!mounted) return;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: success ? const Color(0xFF2E7D32) : null,
+      content: Text(
+        success
+            ? l10n.applicationApprovedSuccessfully
+            : _errorMessage(
+                l10n,
+                _controller.errorKey,
+                l10n.failedToApproveApplication,
+              ),
+      ),
+    ),
+  );
+}
+
+Future<void> _showRejectDialog(
+  VolunteerApplicationModel application,
+  AppLocalizations l10n,
+) async {
+  final reasonController = TextEditingController();
+  String? errorText;
+
+  final reason = await showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            titlePadding: const EdgeInsets.fromLTRB(22, 20, 16, 0),
+            contentPadding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
+            actionsPadding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+            title: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFEAEA),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Icon(
+                    Icons.cancel_outlined,
+                    color: Color(0xFFB3261E),
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.rejectApplication,
+                    style: AppTextStyles.subtitle.copyWith(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 15,
                     ),
-                    child: const Icon(
-                      Icons.cancel_outlined,
-                      color: Color(0xFFB3261E),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () => Navigator.pop(dialogContext),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.close_rounded,
                       size: 18,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  application.fullName,
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: reasonController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: l10n.rejectionReasonHint,
+                    errorText: errorText,
+                    filled: true,
+                    fillColor: AppColors.background,
+                    contentPadding: const EdgeInsets.all(14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(color: AppColors.border),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      l10n.rejectApplication,
-                      style: AppTextStyles.subtitle.copyWith(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 15,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final reason = reasonController.text.trim();
+
+                        if (reason.isEmpty) {
+                          setDialogState(() {
+                            errorText = l10n.rejectionReasonRequired;
+                          });
+                          return;
+                        }
+
+                        Navigator.pop(dialogContext, reason);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB3261E),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
-                    ),
-                  ),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(999),
-                    onTap: () => Navigator.pop(dialogContext),
-                    child: const Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 18,
-                        color: AppColors.textMuted,
-                      ),
+                      child: Text(l10n.confirmReject),
                     ),
                   ),
                 ],
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    application.fullName,
-                    style: AppTextStyles.label.copyWith(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    controller: reasonController,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: l10n.rejectionReasonHint,
-                      errorText: errorText,
-                      filled: true,
-                      fillColor: AppColors.background,
-                      contentPadding: const EdgeInsets.all(14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                ],
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  reasonController.dispose();
+
+  if (reason == null || reason.isEmpty) return;
+
+  final success = await _controller.rejectApplication(
+    applicationId: application.id,
+    reviewerUid: _reviewerUid,
+    rejectionReason: reason,
+  );
+
+  if (!mounted) return;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: success ? const Color(0xFF2E7D32) : null,
+      content: Text(
+        success
+            ? l10n.applicationRejectedSuccessfully
+            : _errorMessage(
+                l10n,
+                _controller.errorKey,
+                l10n.failedToRejectApplication,
               ),
-              actions: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: BorderSide(color: AppColors.border),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(l10n.cancel),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final reason = reasonController.text.trim();
-
-                          if (reason.isEmpty) {
-                            setDialogState(() {
-                              errorText = l10n.rejectionReasonRequired;
-                            });
-                            return;
-                          }
-
-                          final success = await _controller.rejectApplication(
-                            applicationId: application.id,
-                            reviewerUid: _reviewerUid,
-                            rejectionReason: reason,
-                          );
-
-                          if (!mounted) return;
-
-                          Navigator.pop(dialogContext);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                success
-                                    ? l10n.applicationRejectedSuccessfully
-                                    : _errorMessage(
-                                        l10n,
-                                        _controller.errorKey,
-                                        l10n.failedToRejectApplication,
-                                      ),
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFB3261E),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(l10n.confirmReject),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    reasonController.dispose();
-  }
+      ),
+    ),
+  );
+}
 
   Widget _buildEmptyState(String message) {
     return Center(
