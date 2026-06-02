@@ -67,14 +67,17 @@ class _VolunteerApplicationStatusCardState
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        app.eventTitle,
-                        style: AppTextStyles.body.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
+                      if (app.eventDateTime != null)
+  Padding(
+    padding: const EdgeInsets.only(top: 3),
+    child: Text(
+      'Event date: ${DateFormat('d MMM yyyy, h:mm a').format(app.eventDateTime!)}',
+      style: AppTextStyles.caption.copyWith(
+        fontSize: 12,
+        color: AppColors.textMuted,
+      ),
+    ),
+  ),
                       if (hasOrganizationName)
                         Text(
                           app.organizationName,

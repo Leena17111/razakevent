@@ -522,7 +522,10 @@ class _ApplicationSuccessScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
+                  onPressed: () {
+  Navigator.pop(context);
+  Navigator.pop(context, true);
+},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
