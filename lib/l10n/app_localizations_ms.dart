@@ -889,9 +889,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get additionalQuestionsSection => 'SOALAN TAMBAHAN';
 
   @override
-  String get commentsAndSuggestions => 'KOMEN & CADANGAN';
-
-  @override
   String get commentsHint =>
       'Ceritakan lebih lanjut tentang pengalaman anda...';
 
@@ -931,6 +928,42 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get ratingRequired =>
       'Sila beri penilaian untuk semua soalan sebelum menghantar.';
+
+  @override
+  String get openFor => 'Buka untuk';
+
+  @override
+  String get days => 'hari';
+
+  @override
+  String get day => 'hari';
+
+  @override
+  String get hours => 'jam';
+
+  @override
+  String get hour => 'jam';
+
+  @override
+  String get remaining => 'lagi';
+
+  @override
+  String get filter3DaysLeft => '3 hari lagi';
+
+  @override
+  String get filter2DaysLeft => '2 hari lagi';
+
+  @override
+  String get filterLessThanDay => 'Kurang sehari';
+
+  @override
+  String get filterDaysRemaining => 'hari lagi';
+
+  @override
+  String get filterDayRemaining => 'hari lagi';
+
+  @override
+  String get filterHoursRemaining => 'jam lagi';
 
   @override
   String get registrationsAndFeedback => 'Pendaftaran & Maklum Balas';

@@ -16,8 +16,9 @@ class FeedbackListScreen extends StatefulWidget {
 
 class _FeedbackListScreenState extends State<FeedbackListScreen> {
   final FeedbackRepository _repo = FeedbackRepository();
-  List<Map<String, dynamic>> _pendingEvents = [];
+  List<Map<String, dynamic>> _allEvents = []; 
   bool _isLoading = true;
+  String _selectedFilter = 'all';  // ADD THIS
 
   @override
   void initState() {
@@ -31,10 +32,40 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     final events = await _repo.getPendingFeedbackEvents(user.uid);
     if (mounted) {
       setState(() {
-        _pendingEvents = events;
+        _allEvents = events;
         _isLoading = false;
       });
     }
+  }
+
+  // ADD THIS METHOD
+  void _setFilter(String filter) {
+    setState(() {
+      _selectedFilter = filter;
+    });
+  }
+
+  // ADD THIS GETTER
+  List<Map<String, dynamic>> get _filteredEvents {
+    if (_selectedFilter == 'all') return _allEvents;
+    
+    final now = DateTime.now();
+    return _allEvents.where((event) {
+      final deadline = event['feedbackDeadline'] as DateTime;
+      final remaining = deadline.difference(now);
+      final days = remaining.inDays;
+      
+      switch (_selectedFilter) {
+        case '3days':
+          return days == 3;
+        case '2days':
+          return days == 2;
+        case 'lessThanDay':
+          return days == 0 || days == 1;
+        default:
+          return true;
+      }
+    }).toList();
   }
 
   String _formatDate(dynamic timestamp) {
@@ -49,6 +80,21 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month];
+  }
+
+  String _getTimeRemainingText(DateTime deadline, AppLocalizations l10n) {
+    final now = DateTime.now();
+    final remaining = deadline.difference(now);
+    
+    if (remaining.inDays > 0) {
+      final days = remaining.inDays;
+      return '${l10n.openFor} $days ${days > 1 ? l10n.days : l10n.day}';
+    } else if (remaining.inHours > 0) {
+      final hours = remaining.inHours;
+      return '${l10n.openFor} $hours ${hours > 1 ? l10n.hours : l10n.hour}';
+    } else {
+      return '${l10n.openFor} ${remaining.inMinutes} minutes';
+    }
   }
 
   @override
@@ -108,7 +154,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                 : RefreshIndicator(
                     onRefresh: _loadPendingFeedback,
                     color: AppColors.primary,
-                    child: _pendingEvents.isEmpty
+                    child: _allEvents.isEmpty  
                         ? _buildEmpty(l10n)
                         : ListView(
                             padding: const EdgeInsets.all(16),
@@ -123,7 +169,74 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              ..._pendingEvents.map((event) => _buildEventCard(event)),
+                              
+                              // ADD FILTER CHIPS HERE - CENTERED
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: Center(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        FilterChip(
+                                          label: Text(l10n.filterAll),
+                                          selected: _selectedFilter == 'all',
+                                          onSelected: (_) => _setFilter('all'),
+                                          backgroundColor: AppColors.surfaceSoft,
+                                          selectedColor: AppColors.primary,  // CHANGED: to match header
+                                          labelStyle: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            color: _selectedFilter == 'all' ? Colors.white : AppColors.textPrimary,
+                                          ),
+                                          checkmarkColor: Colors.white,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        FilterChip(
+                                          label: Text(l10n.filter3DaysLeft),
+                                          selected: _selectedFilter == '3days',
+                                          onSelected: (_) => _setFilter('3days'),
+                                          backgroundColor: AppColors.surfaceSoft,
+                                          selectedColor: AppColors.primary,  // CHANGED: to match header
+                                          labelStyle: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            color: _selectedFilter == '3days' ? Colors.white : AppColors.textPrimary,
+                                          ),
+                                          checkmarkColor: Colors.white,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        FilterChip(
+                                          label: Text(l10n.filter2DaysLeft),
+                                          selected: _selectedFilter == '2days',
+                                          onSelected: (_) => _setFilter('2days'),
+                                          backgroundColor: AppColors.surfaceSoft,
+                                          selectedColor: AppColors.primary,  // CHANGED: to match header
+                                          labelStyle: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            color: _selectedFilter == '2days' ? Colors.white : AppColors.textPrimary,
+                                          ),
+                                          checkmarkColor: Colors.white,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        FilterChip(
+                                          label: Text(l10n.filterLessThanDay),
+                                          selected: _selectedFilter == 'lessThanDay',
+                                          onSelected: (_) => _setFilter('lessThanDay'),
+                                          backgroundColor: AppColors.surfaceSoft,
+                                          selectedColor: AppColors.primary,  // CHANGED: to match header
+                                          labelStyle: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            color: _selectedFilter == 'lessThanDay' ? Colors.white : AppColors.textPrimary,
+                                          ),
+                                          checkmarkColor: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              
+                              ..._filteredEvents.map((event) => _buildEventCard(event)),
                             ],
                           ),
                   ),
@@ -173,6 +286,22 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.primarySoft,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _getTimeRemainingText(event['feedbackDeadline'], AppLocalizations.of(context)!),
+                style: GoogleFonts.poppins(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ],

@@ -884,9 +884,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get additionalQuestionsSection => 'ADDITIONAL QUESTIONS';
 
   @override
-  String get commentsAndSuggestions => 'COMMENTS & SUGGESTIONS';
-
-  @override
   String get commentsHint => 'Tell us more about your experience...';
 
   @override
@@ -924,6 +921,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ratingRequired => 'Please rate all questions before submitting.';
+
+  @override
+  String get openFor => 'Open for';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get hours => 'hours';
+
+  @override
+  String get hour => 'hour';
+
+  @override
+  String get remaining => 'remaining';
+
+  @override
+  String get filter3DaysLeft => '3 days left';
+
+  @override
+  String get filter2DaysLeft => '2 days left';
+
+  @override
+  String get filterLessThanDay => 'Less than a day';
+
+  @override
+  String get filterDaysRemaining => 'days remaining';
+
+  @override
+  String get filterDayRemaining => 'day remaining';
+
+  @override
+  String get filterHoursRemaining => 'hours remaining';
 
   @override
   String get registrationsAndFeedback => 'Registrations & Feedback';
