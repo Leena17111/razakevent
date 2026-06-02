@@ -60,9 +60,9 @@ class VolunteerApplicationModel {
   /// Populated by UC016 when organizer rejects.
   final String? rejectionReason;
 
-  final DateTime? appliedAt;
-  final DateTime? reviewedAt;
-
+final DateTime? eventDateTime;
+final DateTime? appliedAt;
+final DateTime? reviewedAt;
   /// UID of organizer who reviewed. Populated by UC016.
   final String? reviewedByUid;
 
@@ -80,7 +80,8 @@ class VolunteerApplicationModel {
     required this.previousExperience,
     required this.status,
     this.rejectionReason,
-    this.appliedAt,
+this.eventDateTime,
+this.appliedAt,
     this.reviewedAt,
     this.reviewedByUid,
   });
@@ -108,7 +109,8 @@ class VolunteerApplicationModel {
       previousExperience: map['previousExperience'] as String? ?? '',
       status: map['status'] as String? ?? VolunteerApplicationStatus.pending,
       rejectionReason: map['rejectionReason'] as String?,
-      appliedAt: parseTimestamp(map['appliedAt']),
+eventDateTime: parseTimestamp(map['eventDateTime']),
+appliedAt: parseTimestamp(map['appliedAt']),
       reviewedAt: parseTimestamp(map['reviewedAt']),
       reviewedByUid: map['reviewedByUid'] as String?,
     );
