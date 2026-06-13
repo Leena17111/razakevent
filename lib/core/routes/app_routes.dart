@@ -60,4 +60,26 @@ class AppRoutes {
   static const String addVolunteerPosition = '/volunteer/add-position';
   static const String reviewApplications = '/volunteer/review-applications';
   static const String studentVolunteerPositions = '/student-volunteer-positions';
+
+  // Sprint 4 — Epic 1: Equipment Borrowing Management
+
+  // Admin Equipment
+  static const String equipmentInventory = '/equipment/inventory';
+  static const String addEquipment = '/equipment/add';
+  static const String editEquipment = '/equipment/edit';
+  static const String reviewSpecialEquipmentRequests =
+      '/equipment/special-requests/review';
+
+  // Organizer Equipment
+  static const String selectEquipmentEvent = '/equipment/select-event';
+  static const String availableEquipment = '/equipment/available';
+  static const String viewBorrowedEquipment = '/equipment/borrowed/view';
+  static const String requestSpecialEquipment = '/equipment/special-request';
+  static const String returnBorrowedEquipment = '/equipment/borrowed/return';
+  static const String cancelBorrowedEquipment = '/equipment/borrowed/cancel';
+
+  // Sprint 4 — Epic 2: Certification Management
+  static const String certificates = '/certificates';
+  static const String certificatePreview = '/certificates/preview';
+
 }
