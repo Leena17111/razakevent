@@ -140,6 +140,61 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.reviewApplications: (_) =>
                 const VolunteerEventSelectScreen(mode: 'review'),
                 AppRoutes.studentVolunteerPositions: (_) => const StudentVolunteerPositionsScreen(),
+
+            // Sprint 4 — Epic 1: Equipment Borrowing Management
+
+            // Admin Equipment
+            AppRoutes.equipmentInventory: (_) => const Scaffold(
+                  body: Center(child: Text('Equipment Inventory')),
+                ),
+
+            AppRoutes.addEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Add Equipment')),
+                ),
+
+            AppRoutes.editEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Edit Equipment')),
+                ),
+
+            AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
+                  body: Center(
+                    child: Text('Review Special Equipment Requests'),
+                  ),
+                ),
+
+            // Organizer Equipment
+            AppRoutes.selectEquipmentEvent: (_) => const Scaffold(
+                  body: Center(child: Text('Select Equipment Event')),
+                ),
+
+            AppRoutes.availableEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Available Equipment')),
+                ),
+
+            AppRoutes.viewBorrowedEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('View Borrowed Equipment')),
+                ),
+
+            AppRoutes.requestSpecialEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Request Special Equipment')),
+                ),
+
+            AppRoutes.returnBorrowedEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Return Borrowed Equipment')),
+                ),
+
+            AppRoutes.cancelBorrowedEquipment: (_) => const Scaffold(
+                  body: Center(child: Text('Cancel Borrowed Equipment')),
+                ),
+
+            // Sprint 4 — Epic 2: Certification Management
+            AppRoutes.certificates: (_) => const Scaffold(
+                  body: Center(child: Text('Certificates')),
+                ),
+
+            AppRoutes.certificatePreview: (_) => const Scaffold(
+                  body: Center(child: Text('Certificate Preview')),
+                ),
           },
         );
       },
