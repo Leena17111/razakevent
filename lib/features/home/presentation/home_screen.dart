@@ -1,14 +1,4 @@
 // lib/features/home/presentation/home_screen.dart
-//
-// Role-based home dashboard.
-// Sprint 1:
-//   - Loads authenticated user's Firestore profile.
-//   - Keeps profile shortcut.
-// Sprint 2 setup:
-//   - Shows role-based dashboard entry cards.
-//   - Uses prepared AppRoutes names.
-//   - Does not navigate to missing Sprint 2 screens yet.
-//   - Does not show dummy stats or fake recent documents.
 
 import 'package:flutter/material.dart';
 
@@ -165,23 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _profileController.loadCurrentUserProfile();
   }
 
-  void _showPreparedFeature(String featureName) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$featureName screen will be connected by the assigned teammate.',
-          style: AppTextStyles.body.copyWith(color: AppColors.textWhite),
-        ),
-        backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      ),
-    );
-  }
-
   void _showComingSoon(String featureName) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -245,20 +218,17 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Expanded(
           child: Text(
-            'Home',
+            'Welcome back, ${_firstName(user.fullName)}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.title.copyWith(
               color: AppColors.textPrimary,
-              fontSize: 25,
+              fontSize: 24,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.6,
             ),
           ),
         ),
-        _buildCircleIconButton(
-          icon: Icons.notifications_none_rounded,
-          onTap: () => _showComingSoon('Notifications'),
-        ),
-        const SizedBox(width: 10),
         Material(
           color: Colors.transparent,
           child: InkWell(
@@ -291,39 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildCircleIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(50),
-        onTap: onTap,
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            shape: BoxShape.circle,
-            boxShadow: const [
-              BoxShadow(
-                color: AppColors.shadowDark,
-                blurRadius: 12,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: 22,
-          ),
-        ),
-      ),
     );
   }
 
@@ -402,8 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 18),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: roleBadgeBg,
                   borderRadius: BorderRadius.circular(30),
@@ -508,76 +447,87 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildRoleActionCards(UserModel user) {
     switch (user.role) {
       case UserRole.organizerHead:
-  return Column(
-    children: [
-      Row(
-        children: [
-          Expanded(
-            child: _buildActionCard(
-              title: 'Documents',
-              subtitle: 'Track approval status',
-              icon: Icons.description_rounded,
-              color: AppColors.communityBadgeText,
-              routeName: AppRoutes.trackEventDocumentStatus,
-              isCompact: true,
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Documents',
+                    subtitle: 'Track approval status',
+                    icon: Icons.description_rounded,
+                    color: AppColors.communityBadgeText,
+                    routeName: AppRoutes.trackEventDocumentStatus,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Event Details',
+                    subtitle: 'Manage event info',
+                    icon: Icons.event_note_rounded,
+                    color: AppColors.clubBadgeText,
+                    routeName: AppRoutes.eventDetailsList,
+                    isCompact: true,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildActionCard(
-              title: 'Event Details',
-              subtitle: 'Manage event info',
-              icon: Icons.event_note_rounded,
-              color: AppColors.clubBadgeText,
-              routeName: AppRoutes.eventDetailsList,
-              isCompact: true,
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Feedback & Registrations',
+                    subtitle: 'View responses & attendees',
+                    icon: Icons.analytics_rounded,
+                    color: AppColors.studentBadgeText,
+                    routeName: AppRoutes.eventResponsesSelect,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Volunteer Positions',
+                    subtitle: 'Manage applications',
+                    icon: Icons.groups_rounded,
+                    color: AppColors.accent,
+                    routeName: AppRoutes.volunteerManagement,
+                    isCompact: true,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 14),
-      Row(
-        children: [
-          Expanded(
-            child: _buildActionCard(
-              title: 'Feedback & Registrations',
-              subtitle: 'View responses & attendees',
-              icon: Icons.analytics_rounded,
-              color: AppColors.studentBadgeText,
-              routeName: AppRoutes.eventResponsesSelect,
-              isCompact: true,
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Feedback Form',
+                    subtitle: 'Set up event feedback',
+                    icon: Icons.feedback_rounded,
+                    color: AppColors.accent,
+                    routeName: AppRoutes.createEventFeedbackForm,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Borrow Equipment',
+                    subtitle: 'Manage borrowed items',
+                    icon: Icons.inventory_2_rounded,
+                    color: AppColors.studentBadgeText,
+                    routeName: AppRoutes.selectEquipmentEvent,
+                    isCompact: true,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildActionCard(
-              title: 'Volunteer Positions',
-              subtitle: 'Manage applications',
-              icon: Icons.groups_rounded,
-              color: AppColors.accent,
-              routeName: AppRoutes.volunteerManagement,
-              isCompact: true,
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 14),
-      Row(
-        children: [
-          Expanded(
-            child: _buildActionCard(
-              title: 'Feedback Form',
-              subtitle: 'Set up event feedback',
-              icon: Icons.feedback_rounded,
-              color: AppColors.accent,
-              routeName: AppRoutes.createEventFeedbackForm,
-              isCompact: true,
-            ),
-          ),
-        ],
-      ),
-    ],
-  );
+          ],
+        );
 
       case UserRole.secretary:
         return Row(
@@ -607,71 +557,118 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
       case UserRole.admin:
-        return Row(
+        return Column(
           children: [
-            Expanded(
-              child: _buildActionCard(
-                title: 'Review',
-                subtitle: 'Review pending documents',
-                icon: Icons.rule_folder_rounded,
-                color: AppColors.accent,
-                routeName: AppRoutes.reviewEventDocuments,
-                isCompact: true,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Review',
+                    subtitle: 'Review pending documents',
+                    icon: Icons.rule_folder_rounded,
+                    color: AppColors.accent,
+                    routeName: AppRoutes.reviewEventDocuments,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Archive',
+                    subtitle: 'View reviewed documents',
+                    icon: Icons.inventory_2_rounded,
+                    color: AppColors.textSecondary,
+                    routeName: AppRoutes.adminReviewedDocuments,
+                    isCompact: true,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                title: 'Archive',
-                subtitle: 'View reviewed documents',
-                icon: Icons.inventory_2_rounded,
-                color: AppColors.textSecondary,
-                routeName: AppRoutes.adminReviewedDocuments,
-                isCompact: true,
-              ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Equipment',
+                    subtitle: 'Manage inventory',
+                    icon: Icons.inventory_rounded,
+                    color: AppColors.clubBadgeText,
+                    routeName: AppRoutes.equipmentInventory,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Special Requests',
+                    subtitle: 'Review requests',
+                    icon: Icons.assignment_rounded,
+                    color: AppColors.studentBadgeText,
+                    routeName: AppRoutes.reviewSpecialEquipmentRequests,
+                    isCompact: true,
+                  ),
+                ),
+              ],
             ),
           ],
         );
 
       case UserRole.student:
-      return Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionCard(
-                  title: 'Events',
-                  subtitle: 'Browse & register',
-                  icon: Icons.event_available_rounded,
-                  color: AppColors.studentBadgeText,
-                  routeName: AppRoutes.browseEvents,
-                  isCompact: true,
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Events',
+                    subtitle: 'Browse & register',
+                    icon: Icons.event_available_rounded,
+                    color: AppColors.studentBadgeText,
+                    routeName: AppRoutes.browseEvents,
+                    isCompact: true,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildActionCard(
-                  title: 'Feedback',
-                  subtitle: 'Submit event feedback',
-                  icon: Icons.rate_review_rounded,
-                  color: AppColors.accent,
-                  routeName: AppRoutes.submitFeedback,
-                  isCompact: true,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Feedback',
+                    subtitle: 'Submit event feedback',
+                    icon: Icons.rate_review_rounded,
+                    color: AppColors.accent,
+                    routeName: AppRoutes.submitFeedback,
+                    isCompact: true,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _buildActionCard(
-          title: 'Volunteer Positions',
-          subtitle: 'Apply for volunteer roles',
-          icon: Icons.groups_rounded,
-          color: AppColors.communityBadgeText,
-          routeName: AppRoutes.studentVolunteerPositions,
-          isAccentWide: false,
-        ),
-        ],
-      );
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Volunteer Positions',
+                    subtitle: 'Apply for volunteer roles',
+                    icon: Icons.groups_rounded,
+                    color: AppColors.communityBadgeText,
+                    routeName: AppRoutes.studentVolunteerPositions,
+                    isCompact: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    title: 'Certificates',
+                    subtitle: 'View participation certificates',
+                    icon: Icons.workspace_premium_rounded,
+                    color: AppColors.clubBadgeText,
+                    routeName: AppRoutes.certificates,
+                    isCompact: true,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
 
       default:
         return _buildActionCard(
