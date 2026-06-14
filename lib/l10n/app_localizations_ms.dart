@@ -1098,4 +1098,145 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get createPositionConfirmation =>
       'Sila pastikan semua maklumat jawatan sukarelawan adalah betul sebelum dihantar. Jawatan sukarelawan tidak boleh diedit atau dipadam selepas dicipta.';
+
+  @override
+  String get manageEquipmentTitle => 'Urus Peralatan';
+
+  @override
+  String get inventoryManagement => 'Pengurusan Inventori';
+
+  @override
+  String get searchEquipmentHint => 'Cari peralatan...';
+
+  @override
+  String get addEquipment => 'Tambah Peralatan';
+
+  @override
+  String get editEquipment => 'Edit Peralatan';
+
+  @override
+  String get itemName => 'Nama Item';
+
+  @override
+  String get totalQuantity => 'Jumlah Kuantiti';
+
+  @override
+  String get descriptionOptional => 'Penerangan (Pilihan)';
+
+  @override
+  String get storageLocation => 'Lokasi Simpanan';
+
+  @override
+  String get save => 'Simpan';
+
+  @override
+  String get categoryAudio => 'Audio';
+
+  @override
+  String get categoryPresentation => 'Pembentangan';
+
+  @override
+  String get categoryFurniture => 'Perabot';
+
+  @override
+  String get categoryDecoration => 'Dekorasi';
+
+  @override
+  String get categoryElectrical => 'Elektrik';
+
+  @override
+  String get quantityTotal => 'Jumlah';
+
+  @override
+  String get quantityBorrowed => 'Dipinjam';
+
+  @override
+  String get quantityAvailable => 'Tersedia';
+
+  @override
+  String get noEquipmentFound => 'Tiada peralatan dijumpai.';
+
+  @override
+  String get editButton => 'Edit';
+
+  @override
+  String get equipmentAdded => 'Peralatan berjaya ditambah.';
+
+  @override
+  String get equipmentUpdated => 'Peralatan berjaya dikemas kini.';
+
+  @override
+  String get itemNameRequired => 'Nama item diperlukan.';
+
+  @override
+  String get totalQuantityRequired => 'Jumlah kuantiti diperlukan.';
+
+  @override
+  String get quantityCannotBeNegative => 'Kuantiti mesti lebih daripada 0.';
+
+  @override
+  String get storageLocationRequired => 'Lokasi simpanan diperlukan.';
+
+  @override
+  String get quantityCannotBeLessThanBorrowed =>
+      'Jumlah kuantiti tidak boleh kurang daripada kuantiti yang dipinjam.';
+
+  @override
+  String get equipmentNotFound => 'Peralatan tidak dijumpai.';
+
+  @override
+  String get equipmentIdMissing => 'ID peralatan tiada.';
+
+  @override
+  String get somethingWentWrong => 'Sesuatu telah berlaku.';
+
+  @override
+  String get itemNameHint => 'cth. Mikrofon Tanpa Wayar';
+
+  @override
+  String get totalQuantityHint => 'cth. 10';
+
+  @override
+  String get descriptionHint => 'Penerangan ringkas tentang item...';
+
+  @override
+  String get storageLocationHint => 'cth. Bilik Stor A, Aras 1';
+
+  @override
+  String get markUnavailable => 'Tanda Tidak Tersedia';
+
+  @override
+  String get markAvailable => 'Tanda Tersedia';
+
+  @override
+  String get unavailable => 'Tidak Tersedia';
+
+  @override
+  String get equipmentMarkedUnavailable =>
+      'Peralatan ditanda sebagai tidak tersedia.';
+
+  @override
+  String get equipmentMarkedAvailable => 'Peralatan ditanda sebagai tersedia.';
+
+  @override
+  String get markUnavailableTitle => 'Tanda peralatan sebagai tidak tersedia?';
+
+  @override
+  String get markAvailableTitle => 'Tanda peralatan sebagai tersedia?';
+
+  @override
+  String get markUnavailableMessage =>
+      'Item ini akan disembunyikan daripada permintaan pinjaman baharu. Item yang sedang dipinjam tidak akan terjejas.';
+
+  @override
+  String get markAvailableMessage =>
+      'Item ini akan dipaparkan semula untuk permintaan pinjaman baharu.';
+
+  @override
+  String borrowedItemsWarning(Object count) {
+    return '$count item sedang dipinjam dan masih perlu dipulangkan.';
+  }
+
+  @override
+  String get confirm => 'Sahkan';
 }

@@ -1093,4 +1093,144 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get createPositionConfirmation =>
       'Please make sure all volunteer position information is correct before submitting. Volunteer positions cannot be edited or deleted after creation.';
+
+  @override
+  String get manageEquipmentTitle => 'Manage Equipment';
+
+  @override
+  String get inventoryManagement => 'Inventory Management';
+
+  @override
+  String get searchEquipmentHint => 'Search equipment...';
+
+  @override
+  String get addEquipment => 'Add Equipment';
+
+  @override
+  String get editEquipment => 'Edit Equipment';
+
+  @override
+  String get itemName => 'Item Name';
+
+  @override
+  String get totalQuantity => 'Total Quantity';
+
+  @override
+  String get descriptionOptional => 'Description (Optional)';
+
+  @override
+  String get storageLocation => 'Storage Location';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get categoryAudio => 'Audio';
+
+  @override
+  String get categoryPresentation => 'Presentation';
+
+  @override
+  String get categoryFurniture => 'Furniture';
+
+  @override
+  String get categoryDecoration => 'Decoration';
+
+  @override
+  String get categoryElectrical => 'Electrical';
+
+  @override
+  String get quantityTotal => 'Total';
+
+  @override
+  String get quantityBorrowed => 'Borrowed';
+
+  @override
+  String get quantityAvailable => 'Available';
+
+  @override
+  String get noEquipmentFound => 'No equipment found.';
+
+  @override
+  String get editButton => 'Edit';
+
+  @override
+  String get equipmentAdded => 'Equipment added successfully.';
+
+  @override
+  String get equipmentUpdated => 'Equipment updated successfully.';
+
+  @override
+  String get itemNameRequired => 'Item name is required.';
+
+  @override
+  String get totalQuantityRequired => 'Total quantity is required.';
+
+  @override
+  String get quantityCannotBeNegative => 'Quantity must be greater than 0.';
+
+  @override
+  String get storageLocationRequired => 'Storage location is required.';
+
+  @override
+  String get quantityCannotBeLessThanBorrowed =>
+      'Total quantity cannot be less than borrowed quantity.';
+
+  @override
+  String get equipmentNotFound => 'Equipment not found.';
+
+  @override
+  String get equipmentIdMissing => 'Equipment ID is missing.';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong.';
+
+  @override
+  String get itemNameHint => 'e.g. Wireless Microphone';
+
+  @override
+  String get totalQuantityHint => 'e.g. 10';
+
+  @override
+  String get descriptionHint => 'Brief description of the item...';
+
+  @override
+  String get storageLocationHint => 'e.g. Store Room A, Level 1';
+
+  @override
+  String get markUnavailable => 'Mark Unavailable';
+
+  @override
+  String get markAvailable => 'Mark Available';
+
+  @override
+  String get unavailable => 'Unavailable';
+
+  @override
+  String get equipmentMarkedUnavailable => 'Equipment marked as unavailable.';
+
+  @override
+  String get equipmentMarkedAvailable => 'Equipment marked as available.';
+
+  @override
+  String get markUnavailableTitle => 'Mark equipment unavailable?';
+
+  @override
+  String get markAvailableTitle => 'Mark equipment available?';
+
+  @override
+  String get markUnavailableMessage =>
+      'This item will be hidden from new borrow requests. Existing borrowed items are not affected.';
+
+  @override
+  String get markAvailableMessage =>
+      'This item will appear again for new borrow requests.';
+
+  @override
+  String borrowedItemsWarning(Object count) {
+    return '$count item(s) are currently borrowed and must still be returned.';
+  }
+
+  @override
+  String get confirm => 'Confirm';
 }

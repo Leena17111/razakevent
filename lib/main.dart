@@ -32,6 +32,8 @@ import 'features/events/presentation/event_detail_screen.dart';
 import 'features/volunteer/presentation/volunteer_event_select_screen.dart';
 import 'features/events/presentation/event_registration_screen.dart';
 import 'features/volunteer/presentation/student_volunteer_positions_screen.dart';
+import 'features/equipment/presentation/manage_equipment_screen.dart';
+import 'features/equipment/presentation/equipment_form_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,19 +146,13 @@ class RazakEventApp extends StatelessWidget {
             // Sprint 4 — Epic 1: Equipment Borrowing Management
 
             // Admin Equipment
-            AppRoutes.equipmentInventory: (_) => const Scaffold(
-                  body: Center(child: Text('Equipment Inventory')),
-                ),
+           AppRoutes.equipmentInventory: (_) => const ManageEquipmentScreen(),
 
-            AppRoutes.addEquipment: (_) => const Scaffold(
-                  body: Center(child: Text('Add Equipment')),
-                ),
+           AppRoutes.addEquipment: (_) => const EquipmentFormScreen(),
 
-            AppRoutes.editEquipment: (_) => const Scaffold(
-                  body: Center(child: Text('Edit Equipment')),
-                ),
+           AppRoutes.editEquipment: (_) => const EquipmentFormScreen(),
 
-            AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
+           AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
                   body: Center(
                     child: Text('Review Special Equipment Requests'),
                   ),

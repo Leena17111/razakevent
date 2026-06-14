@@ -2179,6 +2179,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please make sure all volunteer position information is correct before submitting. Volunteer positions cannot be edited or deleted after creation.'**
   String get createPositionConfirmation;
+
+  /// No description provided for @manageEquipmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Equipment'**
+  String get manageEquipmentTitle;
+
+  /// No description provided for @inventoryManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory Management'**
+  String get inventoryManagement;
+
+  /// No description provided for @searchEquipmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search equipment...'**
+  String get searchEquipmentHint;
+
+  /// No description provided for @addEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Equipment'**
+  String get addEquipment;
+
+  /// No description provided for @editEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Equipment'**
+  String get editEquipment;
+
+  /// No description provided for @itemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Name'**
+  String get itemName;
+
+  /// No description provided for @totalQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Quantity'**
+  String get totalQuantity;
+
+  /// No description provided for @descriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Optional)'**
+  String get descriptionOptional;
+
+  /// No description provided for @storageLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage Location'**
+  String get storageLocation;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @categoryAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get categoryAudio;
+
+  /// No description provided for @categoryPresentation.
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation'**
+  String get categoryPresentation;
+
+  /// No description provided for @categoryFurniture.
+  ///
+  /// In en, this message translates to:
+  /// **'Furniture'**
+  String get categoryFurniture;
+
+  /// No description provided for @categoryDecoration.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoration'**
+  String get categoryDecoration;
+
+  /// No description provided for @categoryElectrical.
+  ///
+  /// In en, this message translates to:
+  /// **'Electrical'**
+  String get categoryElectrical;
+
+  /// No description provided for @quantityTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get quantityTotal;
+
+  /// No description provided for @quantityBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed'**
+  String get quantityBorrowed;
+
+  /// No description provided for @quantityAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get quantityAvailable;
+
+  /// No description provided for @noEquipmentFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No equipment found.'**
+  String get noEquipmentFound;
+
+  /// No description provided for @editButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editButton;
+
+  /// No description provided for @equipmentAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment added successfully.'**
+  String get equipmentAdded;
+
+  /// No description provided for @equipmentUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment updated successfully.'**
+  String get equipmentUpdated;
+
+  /// No description provided for @itemNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name is required.'**
+  String get itemNameRequired;
+
+  /// No description provided for @totalQuantityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Total quantity is required.'**
+  String get totalQuantityRequired;
+
+  /// No description provided for @quantityCannotBeNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity must be greater than 0.'**
+  String get quantityCannotBeNegative;
+
+  /// No description provided for @storageLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage location is required.'**
+  String get storageLocationRequired;
+
+  /// No description provided for @quantityCannotBeLessThanBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Total quantity cannot be less than borrowed quantity.'**
+  String get quantityCannotBeLessThanBorrowed;
+
+  /// No description provided for @equipmentNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment not found.'**
+  String get equipmentNotFound;
+
+  /// No description provided for @equipmentIdMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment ID is missing.'**
+  String get equipmentIdMissing;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get somethingWentWrong;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Wireless Microphone'**
+  String get itemNameHint;
+
+  /// No description provided for @totalQuantityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 10'**
+  String get totalQuantityHint;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Brief description of the item...'**
+  String get descriptionHint;
+
+  /// No description provided for @storageLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Store Room A, Level 1'**
+  String get storageLocationHint;
+
+  /// No description provided for @markUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Unavailable'**
+  String get markUnavailable;
+
+  /// No description provided for @markAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Available'**
+  String get markAvailable;
+
+  /// No description provided for @unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get unavailable;
+
+  /// No description provided for @equipmentMarkedUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment marked as unavailable.'**
+  String get equipmentMarkedUnavailable;
+
+  /// No description provided for @equipmentMarkedAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment marked as available.'**
+  String get equipmentMarkedAvailable;
+
+  /// No description provided for @markUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark equipment unavailable?'**
+  String get markUnavailableTitle;
+
+  /// No description provided for @markAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark equipment available?'**
+  String get markAvailableTitle;
+
+  /// No description provided for @markUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This item will be hidden from new borrow requests. Existing borrowed items are not affected.'**
+  String get markUnavailableMessage;
+
+  /// No description provided for @markAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This item will appear again for new borrow requests.'**
+  String get markAvailableMessage;
+
+  /// No description provided for @borrowedItemsWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} item(s) are currently borrowed and must still be returned.'**
+  String borrowedItemsWarning(Object count);
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 }
 
 class _AppLocalizationsDelegate
