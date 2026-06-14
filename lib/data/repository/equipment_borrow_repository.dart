@@ -1,5 +1,8 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import '../models/borrowed_equipment_request_model.dart';
 import '../models/equipment_model.dart';
 
 import '../models/special_equipment_request_model.dart';
@@ -9,7 +12,8 @@ class EquipmentItem {
   final String id;
   final String name;
   final String description;
-  final String category; // Audio, Presentation, Furniture, Decoration, Sports, Electrical, Others
+  final String
+  category; // Audio, Presentation, Furniture, Decoration, Sports, Electrical, Others
   final int totalQuantity;
   final int availableQuantity;
   final String storageLocation;
@@ -26,7 +30,8 @@ class EquipmentItem {
 
   factory EquipmentItem.fromFirestore(DocumentSnapshot doc) {
     final m = EquipmentModel.fromFirestore(
-        doc as DocumentSnapshot<Map<String, dynamic>>);
+      doc as DocumentSnapshot<Map<String, dynamic>>,
+    );
     return EquipmentItem(
       id: m.equipmentId,
       name: m.itemName,
@@ -67,9 +72,10 @@ class BorrowCartItem {
 class EquipmentBorrowRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
   String get currentUserId => _auth.currentUser?.uid ?? '';
 
-  // Eligible Events 
+  // Eligible Events
 
   /// Fetches events organized by the current user that fall within the next
   /// 3 days (inclusive). Events further away are excluded so equipment cannot
@@ -106,13 +112,15 @@ class EquipmentBorrowRepository {
             .where('organizerHeadId', isEqualTo: user.uid)
             .get();
 
-        eligible.add(EligibleEvent(
-          id: doc.id,
-          name: data['title'] ?? '',
-          eventDate: eventDate,
-          venue: data['venue'] ?? '',
-          borrowedItemsCount: borrowSnap.docs.length,
-        ));
+        eligible.add(
+          EligibleEvent(
+            id: doc.id,
+            name: data['title'] ?? '',
+            eventDate: eventDate,
+            venue: data['venue'] ?? '',
+            borrowedItemsCount: borrowSnap.docs.length,
+          ),
+        );
       }
     }
 
@@ -154,6 +162,7 @@ class EquipmentBorrowRepository {
   Future<void> submitBorrowRequest({
     required String eventId,
     required String eventName,
+    required DateTime eventDate,
     required List<BorrowCartItem> cartItems,
   }) async {
     final user = _auth.currentUser;
@@ -174,7 +183,9 @@ class EquipmentBorrowRepository {
         final snap = snapshots[i];
 
         if (!snap.exists) {
-          throw Exception('Equipment ${cartItem.equipment.name} no longer exists.');
+          throw Exception(
+            'Equipment ${cartItem.equipment.name} no longer exists.',
+          );
         }
 
         final data = snap.data() as Map<String, dynamic>;
@@ -194,8 +205,9 @@ class EquipmentBorrowRepository {
       for (int i = 0; i < cartItems.length; i++) {
         final cartItem = cartItems[i];
 
-        final requestRef =
-            _firestore.collection('equipmentBorrowRequests').doc();
+        final requestRef = _firestore
+            .collection('equipmentBorrowRequests')
+            .doc();
         transaction.set(requestRef, {
           'eventId': eventId,
           'eventName': eventName,
@@ -204,6 +216,8 @@ class EquipmentBorrowRepository {
           'equipmentName': cartItem.equipment.name,
           'category': cartItem.equipment.category,
           'quantity': cartItem.quantity,
+          'storageLocation': cartItem.equipment.storageLocation,
+          'eventDate': Timestamp.fromDate(eventDate),
           'status': 'borrowed',
           'isSpecialRequest': false,
           'returnedAt': null,
@@ -223,16 +237,184 @@ class EquipmentBorrowRepository {
   /// Creates a special equipment request (item not in inventory).
   /// Starts with status = 'pending' for admin review.
   Future<void> submitSpecialEquipmentRequest(
-      SpecialEquipmentRequest request) async {
+    SpecialEquipmentRequest request,
+  ) async {
     await _firestore
         .collection('specialEquipmentRequests')
         .add(request.toFirestore());
   }
+
+  Stream<List<BorrowedEquipmentRequestModel>> watchBorrowedEquipmentForEvent(
+    String eventId,
+  ) {
+    final userId = currentUserId;
+    if (userId.isEmpty) return Stream.value(const []);
+    return _firestore
+        .collection('equipmentBorrowRequests')
+        .where('eventId', isEqualTo: eventId)
+        .where('organizerHeadId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+          const statuses = {'borrowed', 'returned', 'cancelled'};
+          final requests =
+              snapshot.docs
+                  .where(
+                    (doc) =>
+                        doc.data()['isSpecialRequest'] != true &&
+                        statuses.contains(doc.data()['status']),
+                  )
+                  .map(BorrowedEquipmentRequestModel.fromFirestore)
+                  .toList()
+                ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return requests;
+        });
+  }
+
+  Stream<List<SpecialEquipmentRequest>> watchSpecialRequestsForEvent(
+    String eventId,
+  ) {
+    final userId = currentUserId;
+    if (userId.isEmpty) return Stream.value(const []);
+    return _firestore
+        .collection('specialEquipmentRequests')
+        .where('eventId', isEqualTo: eventId)
+        .where('organizerHeadId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+          const statuses = {'pending', 'approved', 'rejected', 'cancelled'};
+          final requests =
+              snapshot.docs
+                  .where((doc) => statuses.contains(doc.data()['status']))
+                  .map(SpecialEquipmentRequest.fromFirestore)
+                  .toList()
+                ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return requests;
+        });
+  }
+
+  Future<void> cancelBorrowRequest(String requestId) async {
+    final requestRef = _firestore
+        .collection('equipmentBorrowRequests')
+        .doc(requestId);
+    await _firestore.runTransaction((transaction) async {
+      final request = await transaction.get(requestRef);
+      if (!request.exists) throw Exception('Borrow request not found.');
+      final data = request.data()!;
+      if (data['organizerHeadId'] != currentUserId ||
+          data['isSpecialRequest'] == true ||
+          data['status'] != 'borrowed') {
+        throw Exception('Borrow request cannot be cancelled.');
+      }
+      DateTime? eventDate = (data['eventDate'] as Timestamp?)?.toDate();
+      if (eventDate == null) {
+        final eventId = data['eventId'] as String? ?? '';
+        final event = await transaction.get(
+          _firestore.collection('events').doc(eventId),
+        );
+        eventDate = (event.data()?['eventDateTime'] as Timestamp?)?.toDate();
+      }
+      if (eventDate == null ||
+          !eventDate.isAfter(DateTime.now().add(const Duration(days: 3)))) {
+        throw Exception('Borrow request can no longer be cancelled.');
+      }
+
+      final equipmentId = data['equipmentId'] as String? ?? '';
+      final quantity = (data['quantity'] as num?)?.toInt() ?? 0;
+      final equipmentRef = _firestore.collection('equipment').doc(equipmentId);
+      final equipment = await transaction.get(equipmentRef);
+      transaction.update(requestRef, {
+        'status': 'cancelled',
+        'cancelledAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      if (equipment.exists) {
+        final borrowed =
+            (equipment.data()?['borrowedQuantity'] as num?)?.toInt() ?? 0;
+        transaction.update(equipmentRef, {
+          'borrowedQuantity': (borrowed - quantity).clamp(0, borrowed),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+    });
+  }
+
+  Future<void> cancelSpecialRequest(String requestId) async {
+    final requestRef = _firestore
+        .collection('specialEquipmentRequests')
+        .doc(requestId);
+    await _firestore.runTransaction((transaction) async {
+      final request = await transaction.get(requestRef);
+      if (!request.exists) throw Exception('Special request not found.');
+      final data = request.data()!;
+      if (data['organizerHeadId'] != currentUserId ||
+          data['status'] != 'pending') {
+        throw Exception('Special request cannot be cancelled.');
+      }
+      transaction.update(requestRef, {
+        'status': 'cancelled',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    });
+  }
+
+  Future<void> returnBorrowedEquipment(
+    String requestId,
+    String equipmentId,
+    int quantity,
+    XFile evidenceFile,
+  ) async {
+    final userId = currentUserId;
+    if (userId.isEmpty) throw Exception('Not authenticated');
+
+    final extension = evidenceFile.name.split('.').last.toLowerCase();
+    final storageRef = _storage
+        .ref()
+        .child('equipment_return_evidence')
+        .child(userId)
+        .child(requestId)
+        .child('${DateTime.now().millisecondsSinceEpoch}.$extension');
+    final upload = await storageRef.putData(
+      await evidenceFile.readAsBytes(),
+      SettableMetadata(contentType: evidenceFile.mimeType ?? 'image/jpeg'),
+    );
+    final evidenceUrl = await upload.ref.getDownloadURL();
+
+    final requestRef = _firestore
+        .collection('equipmentBorrowRequests')
+        .doc(requestId);
+    final equipmentRef = _firestore.collection('equipment').doc(equipmentId);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final request = await transaction.get(requestRef);
+        final equipment = await transaction.get(equipmentRef);
+        if (!request.exists || !equipment.exists) {
+          throw Exception('Borrow request or equipment not found.');
+        }
+        final data = request.data()!;
+        if (data['organizerHeadId'] != userId ||
+            data['isSpecialRequest'] == true ||
+            data['status'] != 'borrowed' ||
+            data['equipmentId'] != equipmentId ||
+            (data['quantity'] as num?)?.toInt() != quantity) {
+          throw Exception('Borrow request is no longer returnable.');
+        }
+        final borrowed =
+            (equipment.data()?['borrowedQuantity'] as num?)?.toInt() ?? 0;
+        transaction.update(requestRef, {
+          'status': 'returned',
+          'returnEvidenceUrl': evidenceUrl,
+          'returnEvidencePath': upload.ref.fullPath,
+          'returnedAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        transaction.update(equipmentRef, {
+          'borrowedQuantity': (borrowed - quantity).clamp(0, borrowed),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    } catch (_) {
+      await upload.ref.delete().catchError((_) {});
+      rethrow;
+    }
+  }
 }
-
-
-
-
-
-
-
