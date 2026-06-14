@@ -77,11 +77,18 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
     final dateStr = DateFormat('d MMM yyyy').format(event.eventDate);
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BorrowEquipmentScreen(event: event),
-        ),
-      ),
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BorrowEquipmentScreen(event: event),
+          ),
+        );
+        if (mounted) {
+          setState(() {
+            _eventsFuture = _repo.fetchEligibleEvents();
+          });
+        }
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
@@ -158,7 +165,6 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -229,7 +235,7 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
             ),
           ),
 
-          // â”€â”€ Event list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // Event list 
           Expanded(
             child: FutureBuilder<List<EligibleEvent>>(
               future: _eventsFuture,
@@ -266,7 +272,7 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
             ),
           ),
 
-          // â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // Footer
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
