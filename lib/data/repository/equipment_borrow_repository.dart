@@ -12,6 +12,7 @@ class EquipmentItem {
   final String category; // Audio, Presentation, Furniture, Decoration, Sports, Electrical, Others
   final int totalQuantity;
   final int availableQuantity;
+  final String storageLocation;
 
   const EquipmentItem({
     required this.id,
@@ -20,17 +21,20 @@ class EquipmentItem {
     required this.category,
     required this.totalQuantity,
     required this.availableQuantity,
+    this.storageLocation = '',
   });
 
   factory EquipmentItem.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final m = EquipmentModel.fromFirestore(
+        doc as DocumentSnapshot<Map<String, dynamic>>);
     return EquipmentItem(
-      id: doc.id,
-      name: data['title'] ?? '',
-      description: data['description'] ?? '',
-      category: data['category'] ?? 'Others',
-      totalQuantity: data['totalQuantity'] ?? 0,
-      availableQuantity: data['availableQuantity'] ?? 0,
+      id: m.equipmentId,
+      name: m.itemName,
+      description: m.description,
+      category: m.category,
+      totalQuantity: m.totalQuantity,
+      availableQuantity: m.availableQuantity,
+      storageLocation: m.storageLocation,
     );
   }
 }
@@ -63,8 +67,9 @@ class BorrowCartItem {
 class EquipmentBorrowRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String get currentUserId => _auth.currentUser?.uid ?? '';
 
-  // â”€â”€ Eligible Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Eligible Events 
 
   /// Fetches events organized by the current user that fall within the next
   /// 3 days (inclusive). Events further away are excluded so equipment cannot
@@ -116,7 +121,7 @@ class EquipmentBorrowRepository {
     return eligible;
   }
 
-  // â”€â”€ Available Equipment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Available Equipment
 
   /// Fetches all equipment items that have at least 1 unit available.
   Future<List<EquipmentItem>> fetchAvailableEquipment() async {
@@ -135,13 +140,14 @@ class EquipmentBorrowRepository {
             category: m.category,
             totalQuantity: m.totalQuantity,
             availableQuantity: m.availableQuantity,
+            storageLocation: m.storageLocation,
           );
         })
         .where((item) => item.availableQuantity > 0)
         .toList();
   }
 
-  // â”€â”€ Submit Borrow Request (in-stock) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Submit Borrow Request (in-stock)
 
   /// Submits a borrow request for a list of in-stock items for the given event.
   /// Each item has its availableQuantity decremented atomically via a batch.
@@ -153,38 +159,66 @@ class EquipmentBorrowRepository {
     final user = _auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
-    final batch = _firestore.batch();
+    await _firestore.runTransaction((transaction) async {
+      // First pass: read all inventory docs and validate availability.
+      final inventoryRefs = cartItems
+          .map((ci) => _firestore.collection('equipment').doc(ci.equipment.id))
+          .toList();
 
-    for (final cartItem in cartItems) {
-      // Write a borrow request document.
-      final requestRef = _firestore.collection('equipmentBorrowRequests').doc();
-      batch.set(requestRef, {
-        'eventId': eventId,
-        'eventName': eventName,
-        'organizerHeadId': user.uid,
-        'equipmentId': cartItem.equipment.id,
-        'equipmentName': cartItem.equipment.name,
-        'category': cartItem.equipment.category,
-        'quantity': cartItem.quantity,
-        'status': 'borrowed', // in-stock items are auto-approved
-        'isSpecialRequest': false,
-        'returnedAt': null,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      final snapshots = await Future.wait(
+        inventoryRefs.map((ref) => transaction.get(ref)),
+      );
 
-      // Decrement the available quantity on the inventory item.
-      final inventoryRef = _firestore
-          .collection('equipment')
-          .doc(cartItem.equipment.id);
-      batch.update(inventoryRef, {
-        'borrowedQuantity': FieldValue.increment(cartItem.quantity),
-      });
-    }
+      for (int i = 0; i < cartItems.length; i++) {
+        final cartItem = cartItems[i];
+        final snap = snapshots[i];
 
-    await batch.commit();
+        if (!snap.exists) {
+          throw Exception('Equipment ${cartItem.equipment.name} no longer exists.');
+        }
+
+        final data = snap.data() as Map<String, dynamic>;
+        final total = (data['totalQuantity'] as num?)?.toInt() ?? 0;
+        final borrowed = (data['borrowedQuantity'] as num?)?.toInt() ?? 0;
+        final available = total - borrowed;
+
+        if (cartItem.quantity > available) {
+          throw Exception(
+            'Not enough stock for ${cartItem.equipment.name}. '
+            'Only $available unit(s) available.',
+          );
+        }
+      }
+
+      // Second pass: write borrow request docs and update inventory.
+      for (int i = 0; i < cartItems.length; i++) {
+        final cartItem = cartItems[i];
+
+        final requestRef =
+            _firestore.collection('equipmentBorrowRequests').doc();
+        transaction.set(requestRef, {
+          'eventId': eventId,
+          'eventName': eventName,
+          'organizerHeadId': user.uid,
+          'equipmentId': cartItem.equipment.id,
+          'equipmentName': cartItem.equipment.name,
+          'category': cartItem.equipment.category,
+          'quantity': cartItem.quantity,
+          'status': 'borrowed',
+          'isSpecialRequest': false,
+          'returnedAt': null,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(inventoryRefs[i], {
+          'borrowedQuantity': FieldValue.increment(cartItem.quantity),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+    });
   }
 
-  // â”€â”€ Submit Special Equipment Request â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Submit Special Equipment
 
   /// Creates a special equipment request (item not in inventory).
   /// Starts with status = 'pending' for admin review.
@@ -195,6 +229,7 @@ class EquipmentBorrowRepository {
         .add(request.toFirestore());
   }
 }
+
 
 
 

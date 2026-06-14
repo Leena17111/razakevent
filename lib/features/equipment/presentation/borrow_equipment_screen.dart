@@ -7,11 +7,9 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/repository/equipment_borrow_repository.dart';
 import '../../../data/models/special_equipment_request_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Category icon helper
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 IconData _categoryIcon(String category) {
   switch (category.toLowerCase()) {
     case 'audio':
@@ -50,9 +48,7 @@ Color _categoryColor(String category) {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BorrowEquipmentScreen
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class BorrowEquipmentScreen extends StatefulWidget {
   final EligibleEvent event;
 
@@ -69,8 +65,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   late TabController _tabController;
   late Future<List<EquipmentItem>> _equipmentFuture;
 
-  // Cart: equipmentId â†’ BorrowCartItem
+  // Cart: equipmentId → BorrowCartItem
   final Map<String, BorrowCartItem> _cart = {};
+  bool _isSubmitting = false;
 
   // Filter / search state
   String _selectedCategory = 'All';
@@ -101,15 +98,17 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     super.dispose();
   }
 
-  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
   List<EquipmentItem> _filterItems(List<EquipmentItem> all) {
     return all.where((item) {
       final matchCat = _selectedCategory == 'All' ||
           item.category.toLowerCase() == _selectedCategory.toLowerCase();
-      final matchSearch = _searchQuery.isEmpty ||
-          item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.description.toLowerCase().contains(_searchQuery.toLowerCase());
+      final q = _searchQuery.toLowerCase().trim();
+      final matchSearch = q.isEmpty ||
+          item.name.toLowerCase().contains(q) ||
+          item.description.toLowerCase().contains(q) ||
+          item.category.toLowerCase().contains(q) ||
+          item.storageLocation.toLowerCase().contains(q) ||
+          item.availableQuantity.toString().contains(q);
       return matchCat && matchSearch;
     }).toList();
   }
@@ -124,7 +123,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
           _cart[item.id]!.quantity++;
         }
       } else {
-        _cart[item.id] = BorrowCartItem(equipment: item, quantity: 1);
+        if (item.availableQuantity > 0) {
+          _cart[item.id] = BorrowCartItem(equipment: item, quantity: 1);
+        }
       }
     });
   }
@@ -141,7 +142,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     });
   }
 
-  // â”€â”€ Confirm Borrow Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Confirm Borrow Dialog
 
   Future<void> _showConfirmDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -198,7 +199,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                           Expanded(
                               child: Text(ci.equipment.name,
                                   style: AppTextStyles.body)),
-                          Text('Ã—${ci.quantity}',
+                          Text('×${ci.quantity}',
                               style: AppTextStyles.body.copyWith(
                                   color: AppColors.textSecondary)),
                         ],
@@ -246,7 +247,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   }
 
   Future<void> _submitBorrow(BuildContext context) async {
+    if (_isSubmitting) return;
     final l10n = AppLocalizations.of(context)!;
+    setState(() => _isSubmitting = true);
     try {
       await _repo.submitBorrowRequest(
         eventId: widget.event.id,
@@ -254,7 +257,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         cartItems: _cart.values.toList(),
       );
       if (!mounted) return;
-      setState(() => _cart.clear());
+      setState(() {
+        _cart.clear();
+        _isSubmitting = false;
+        _equipmentFuture = _repo.fetchAvailableEquipment();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -270,6 +277,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       );
     } catch (e) {
       if (!mounted) return;
+      setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.borrowSubmitError),
@@ -280,8 +288,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     }
   }
 
-  // â”€â”€ Special Request bottom sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+  // Special Request bottom sheet
   void _showSpecialRequestSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -294,7 +301,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 
-  // â”€â”€ Available Tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Available Tab 
 
   Widget _buildAvailableTab(
       BuildContext context, List<EquipmentItem> allItems) {
@@ -444,6 +451,15 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                 Text(item.description,
                     style: AppTextStyles.caption,
                     overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                if (item.storageLocation.isNotEmpty)
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined, size: 11, color: AppColors.textSecondary),
+                      const SizedBox(width: 3),
+                      Expanded(child: Text(item.storageLocation, style: AppTextStyles.caption, overflow: TextOverflow.ellipsis)),
+                    ],
+                  ),
                 const SizedBox(height: 4),
                 Text(
                   l10n.borrowAvailableCount(item.availableQuantity),
@@ -547,7 +563,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => _showConfirmDialog(context),
+                onPressed: _isSubmitting ? null : () => _showConfirmDialog(context),
                 icon: const Icon(Icons.shopping_basket_outlined,
                     size: 18, color: AppColors.textWhite),
                 label: Text(
@@ -587,7 +603,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 
-  // â”€â”€ Category localization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Category localization
 
   String _localizeCategory(BuildContext context, String cat) {
     final l10n = AppLocalizations.of(context)!;
@@ -613,7 +629,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     }
   }
 
-  // â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Build
 
   @override
   Widget build(BuildContext context) {
@@ -623,7 +639,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // Header
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -681,31 +697,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     tabs: [
                       Tab(text: l10n.borrowTabAvailable),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(l10n.borrowTabBorrowed),
-                            if (_cartCount > 0) ...[
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.accent,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  '$_cartCount',
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.textWhite,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ]
-                          ],
-                        ),
-                      ),
+                      Tab(text: l10n.borrowTabBorrowed),
                     ],
                   ),
                 ],
@@ -713,7 +705,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             ),
           ),
 
-          // â”€â”€ Tab content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // Tab Content
           Expanded(
             child: FutureBuilder<List<EquipmentItem>>(
               future: _equipmentFuture,
@@ -749,10 +741,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 }
-
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Special Equipment Request bottom sheet
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _SpecialRequestSheet extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repo;
@@ -788,7 +777,7 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
       final request = SpecialEquipmentRequest(
         eventId: widget.event.id,
         eventName: widget.event.name,
-        organizerHeadId: '', // filled in repo from FirebaseAuth.currentUser
+        organizerHeadId: FirebaseAuth.instance.currentUser?.uid ?? '',
         itemName: _itemNameController.text.trim(),
         quantityRequired: int.parse(_quantityController.text.trim()),
         reason: _reasonController.text.trim(),
@@ -1045,6 +1034,9 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
         ),
       );
 }
+
+
+
 
 
 
