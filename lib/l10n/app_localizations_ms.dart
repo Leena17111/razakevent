@@ -1538,4 +1538,22 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get returnSubmitError =>
       'Gagal memulangkan peralatan. Sila cuba lagi.';
+
+  @override
+  String get specialRequestBadge => 'Permintaan Khas';
+
+  @override
+  String get borrowQuantityShort => 'Kuantiti';
+
+  @override
+  String get returnEquipmentSubtitle => 'Hantar bukti pemulangan';
+
+  @override
+  String get returnEquipmentDetails => 'BUTIRAN PERALATAN';
+
+  @override
+  String get returnUploadPhotoHint => 'PNG atau JPG · Ketik untuk memilih foto';
+
+  @override
+  String get returnCancel => 'Batal';
 }

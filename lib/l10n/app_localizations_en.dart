@@ -1529,4 +1529,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get returnSubmitError =>
       'Failed to return equipment. Please try again.';
+
+  @override
+  String get specialRequestBadge => 'Special Request';
+
+  @override
+  String get borrowQuantityShort => 'Qty';
+
+  @override
+  String get returnEquipmentSubtitle => 'Submit return evidence';
+
+  @override
+  String get returnEquipmentDetails => 'EQUIPMENT DETAILS';
+
+  @override
+  String get returnUploadPhotoHint => 'PNG or JPG · Tap to choose a photo';
+
+  @override
+  String get returnCancel => 'Cancel';
 }

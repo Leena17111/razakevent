@@ -143,6 +143,13 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     });
   }
 
+  void _refreshAvailableEquipment() {
+    if (!mounted) return;
+    setState(() {
+      _equipmentFuture = _repo.fetchAvailableEquipment();
+    });
+  }
+
   // Confirm Borrow Dialog
 
   Future<void> _showConfirmDialog(BuildContext context) async {
@@ -817,7 +824,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                     return _buildAvailableTab(context, snapshot.data ?? []);
                   },
                 ),
-                BorrowedEquipmentTab(event: widget.event, repository: _repo),
+                BorrowedEquipmentTab(
+                  event: widget.event,
+                  repository: _repo,
+                  onInventoryChanged: _refreshAvailableEquipment,
+                ),
                 SpecialRequestsTab(event: widget.event, repository: _repo),
               ],
             ),

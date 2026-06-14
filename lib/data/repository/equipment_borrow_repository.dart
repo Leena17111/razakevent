@@ -322,19 +322,21 @@ class EquipmentBorrowRepository {
       final quantity = (data['quantity'] as num?)?.toInt() ?? 0;
       final equipmentRef = _firestore.collection('equipment').doc(equipmentId);
       final equipment = await transaction.get(equipmentRef);
+      if (!equipment.exists || equipmentId.isEmpty || quantity <= 0) {
+        throw Exception('Equipment inventory could not be restored.');
+      }
+      final borrowed =
+          (equipment.data()?['borrowedQuantity'] as num?)?.toInt() ?? 0;
+      final updatedBorrowed = borrowed > quantity ? borrowed - quantity : 0;
       transaction.update(requestRef, {
         'status': 'cancelled',
         'cancelledAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      if (equipment.exists) {
-        final borrowed =
-            (equipment.data()?['borrowedQuantity'] as num?)?.toInt() ?? 0;
-        transaction.update(equipmentRef, {
-          'borrowedQuantity': (borrowed - quantity).clamp(0, borrowed),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
+      transaction.update(equipmentRef, {
+        'borrowedQuantity': updatedBorrowed,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
     });
   }
 
@@ -391,15 +393,20 @@ class EquipmentBorrowRepository {
           throw Exception('Borrow request or equipment not found.');
         }
         final data = request.data()!;
+        final requestQuantity = (data['quantity'] as num?)?.toInt() ?? 0;
         if (data['organizerHeadId'] != userId ||
             data['isSpecialRequest'] == true ||
             data['status'] != 'borrowed' ||
             data['equipmentId'] != equipmentId ||
-            (data['quantity'] as num?)?.toInt() != quantity) {
+            requestQuantity != quantity ||
+            requestQuantity <= 0) {
           throw Exception('Borrow request is no longer returnable.');
         }
         final borrowed =
             (equipment.data()?['borrowedQuantity'] as num?)?.toInt() ?? 0;
+        final updatedBorrowed = borrowed > requestQuantity
+            ? borrowed - requestQuantity
+            : 0;
         transaction.update(requestRef, {
           'status': 'returned',
           'returnEvidenceUrl': evidenceUrl,
@@ -408,7 +415,7 @@ class EquipmentBorrowRepository {
           'updatedAt': FieldValue.serverTimestamp(),
         });
         transaction.update(equipmentRef, {
-          'borrowedQuantity': (borrowed - quantity).clamp(0, borrowed),
+          'borrowedQuantity': updatedBorrowed,
           'updatedAt': FieldValue.serverTimestamp(),
         });
       });

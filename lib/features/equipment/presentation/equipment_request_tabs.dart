@@ -13,11 +13,13 @@ import 'return_borrowed_equipment_screen.dart';
 class BorrowedEquipmentTab extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repository;
+  final VoidCallback onInventoryChanged;
 
   const BorrowedEquipmentTab({
     super.key,
     required this.event,
     required this.repository,
+    required this.onInventoryChanged,
   });
 
   @override
@@ -27,17 +29,12 @@ class BorrowedEquipmentTab extends StatefulWidget {
 class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
   String _filter = 'all';
 
-  bool _canCancel(BorrowedEquipmentRequestModel request) {
-    final date = request.eventDate ?? widget.event.eventDate;
-    return request.status == 'borrowed' &&
-        date.isAfter(DateTime.now().add(const Duration(days: 3)));
-  }
-
   Future<void> _cancel(BorrowedEquipmentRequestModel request) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       await widget.repository.cancelBorrowRequest(request.id);
       if (!mounted) return;
+      widget.onInventoryChanged();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.borrowCancelSuccess),
@@ -73,14 +70,17 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
             : all.where((item) => item.status == _filter).toList();
         return Column(
           children: [
-            _FilterBar(
-              selected: _filter,
-              filters: {
-                'all': l10n.borrowFilterAll,
-                'borrowed': l10n.borrowFilterBorrowed,
-                'returned': l10n.borrowFilterReturned,
-              },
-              onSelected: (value) => setState(() => _filter = value),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _FilterBar(
+                selected: _filter,
+                filters: {
+                  'all': l10n.borrowFilterAll,
+                  'borrowed': l10n.borrowFilterBorrowed,
+                  'returned': l10n.borrowFilterReturned,
+                },
+                onSelected: (value) => setState(() => _filter = value),
+              ),
             ),
             Expanded(
               child: items.isEmpty
@@ -89,24 +89,38 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
                       text: l10n.borrowedEmpty,
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final request = items[index];
+                        final eventDate =
+                            request.eventDate ?? widget.event.eventDate;
+                        final arguments = ReturnBorrowedEquipmentArguments(
+                          request: request,
+                          eventDate: eventDate,
+                        );
                         return _BorrowedCard(
                           request: request,
-                          eventDate:
-                              request.eventDate ?? widget.event.eventDate,
-                          canCancel: _canCancel(request),
                           onCancel: () => _cancel(request),
-                          onReturn: () => Navigator.of(context).pushNamed(
-                            AppRoutes.returnBorrowedEquipment,
-                            arguments: ReturnBorrowedEquipmentArguments(
-                              request: request,
-                              eventDate:
-                                  request.eventDate ?? widget.event.eventDate,
-                            ),
-                          ),
+                          onReturn: () async {
+                            final returned = await Navigator.of(context)
+                                .push<bool>(
+                                  MaterialPageRoute<bool>(
+                                    settings: RouteSettings(
+                                      name: AppRoutes.returnBorrowedEquipment,
+                                      arguments: arguments,
+                                    ),
+                                    builder: (_) =>
+                                        ReturnBorrowedEquipmentScreen(
+                                          request: arguments.request,
+                                          eventDate: arguments.eventDate,
+                                        ),
+                                  ),
+                                );
+                            if (returned == true && mounted) {
+                              widget.onInventoryChanged();
+                            }
+                          },
                         );
                       },
                     ),
@@ -175,15 +189,18 @@ class _SpecialRequestsTabState extends State<SpecialRequestsTab> {
             : all.where((item) => item.status == _filter).toList();
         return Column(
           children: [
-            _FilterBar(
-              selected: _filter,
-              filters: {
-                'all': l10n.borrowFilterAll,
-                'pending': l10n.specialFilterPending,
-                'approved': l10n.specialFilterApproved,
-                'rejected': l10n.specialFilterRejected,
-              },
-              onSelected: (value) => setState(() => _filter = value),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _FilterBar(
+                selected: _filter,
+                filters: {
+                  'all': l10n.borrowFilterAll,
+                  'pending': l10n.specialFilterPending,
+                  'approved': l10n.specialFilterApproved,
+                  'rejected': l10n.specialFilterRejected,
+                },
+                onSelected: (value) => setState(() => _filter = value),
+              ),
             ),
             Expanded(
               child: items.isEmpty
@@ -192,7 +209,7 @@ class _SpecialRequestsTabState extends State<SpecialRequestsTab> {
                       text: l10n.specialRequestsEmpty,
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                       itemCount: items.length,
                       itemBuilder: (context, index) => _SpecialRequestCard(
                         request: items[index],
@@ -221,10 +238,10 @@ class _FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 54,
+      height: 56,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
         children: filters.entries.map((entry) {
           final active = entry.key == selected;
           return Padding(
@@ -234,11 +251,15 @@ class _FilterBar extends StatelessWidget {
               selected: active,
               onSelected: (_) => onSelected(entry.key),
               selectedColor: AppColors.primary,
+              backgroundColor: AppColors.surface,
               labelStyle: AppTextStyles.caption.copyWith(
                 color: active ? AppColors.textWhite : AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
               side: const BorderSide(color: AppColors.border),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
               showCheckmark: false,
             ),
           );
@@ -250,15 +271,11 @@ class _FilterBar extends StatelessWidget {
 
 class _BorrowedCard extends StatelessWidget {
   final BorrowedEquipmentRequestModel request;
-  final DateTime eventDate;
-  final bool canCancel;
   final VoidCallback onCancel;
   final VoidCallback onReturn;
 
   const _BorrowedCard({
     required this.request,
-    required this.eventDate,
-    required this.canCancel,
     required this.onCancel,
     required this.onReturn,
   });
@@ -266,53 +283,33 @@ class _BorrowedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final format = DateFormat('d MMM yyyy');
-    final deadline = eventDate.add(const Duration(hours: 24));
-    return _RequestCard(
+    return _EquipmentCard(
+      icon: _categoryIcon(request.category),
+      iconColor: _categoryColor(request.category),
       title: request.equipmentName,
-      status: _statusLabel(l10n, request.status),
-      statusColor: _statusColor(request.status),
+      quantity: request.quantity,
+      date: request.createdAt,
+      status: request.status,
       children: [
-        _InfoLine(Icons.numbers, '${l10n.borrowQuantity}: ${request.quantity}'),
-        _InfoLine(
-          Icons.calendar_today_outlined,
-          '${l10n.borrowDate}: ${format.format(request.createdAt)}',
-        ),
-        _InfoLine(
-          Icons.event_outlined,
-          '${l10n.borrowEvent}: ${request.eventName}',
-        ),
-        if (request.storageLocation.isNotEmpty)
-          _InfoLine(
-            Icons.location_on_outlined,
-            '${l10n.storageLocation}: ${request.storageLocation}',
-          ),
-        _InfoLine(
-          Icons.schedule,
-          '${l10n.returnDeadline}: ${format.format(deadline)}',
-        ),
-        _InfoLine(Icons.info_outline, l10n.returnInstruction),
         if (request.status == 'borrowed') ...[
-          const SizedBox(height: 12),
+          const Divider(height: 22, color: AppColors.borderLight),
           Row(
             children: [
-              if (canCancel) ...[
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onCancel,
-                    child: Text(l10n.cancelRequest),
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
               Expanded(
-                child: ElevatedButton(
+                child: _OutlinedActionButton(
+                  label: l10n.returnEquipmentAction,
+                  icon: Icons.check_circle_outline,
+                  color: AppColors.success,
                   onPressed: onReturn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textWhite,
-                  ),
-                  child: Text(l10n.returnEquipmentAction),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _OutlinedActionButton(
+                  label: l10n.cancelRequest,
+                  icon: Icons.close,
+                  color: AppColors.error,
+                  onPressed: onCancel,
                 ),
               ),
             ],
@@ -332,30 +329,35 @@ class _SpecialRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return _RequestCard(
+    final note =
+        request.status == 'rejected' &&
+            (request.adminNote?.trim().isNotEmpty ?? false)
+        ? request.adminNote!.trim()
+        : request.reason.trim();
+    return _EquipmentCard(
+      icon: Icons.inventory_2_outlined,
+      iconColor: request.status == 'rejected'
+          ? const Color(0xFFF59E0B)
+          : const Color(0xFF64748B),
       title: request.itemName,
-      status: _statusLabel(l10n, request.status),
-      statusColor: _statusColor(request.status),
+      quantity: request.quantityRequired,
+      date: request.createdAt,
+      status: request.status,
+      specialBadge: l10n.specialRequestBadge,
       children: [
-        _InfoLine(
-          Icons.numbers,
-          '${l10n.borrowQuantity}: ${request.quantityRequired}',
-        ),
-        _InfoLine(
-          Icons.notes_outlined,
-          '${l10n.specialRequestReason}: ${request.reason}',
-        ),
-        _InfoLine(
-          Icons.calendar_today_outlined,
-          '${l10n.specialCreatedAt}: ${DateFormat('d MMM yyyy').format(request.createdAt)}',
-        ),
+        if (note.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _RequestNote(text: note, isRejected: request.status == 'rejected'),
+        ],
         if (request.status == 'pending') ...[
-          const SizedBox(height: 12),
+          const Divider(height: 22, color: AppColors.borderLight),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
+            child: _OutlinedActionButton(
+              label: l10n.cancelRequest,
+              icon: Icons.close,
+              color: AppColors.error,
               onPressed: onCancel,
-              child: Text(l10n.cancelRequest),
             ),
           ),
         ],
@@ -364,33 +366,41 @@ class _SpecialRequestCard extends StatelessWidget {
   }
 }
 
-class _RequestCard extends StatelessWidget {
+class _EquipmentCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
   final String title;
+  final int quantity;
+  final DateTime date;
   final String status;
-  final Color statusColor;
+  final String? specialBadge;
   final List<Widget> children;
 
-  const _RequestCard({
+  const _EquipmentCard({
+    required this.icon,
+    required this.iconColor,
     required this.title,
+    required this.quantity,
+    required this.date,
     required this.status,
-    required this.statusColor,
-    required this.children,
+    this.specialBadge,
+    this.children = const [],
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: const [
           BoxShadow(
-            color: AppColors.shadowDark,
-            blurRadius: 4,
-            offset: Offset(0, 1),
+            color: Color(0x100F172A),
+            blurRadius: 16,
+            offset: Offset(0, 5),
           ),
         ],
       ),
@@ -398,25 +408,68 @@ class _RequestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text(title, style: AppTextStyles.h3)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
+                  color: iconColor.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
                 ),
-                child: Text(
-                  status,
-                  style: AppTextStyles.caption.copyWith(
-                    color: statusColor,
-                    fontWeight: FontWeight.w700,
-                  ),
+                child: Icon(icon, size: 20, color: iconColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF171717),
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${l10n.borrowQuantityShort}: $quantity · ${DateFormat('d MMM yyyy').format(date)}',
+                      style: AppTextStyles.bodySm.copyWith(
+                        color: const Color(0xFF94A3B8),
+                      ),
+                    ),
+                    if (specialBadge != null) ...[
+                      const SizedBox(height: 5),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xFF7C3AED),
+                            width: 1.2,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          specialBadge!,
+                          style: AppTextStyles.caption.copyWith(
+                            color: const Color(0xFF7C3AED),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
+              const SizedBox(width: 8),
+              _StatusBadge(status: status),
             ],
           ),
-          const SizedBox(height: 10),
           ...children,
         ],
       ),
@@ -424,22 +477,102 @@ class _RequestCard extends StatelessWidget {
   }
 }
 
-class _InfoLine extends StatelessWidget {
-  final IconData icon;
-  final String text;
+class _StatusBadge extends StatelessWidget {
+  final String status;
 
-  const _InfoLine(this.icon, this.text);
+  const _StatusBadge({required this.status});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
+    final l10n = AppLocalizations.of(context)!;
+    final colors = _statusColors(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_statusIcon(status), size: 12, color: colors.foreground),
+          const SizedBox(width: 4),
+          Text(
+            _statusLabel(l10n, status),
+            style: AppTextStyles.caption.copyWith(
+              color: colors.foreground,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OutlinedActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const _OutlinedActionButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 15),
+      label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: color,
+        side: BorderSide(color: color, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        textStyle: AppTextStyles.bodySm.copyWith(fontWeight: FontWeight.w800),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      ),
+    );
+  }
+}
+
+class _RequestNote extends StatelessWidget {
+  final String text;
+  final bool isRejected;
+
+  const _RequestNote({required this.text, required this.isRejected});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isRejected
+        ? const Color(0xFFEF4444)
+        : AppColors.textSecondary;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: BoxDecoration(
+        color: isRejected ? const Color(0xFFFFF1F2) : AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(13),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: AppColors.textSecondary),
-          const SizedBox(width: 6),
-          Expanded(child: Text(text, style: AppTextStyles.caption)),
+          Icon(
+            isRejected ? Icons.cancel_outlined : Icons.notes_outlined,
+            size: 14,
+            color: color,
+          ),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.bodySm.copyWith(color: color),
+            ),
+          ),
         ],
       ),
     );
@@ -467,6 +600,36 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+IconData _categoryIcon(String category) {
+  switch (category.toLowerCase()) {
+    case 'audio':
+      return Icons.mic_none_outlined;
+    case 'furniture':
+      return Icons.chair_outlined;
+    case 'presentation':
+      return Icons.present_to_all_outlined;
+    case 'electrical':
+      return Icons.electrical_services_outlined;
+    default:
+      return Icons.inventory_2_outlined;
+  }
+}
+
+Color _categoryColor(String category) {
+  switch (category.toLowerCase()) {
+    case 'audio':
+      return const Color(0xFF7C3AED);
+    case 'furniture':
+      return const Color(0xFFF59E0B);
+    case 'presentation':
+      return const Color(0xFF2563EB);
+    case 'electrical':
+      return const Color(0xFF64748B);
+    default:
+      return AppColors.primary;
+  }
+}
+
 String _statusLabel(AppLocalizations l10n, String status) {
   switch (status) {
     case 'borrowed':
@@ -484,17 +647,47 @@ String _statusLabel(AppLocalizations l10n, String status) {
   }
 }
 
-Color _statusColor(String status) {
+IconData _statusIcon(String status) {
   switch (status) {
-    case 'borrowed':
-    case 'approved':
-      return AppColors.success;
     case 'returned':
-      return AppColors.primary;
+      return Icons.task_alt;
     case 'rejected':
     case 'cancelled':
-      return AppColors.error;
+      return Icons.cancel_outlined;
+    case 'approved':
+      return Icons.check_circle_outline;
     default:
-      return AppColors.warning;
+      return Icons.info_outline;
+  }
+}
+
+({Color background, Color foreground}) _statusColors(String status) {
+  switch (status) {
+    case 'borrowed':
+    case 'pending':
+      return (
+        background: const Color(0xFFFFF3C4),
+        foreground: const Color(0xFFD97706),
+      );
+    case 'approved':
+      return (
+        background: const Color(0xFFDCFCE7),
+        foreground: const Color(0xFF15803D),
+      );
+    case 'rejected':
+      return (
+        background: const Color(0xFFFFE4E6),
+        foreground: const Color(0xFFE11D48),
+      );
+    case 'cancelled':
+      return (
+        background: const Color(0xFFFEE2E2),
+        foreground: const Color(0xFFB91C1C),
+      );
+    default:
+      return (
+        background: const Color(0xFFF1F5F9),
+        foreground: const Color(0xFF475569),
+      );
   }
 }

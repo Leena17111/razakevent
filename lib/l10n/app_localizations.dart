@@ -2995,6 +2995,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to return equipment. Please try again.'**
   String get returnSubmitError;
+
+  /// No description provided for @specialRequestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Request'**
+  String get specialRequestBadge;
+
+  /// No description provided for @borrowQuantityShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get borrowQuantityShort;
+
+  /// No description provided for @returnEquipmentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit return evidence'**
+  String get returnEquipmentSubtitle;
+
+  /// No description provided for @returnEquipmentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'EQUIPMENT DETAILS'**
+  String get returnEquipmentDetails;
+
+  /// No description provided for @returnUploadPhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'PNG or JPG · Tap to choose a photo'**
+  String get returnUploadPhotoHint;
+
+  /// No description provided for @returnCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get returnCancel;
 }
 
 class _AppLocalizationsDelegate

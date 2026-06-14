@@ -514,5 +514,11 @@
   "returnPhotoRequired": "Photo evidence is required before submitting.",
   "returnSubmit": "Submit Return",
   "returnSubmitSuccess": "Equipment returned successfully.",
-  "returnSubmitError": "Failed to return equipment. Please try again."
+  "returnSubmitError": "Failed to return equipment. Please try again.",
+  "specialRequestBadge": "Special Request",
+  "borrowQuantityShort": "Qty",
+  "returnEquipmentSubtitle": "Submit return evidence",
+  "returnEquipmentDetails": "EQUIPMENT DETAILS",
+  "returnUploadPhotoHint": "PNG or JPG · Tap to choose a photo",
+  "returnCancel": "Cancel"
 }

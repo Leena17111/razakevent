@@ -514,5 +514,11 @@
   "returnPhotoRequired": "Bukti foto diperlukan sebelum penghantaran.",
   "returnSubmit": "Hantar Pemulangan",
   "returnSubmitSuccess": "Peralatan berjaya dipulangkan.",
-  "returnSubmitError": "Gagal memulangkan peralatan. Sila cuba lagi."
+  "returnSubmitError": "Gagal memulangkan peralatan. Sila cuba lagi.",
+  "specialRequestBadge": "Permintaan Khas",
+  "borrowQuantityShort": "Kuantiti",
+  "returnEquipmentSubtitle": "Hantar bukti pemulangan",
+  "returnEquipmentDetails": "BUTIRAN PERALATAN",
+  "returnUploadPhotoHint": "PNG atau JPG · Ketik untuk memilih foto",
+  "returnCancel": "Batal"
 }
