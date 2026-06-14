@@ -1233,4 +1233,183 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get appFooter => 'Kolej Tun Razak · UTM';
+
+  @override
+  String get borrowEventTitle => 'Borrow Equipment';
+
+  @override
+  String get borrowEventSubtitle => 'Select an event to borrow equipment for.';
+
+  @override
+  String get borrowEventEligibilityNote =>
+      'Only events within the next 3 days are eligible for equipment borrowing.';
+
+  @override
+  String get borrowEventBadgeToday => 'Today';
+
+  @override
+  String get borrowEventBadgeTomorrow => 'Tomorrow';
+
+  @override
+  String borrowEventBadgeInDays(Object days) {
+    return 'In $days days';
+  }
+
+  @override
+  String borrowEventItemsBorrowed(Object count) {
+    return '$count item(s) borrowed';
+  }
+
+  @override
+  String get borrowEventNoEvents =>
+      'No eligible events found.\nOnly events within the next 3 days will appear here.';
+
+  @override
+  String get borrowEventLoadError => 'Failed to load events. Please try again.';
+
+  @override
+  String get borrowEquipTitle => 'Borrow Equipment';
+
+  @override
+  String get borrowTabAvailable => 'Available';
+
+  @override
+  String get borrowTabBorrowed => 'Borrowed';
+
+  @override
+  String get borrowTabBorrowedPlaceholder => 'Borrowed items will appear here.';
+
+  @override
+  String get borrowSearchHint => 'Search equipment...';
+
+  @override
+  String get borrowCategoryAll => 'All';
+
+  @override
+  String get borrowCategoryAudio => 'Audio';
+
+  @override
+  String get borrowCategoryPresentation => 'Presentation';
+
+  @override
+  String get borrowCategoryFurniture => 'Furniture';
+
+  @override
+  String get borrowCategoryDecoration => 'Decoration';
+
+  @override
+  String get borrowCategorySports => 'Sports';
+
+  @override
+  String get borrowCategoryElectrical => 'Electrical';
+
+  @override
+  String get borrowCategoryOthers => 'Others';
+
+  @override
+  String borrowAvailableCount(Object count) {
+    return '$count available';
+  }
+
+  @override
+  String borrowAdded(Object count) {
+    return 'Added ($count)';
+  }
+
+  @override
+  String get borrowNoEquipmentFound => 'No equipment found';
+
+  @override
+  String get borrowLoadError => 'Failed to load equipment. Please try again.';
+
+  @override
+  String borrowItemsButton(Object count) {
+    return 'Borrow Items ($count selected)';
+  }
+
+  @override
+  String get borrowRequestSpecial => '+ Request Special Equipment';
+
+  @override
+  String get borrowConfirmTitle => 'Confirm Borrow';
+
+  @override
+  String get borrowConfirmSubtitle =>
+      'Borrowed equipment must be returned within 24 hours after the event.';
+
+  @override
+  String get borrowConfirmCancel => 'Cancel';
+
+  @override
+  String get borrowConfirmSubmit => 'Confirm Borrow';
+
+  @override
+  String get borrowSubmitSuccess => 'Borrow request submitted successfully!';
+
+  @override
+  String get borrowSubmitError =>
+      'Failed to submit borrow request. Please try again.';
+
+  @override
+  String get specialRequestTitle => 'Special Equipment Request';
+
+  @override
+  String get specialRequestSubtitle => 'Request equipment not in inventory';
+
+  @override
+  String get specialRequestEventLabel => 'EVENT';
+
+  @override
+  String get specialRequestPendingNote =>
+      'New requests are automatically assigned Pending status and will be reviewed by the Admin.';
+
+  @override
+  String get specialRequestItemNameLabel => 'Item Name *';
+
+  @override
+  String get specialRequestItemNameHint => 'e.g. Projector Screen';
+
+  @override
+  String get specialRequestItemNameRequired => 'Please enter an item name.';
+
+  @override
+  String get specialRequestQuantityLabel => 'Quantity Required *';
+
+  @override
+  String get specialRequestQuantityRequired => 'Please enter a quantity.';
+
+  @override
+  String get specialRequestQuantityInvalid =>
+      'Please enter a valid quantity (minimum 1).';
+
+  @override
+  String get specialRequestReasonLabel => 'Reason / Description *';
+
+  @override
+  String get specialRequestReasonHint =>
+      'Describe why you need this item and any relevant details...';
+
+  @override
+  String get specialRequestReasonRequired => 'Please provide a reason.';
+
+  @override
+  String get specialRequestReasonTooShort =>
+      'Please provide a reason (min. 10 characters).';
+
+  @override
+  String get specialRequestCancel => 'Cancel';
+
+  @override
+  String get specialRequestSubmit => 'Submit Request';
+
+  @override
+  String get specialRequestSubmitSuccess =>
+      'Special request submitted successfully!';
+
+  @override
+  String get specialRequestSubmitError =>
+      'Failed to submit request. Please try again.';
 }
