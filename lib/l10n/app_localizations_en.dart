@@ -1412,4 +1412,43 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get specialRequestSubmitError =>
       'Failed to submit request. Please try again.';
+
+  @override
+  String get certificatesTitle => 'My Certificates';
+
+  @override
+  String get certificatesSubtitle => 'Your earned certificates';
+
+  @override
+  String get certificatesNote =>
+      'Certificates are auto-generated after the event ends and feedback is submitted.';
+
+  @override
+  String get certificatesParticipation => 'Participation';
+
+  @override
+  String get certificatesVolunteer => 'Volunteer';
+
+  @override
+  String get certificatesIssued => 'Issued';
+
+  @override
+  String get certificatesView => 'View';
+
+  @override
+  String get certificatesDownload => 'Download';
+
+  @override
+  String get certificatesEmpty => 'No Certificates Yet';
+
+  @override
+  String get certificatesEmptyDesc =>
+      'Complete feedback for eligible events, or be approved as a volunteer, to receive certificates.';
+
+  @override
+  String get certificatesDownloading => 'Downloading certificate...';
+
+  @override
+  String get certificatesPdfNotReady =>
+      'Certificate PDF is not ready yet. Please try again later.';
 }

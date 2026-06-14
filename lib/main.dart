@@ -1,13 +1,14 @@
 ﻿import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart'; // Stripe: initialize before runApp
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'core/constants/app_colors.dart';
 import 'core/localization/locale_controller.dart';
 import 'core/routes/app_routes.dart';
 import 'features/auth/presentation/forgot_password_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
+import 'features/certificates/presentation/view_certificates_screen.dart';
 import 'features/documents/presentation/document_details_screen.dart';
 import 'features/documents/presentation/document_status_screen.dart';
 import 'features/documents/presentation/edit_document_screen.dart';
@@ -40,8 +41,6 @@ import 'features/equipment/presentation/borrow_equipment_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Stripe: only initialize on mobile â€” flutter_stripe does not support web.
-  // On web, the payment button will show a message directing users to the app.
   if (!kIsWeb) {
     Stripe.publishableKey = 'pk_test_51Ta6LqJCG09jyIk1UrF7IMTwCppku8SkbAbE9kspuX1jCTVUZe4JviBF95E0ilZQ9heGKSmk8AQiuJZlBOaB2QoB00qJkpXxyd';
     await Stripe.instance.applySettings();
@@ -109,83 +108,56 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.secretaryProposedEvents:  (_) => const SecretaryProposedEventsScreen(),
             AppRoutes.secretaryEventDetail:     (_) => const SecretaryEventDetailScreen(),
 
-            // Sprint 3 â€” Epic 1: Event Participation & Feedback Module
-
-            // Student Event Participation
+            // Sprint 3 — Epic 1: Event Participation & Feedback Module
             AppRoutes.browseEvents:           (_) => const BrowseEventsScreen(),
-            AppRoutes.eventDetail: (_) => const EventDetailScreen(),
-            AppRoutes.registerEvent: (_) => const EventRegistrationScreen(),
+            AppRoutes.eventDetail:            (_) => const EventDetailScreen(),
+            AppRoutes.registerEvent:          (_) => const EventRegistrationScreen(),
             AppRoutes.registrationSuccess:    (_) => const Scaffold(body: Center(child: Text('Registration Success'))),
             AppRoutes.myRegisteredEvents:     (_) => const Scaffold(body: Center(child: Text('My Registered Events'))),
 
-            // Student Feedback
             AppRoutes.submitFeedback:         (_) => const FeedbackListScreen(),
-
-            // Organizer Feedback & Registrations
             AppRoutes.eventResponsesSelect:   (_) => const OrganizerEventSelectScreen(),
             AppRoutes.eventRegistrants:       (_) => const Scaffold(body: Center(child: Text('Event Registrants'))),
             AppRoutes.eventFeedbackResponses: (_) => const Scaffold(body: Center(child: Text('Event Feedback Responses'))),
 
-            // Sprint 3 â€” Epic 2: Volunteer Recruitment Module
-
-            // Student Volunteer
-          AppRoutes.volunteerPositions: (_) => const StudentVolunteerPositionsScreen(),
+            // Sprint 3 — Epic 2: Volunteer Recruitment Module
+            AppRoutes.volunteerPositions:      (_) => const StudentVolunteerPositionsScreen(),
             AppRoutes.applyVolunteer:          (_) => const Scaffold(body: Center(child: Text('Apply Volunteer'))),
             AppRoutes.myVolunteerApplications: (_) => const Scaffold(body: Center(child: Text('My Volunteer Applications'))),
 
-            // Organizer Volunteer Recruitment
-           // Organizer Volunteer Recruitment
             AppRoutes.volunteerManagement: (_) =>
                 const VolunteerEventSelectScreen(mode: 'add'),
-
             AppRoutes.addVolunteerPosition: (_) =>
                 const VolunteerEventSelectScreen(mode: 'add'),
-
             AppRoutes.reviewApplications: (_) =>
                 const VolunteerEventSelectScreen(mode: 'review'),
-                AppRoutes.studentVolunteerPositions: (_) => const StudentVolunteerPositionsScreen(),
+            AppRoutes.studentVolunteerPositions: (_) =>
+                const StudentVolunteerPositionsScreen(),
 
-            // Sprint 4 â€” Epic 1: Equipment Borrowing Management
-
-            // Admin Equipment
-           AppRoutes.equipmentInventory: (_) => const ManageEquipmentScreen(),
-
-           AppRoutes.addEquipment: (_) => const EquipmentFormScreen(),
-
-           AppRoutes.editEquipment: (_) => const EquipmentFormScreen(),
-
-           AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
-                  body: Center(
-                    child: Text('Review Special Equipment Requests'),
-                  ),
+            // Sprint 4 — Epic 1: Equipment Borrowing Management
+            AppRoutes.equipmentInventory: (_) => const ManageEquipmentScreen(),
+            AppRoutes.addEquipment:       (_) => const EquipmentFormScreen(),
+            AppRoutes.editEquipment:      (_) => const EquipmentFormScreen(),
+            AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
+                  body: Center(child: Text('Review Special Equipment Requests')),
                 ),
-
-            // Organizer Equipment
             AppRoutes.selectEquipmentEvent: (_) => const BorrowEventSelectScreen(),
-
-            AppRoutes.availableEquipment: (_) => const BorrowEventSelectScreen(),
-
+            AppRoutes.availableEquipment:   (_) => const BorrowEventSelectScreen(),
             AppRoutes.viewBorrowedEquipment: (_) => const Scaffold(
                   body: Center(child: Text('View Borrowed Equipment')),
                 ),
-
             AppRoutes.requestSpecialEquipment: (_) => const Scaffold(
                   body: Center(child: Text('Request Special Equipment')),
                 ),
-
             AppRoutes.returnBorrowedEquipment: (_) => const Scaffold(
                   body: Center(child: Text('Return Borrowed Equipment')),
                 ),
-
             AppRoutes.cancelBorrowedEquipment: (_) => const Scaffold(
                   body: Center(child: Text('Cancel Borrowed Equipment')),
                 ),
 
-            // Sprint 4 â€” Epic 2: Certification Management
-            AppRoutes.certificates: (_) => const Scaffold(
-                  body: Center(child: Text('Certificates')),
-                ),
-
+            // Sprint 4 — Epic 2: Certification Management
+            AppRoutes.certificates:       (_) => const ViewCertificatesScreen(),
             AppRoutes.certificatePreview: (_) => const Scaffold(
                   body: Center(child: Text('Certificate Preview')),
                 ),
@@ -195,4 +167,3 @@ class RazakEventApp extends StatelessWidget {
     );
   }
 }
-

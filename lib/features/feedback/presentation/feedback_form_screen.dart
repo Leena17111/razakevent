@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:razakevent/l10n/app_localizations.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../certificates/logic/certificate_trigger_service.dart';
 import '../data/feedback_model.dart';
 import '../data/feedback_repository.dart';
 import 'feedback_success_screen.dart';
@@ -140,6 +141,12 @@ class _FeedbackFormScreenState extends State<FeedbackFormScreen> {
         submittedAt: DateTime.now(),
       );
       await _repo.submitFeedback(feedback);
+
+      // AD-190 — auto-issue participation certificate if event has ended
+      await CertificateTriggerService().onFeedbackSubmitted(
+        userId: feedback.studentId,
+        eventId: feedback.eventId,
+      );
 
       if (mounted) {
         Navigator.pushReplacement(

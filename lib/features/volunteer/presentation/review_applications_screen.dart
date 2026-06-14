@@ -832,6 +832,8 @@ class _ReviewApplicationsScreenState extends State<ReviewApplicationsScreen> {
     applicationId: application.id,
     positionId: application.positionId,
     reviewerUid: _reviewerUid,
+    applicantUserId: application.studentUid,
+    eventId: application.eventId,
   );
 
   if (!mounted) return;

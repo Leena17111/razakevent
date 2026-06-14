@@ -2767,6 +2767,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to submit request. Please try again.'**
   String get specialRequestSubmitError;
+
+  /// No description provided for @certificatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Certificates'**
+  String get certificatesTitle;
+
+  /// No description provided for @certificatesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your earned certificates'**
+  String get certificatesSubtitle;
+
+  /// No description provided for @certificatesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificates are auto-generated after the event ends and feedback is submitted.'**
+  String get certificatesNote;
+
+  /// No description provided for @certificatesParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'Participation'**
+  String get certificatesParticipation;
+
+  /// No description provided for @certificatesVolunteer.
+  ///
+  /// In en, this message translates to:
+  /// **'Volunteer'**
+  String get certificatesVolunteer;
+
+  /// No description provided for @certificatesIssued.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get certificatesIssued;
+
+  /// No description provided for @certificatesView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get certificatesView;
+
+  /// No description provided for @certificatesDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get certificatesDownload;
+
+  /// No description provided for @certificatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No Certificates Yet'**
+  String get certificatesEmpty;
+
+  /// No description provided for @certificatesEmptyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete feedback for eligible events, or be approved as a volunteer, to receive certificates.'**
+  String get certificatesEmptyDesc;
+
+  /// No description provided for @certificatesDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading certificate...'**
+  String get certificatesDownloading;
+
+  /// No description provided for @certificatesPdfNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate PDF is not ready yet. Please try again later.'**
+  String get certificatesPdfNotReady;
 }
 
 class _AppLocalizationsDelegate
