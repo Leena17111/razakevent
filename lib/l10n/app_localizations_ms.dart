@@ -1239,4 +1239,184 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get confirm => 'Sahkan';
+
+  @override
+  String get appFooter => 'Kolej Tun Razak · UTM';
+
+  @override
+  String get borrowEventTitle => 'Pinjam Peralatan';
+
+  @override
+  String get borrowEventSubtitle => 'Pilih acara untuk meminjam peralatan.';
+
+  @override
+  String get borrowEventEligibilityNote =>
+      'Hanya acara dalam tempoh 3 hari akan datang layak untuk peminjaman peralatan.';
+
+  @override
+  String get borrowEventBadgeToday => 'Hari Ini';
+
+  @override
+  String get borrowEventBadgeTomorrow => 'Esok';
+
+  @override
+  String borrowEventBadgeInDays(Object days) {
+    return 'Dalam $days hari';
+  }
+
+  @override
+  String borrowEventItemsBorrowed(Object count) {
+    return '$count item dipinjam';
+  }
+
+  @override
+  String get borrowEventNoEvents =>
+      'Tiada acara layak ditemui.\nHanya acara dalam tempoh 3 hari akan datang akan dipaparkan di sini.';
+
+  @override
+  String get borrowEventLoadError => 'Gagal memuatkan acara. Sila cuba lagi.';
+
+  @override
+  String get borrowEquipTitle => 'Pinjam Peralatan';
+
+  @override
+  String get borrowTabAvailable => 'Tersedia';
+
+  @override
+  String get borrowTabBorrowed => 'Dipinjam';
+
+  @override
+  String get borrowTabBorrowedPlaceholder =>
+      'Item yang dipinjam akan dipaparkan di sini.';
+
+  @override
+  String get borrowSearchHint => 'Cari peralatan...';
+
+  @override
+  String get borrowCategoryAll => 'Semua';
+
+  @override
+  String get borrowCategoryAudio => 'Audio';
+
+  @override
+  String get borrowCategoryPresentation => 'Pembentangan';
+
+  @override
+  String get borrowCategoryFurniture => 'Perabot';
+
+  @override
+  String get borrowCategoryDecoration => 'Hiasan';
+
+  @override
+  String get borrowCategorySports => 'Sukan';
+
+  @override
+  String get borrowCategoryElectrical => 'Elektrik';
+
+  @override
+  String get borrowCategoryOthers => 'Lain-lain';
+
+  @override
+  String borrowAvailableCount(Object count) {
+    return '$count tersedia';
+  }
+
+  @override
+  String borrowAdded(Object count) {
+    return 'Ditambah ($count)';
+  }
+
+  @override
+  String get borrowNoEquipmentFound => 'Tiada peralatan ditemui';
+
+  @override
+  String get borrowLoadError => 'Gagal memuatkan peralatan. Sila cuba lagi.';
+
+  @override
+  String borrowItemsButton(Object count) {
+    return 'Pinjam Item ($count dipilih)';
+  }
+
+  @override
+  String get borrowRequestSpecial => '+ Minta Peralatan Khas';
+
+  @override
+  String get borrowConfirmTitle => 'Sahkan Pinjaman';
+
+  @override
+  String get borrowConfirmSubtitle =>
+      'Peralatan yang dipinjam mesti dikembalikan dalam masa 24 jam selepas acara.';
+
+  @override
+  String get borrowConfirmCancel => 'Batal';
+
+  @override
+  String get borrowConfirmSubmit => 'Sahkan Pinjaman';
+
+  @override
+  String get borrowSubmitSuccess => 'Permintaan pinjaman berjaya dihantar!';
+
+  @override
+  String get borrowSubmitError =>
+      'Gagal menghantar permintaan pinjaman. Sila cuba lagi.';
+
+  @override
+  String get specialRequestTitle => 'Permintaan Peralatan Khas';
+
+  @override
+  String get specialRequestSubtitle =>
+      'Minta peralatan yang tiada dalam inventori';
+
+  @override
+  String get specialRequestEventLabel => 'ACARA';
+
+  @override
+  String get specialRequestPendingNote =>
+      'Permintaan baharu secara automatik ditetapkan status Dalam Semakan dan akan disemak oleh Admin.';
+
+  @override
+  String get specialRequestItemNameLabel => 'Nama Item *';
+
+  @override
+  String get specialRequestItemNameHint => 'cth. Skrin Projektor';
+
+  @override
+  String get specialRequestItemNameRequired => 'Sila masukkan nama item.';
+
+  @override
+  String get specialRequestQuantityLabel => 'Kuantiti Diperlukan *';
+
+  @override
+  String get specialRequestQuantityRequired => 'Sila masukkan kuantiti.';
+
+  @override
+  String get specialRequestQuantityInvalid =>
+      'Sila masukkan kuantiti yang sah (minimum 1).';
+
+  @override
+  String get specialRequestReasonLabel => 'Sebab / Penerangan *';
+
+  @override
+  String get specialRequestReasonHint =>
+      'Terangkan sebab anda memerlukan item ini dan sebarang maklumat berkaitan...';
+
+  @override
+  String get specialRequestReasonRequired => 'Sila berikan sebab.';
+
+  @override
+  String get specialRequestReasonTooShort =>
+      'Sila berikan sebab (min. 10 aksara).';
+
+  @override
+  String get specialRequestCancel => 'Batal';
+
+  @override
+  String get specialRequestSubmit => 'Hantar Permintaan';
+
+  @override
+  String get specialRequestSubmitSuccess => 'Permintaan khas berjaya dihantar!';
+
+  @override
+  String get specialRequestSubmitError =>
+      'Gagal menghantar permintaan. Sila cuba lagi.';
 }

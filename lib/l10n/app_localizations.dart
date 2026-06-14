@@ -2449,6 +2449,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get confirm;
+
+  /// No description provided for @appFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Kolej Tun Razak · UTM'**
+  String get appFooter;
+
+  /// No description provided for @borrowEventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow Equipment'**
+  String get borrowEventTitle;
+
+  /// No description provided for @borrowEventSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an event to borrow equipment for.'**
+  String get borrowEventSubtitle;
+
+  /// No description provided for @borrowEventEligibilityNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Only events within the next 3 days are eligible for equipment borrowing.'**
+  String get borrowEventEligibilityNote;
+
+  /// No description provided for @borrowEventBadgeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get borrowEventBadgeToday;
+
+  /// No description provided for @borrowEventBadgeTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get borrowEventBadgeTomorrow;
+
+  /// No description provided for @borrowEventBadgeInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'In {days} days'**
+  String borrowEventBadgeInDays(Object days);
+
+  /// No description provided for @borrowEventItemsBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} item(s) borrowed'**
+  String borrowEventItemsBorrowed(Object count);
+
+  /// No description provided for @borrowEventNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible events found.\nOnly events within the next 3 days will appear here.'**
+  String get borrowEventNoEvents;
+
+  /// No description provided for @borrowEventLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load events. Please try again.'**
+  String get borrowEventLoadError;
+
+  /// No description provided for @borrowEquipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow Equipment'**
+  String get borrowEquipTitle;
+
+  /// No description provided for @borrowTabAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get borrowTabAvailable;
+
+  /// No description provided for @borrowTabBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed'**
+  String get borrowTabBorrowed;
+
+  /// No description provided for @borrowTabBorrowedPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed items will appear here.'**
+  String get borrowTabBorrowedPlaceholder;
+
+  /// No description provided for @borrowSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search equipment...'**
+  String get borrowSearchHint;
+
+  /// No description provided for @borrowCategoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get borrowCategoryAll;
+
+  /// No description provided for @borrowCategoryAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get borrowCategoryAudio;
+
+  /// No description provided for @borrowCategoryPresentation.
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation'**
+  String get borrowCategoryPresentation;
+
+  /// No description provided for @borrowCategoryFurniture.
+  ///
+  /// In en, this message translates to:
+  /// **'Furniture'**
+  String get borrowCategoryFurniture;
+
+  /// No description provided for @borrowCategoryDecoration.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoration'**
+  String get borrowCategoryDecoration;
+
+  /// No description provided for @borrowCategorySports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get borrowCategorySports;
+
+  /// No description provided for @borrowCategoryElectrical.
+  ///
+  /// In en, this message translates to:
+  /// **'Electrical'**
+  String get borrowCategoryElectrical;
+
+  /// No description provided for @borrowCategoryOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get borrowCategoryOthers;
+
+  /// No description provided for @borrowAvailableCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} available'**
+  String borrowAvailableCount(Object count);
+
+  /// No description provided for @borrowAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added ({count})'**
+  String borrowAdded(Object count);
+
+  /// No description provided for @borrowNoEquipmentFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No equipment found'**
+  String get borrowNoEquipmentFound;
+
+  /// No description provided for @borrowLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load equipment. Please try again.'**
+  String get borrowLoadError;
+
+  /// No description provided for @borrowItemsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow Items ({count} selected)'**
+  String borrowItemsButton(Object count);
+
+  /// No description provided for @borrowRequestSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Request Special Equipment'**
+  String get borrowRequestSpecial;
+
+  /// No description provided for @borrowConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Borrow'**
+  String get borrowConfirmTitle;
+
+  /// No description provided for @borrowConfirmSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed equipment must be returned within 24 hours after the event.'**
+  String get borrowConfirmSubtitle;
+
+  /// No description provided for @borrowConfirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get borrowConfirmCancel;
+
+  /// No description provided for @borrowConfirmSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Borrow'**
+  String get borrowConfirmSubmit;
+
+  /// No description provided for @borrowSubmitSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow request submitted successfully!'**
+  String get borrowSubmitSuccess;
+
+  /// No description provided for @borrowSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit borrow request. Please try again.'**
+  String get borrowSubmitError;
+
+  /// No description provided for @specialRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Equipment Request'**
+  String get specialRequestTitle;
+
+  /// No description provided for @specialRequestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request equipment not in inventory'**
+  String get specialRequestSubtitle;
+
+  /// No description provided for @specialRequestEventLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EVENT'**
+  String get specialRequestEventLabel;
+
+  /// No description provided for @specialRequestPendingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'New requests are automatically assigned Pending status and will be reviewed by the Admin.'**
+  String get specialRequestPendingNote;
+
+  /// No description provided for @specialRequestItemNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Name *'**
+  String get specialRequestItemNameLabel;
+
+  /// No description provided for @specialRequestItemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Projector Screen'**
+  String get specialRequestItemNameHint;
+
+  /// No description provided for @specialRequestItemNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an item name.'**
+  String get specialRequestItemNameRequired;
+
+  /// No description provided for @specialRequestQuantityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity Required *'**
+  String get specialRequestQuantityLabel;
+
+  /// No description provided for @specialRequestQuantityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a quantity.'**
+  String get specialRequestQuantityRequired;
+
+  /// No description provided for @specialRequestQuantityInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid quantity (minimum 1).'**
+  String get specialRequestQuantityInvalid;
+
+  /// No description provided for @specialRequestReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason / Description *'**
+  String get specialRequestReasonLabel;
+
+  /// No description provided for @specialRequestReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe why you need this item and any relevant details...'**
+  String get specialRequestReasonHint;
+
+  /// No description provided for @specialRequestReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason.'**
+  String get specialRequestReasonRequired;
+
+  /// No description provided for @specialRequestReasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason (min. 10 characters).'**
+  String get specialRequestReasonTooShort;
+
+  /// No description provided for @specialRequestCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get specialRequestCancel;
+
+  /// No description provided for @specialRequestSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get specialRequestSubmit;
+
+  /// No description provided for @specialRequestSubmitSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Special request submitted successfully!'**
+  String get specialRequestSubmitSuccess;
+
+  /// No description provided for @specialRequestSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit request. Please try again.'**
+  String get specialRequestSubmitError;
 }
 
 class _AppLocalizationsDelegate
