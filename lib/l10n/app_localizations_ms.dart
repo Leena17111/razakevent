@@ -1419,4 +1419,141 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get specialRequestSubmitError =>
       'Gagal menghantar permintaan. Sila cuba lagi.';
+
+  @override
+  String get borrowTabSpecialRequests => 'Permintaan Khas';
+
+  @override
+  String get borrowFilterAll => 'Semua';
+
+  @override
+  String get borrowFilterBorrowed => 'Dipinjam';
+
+  @override
+  String get borrowFilterReturned => 'Dipulangkan';
+
+  @override
+  String get specialFilterPending => 'Menunggu';
+
+  @override
+  String get specialFilterApproved => 'Diluluskan';
+
+  @override
+  String get specialFilterRejected => 'Ditolak';
+
+  @override
+  String get statusBorrowed => 'Dipinjam';
+
+  @override
+  String get statusReturned => 'Dipulangkan';
+
+  @override
+  String get statusCancelled => 'Dibatalkan';
+
+  @override
+  String get statusPendingEquipment => 'Menunggu';
+
+  @override
+  String get statusApprovedEquipment => 'Diluluskan';
+
+  @override
+  String get statusRejectedEquipment => 'Ditolak';
+
+  @override
+  String get borrowQuantity => 'Kuantiti';
+
+  @override
+  String get borrowDate => 'Tarikh pinjaman';
+
+  @override
+  String get borrowEvent => 'Acara';
+
+  @override
+  String get returnDeadline => 'Tarikh akhir pemulangan';
+
+  @override
+  String get returnInstruction => 'Pulangkan dalam masa 24 jam selepas acara';
+
+  @override
+  String get returnEquipmentAction => 'Pulangkan';
+
+  @override
+  String get cancelRequest => 'Batalkan Permintaan';
+
+  @override
+  String get borrowedEmpty => 'Tiada peralatan dipinjam ditemui.';
+
+  @override
+  String get borrowedLoadError => 'Gagal memuatkan peralatan dipinjam.';
+
+  @override
+  String get borrowCancelSuccess => 'Permintaan pinjaman dibatalkan.';
+
+  @override
+  String get borrowCancelError =>
+      'Tidak dapat membatalkan permintaan pinjaman ini.';
+
+  @override
+  String get specialRequestReason => 'Sebab';
+
+  @override
+  String get specialCreatedAt => 'Diminta pada';
+
+  @override
+  String get specialRequestsEmpty => 'Tiada permintaan khas ditemui.';
+
+  @override
+  String get specialRequestsLoadError => 'Gagal memuatkan permintaan khas.';
+
+  @override
+  String get specialCancelSuccess => 'Permintaan khas dibatalkan.';
+
+  @override
+  String get specialCancelError =>
+      'Tidak dapat membatalkan permintaan khas ini.';
+
+  @override
+  String get returnEquipmentTitle => 'Pulangkan Peralatan';
+
+  @override
+  String get returnPhotoEvidence => 'Bukti Foto';
+
+  @override
+  String get returnPhotoEvidenceHint =>
+      'Muat naik foto jelas yang menunjukkan peralatan sedang dipulangkan.';
+
+  @override
+  String get returnUploadPhoto => 'Muat Naik Foto';
+
+  @override
+  String get returnPhotoRequired =>
+      'Bukti foto diperlukan sebelum penghantaran.';
+
+  @override
+  String get returnSubmit => 'Hantar Pemulangan';
+
+  @override
+  String get returnSubmitSuccess => 'Peralatan berjaya dipulangkan.';
+
+  @override
+  String get returnSubmitError =>
+      'Gagal memulangkan peralatan. Sila cuba lagi.';
+
+  @override
+  String get specialRequestBadge => 'Permintaan Khas';
+
+  @override
+  String get borrowQuantityShort => 'Kuantiti';
+
+  @override
+  String get returnEquipmentSubtitle => 'Hantar bukti pemulangan';
+
+  @override
+  String get returnEquipmentDetails => 'BUTIRAN PERALATAN';
+
+  @override
+  String get returnUploadPhotoHint => 'PNG atau JPG · Ketik untuk memilih foto';
+
+  @override
+  String get returnCancel => 'Batal';
 }

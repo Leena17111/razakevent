@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../core/widgets/language_toggle.dart';
 import '../../../core/localization/locale_controller.dart';
 
@@ -8,7 +8,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../data/repository/equipment_borrow_repository.dart';
 import '../../../data/models/special_equipment_request_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'equipment_request_tabs.dart';
 
 IconData _categoryIcon(String category) {
   switch (category.toLowerCase()) {
@@ -87,7 +87,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
     _equipmentFuture = _repo.fetchAvailableEquipment();
   }
@@ -100,10 +100,12 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
   List<EquipmentItem> _filterItems(List<EquipmentItem> all) {
     return all.where((item) {
-      final matchCat = _selectedCategory == 'All' ||
+      final matchCat =
+          _selectedCategory == 'All' ||
           item.category.toLowerCase() == _selectedCategory.toLowerCase();
       final q = _searchQuery.toLowerCase().trim();
-      final matchSearch = q.isEmpty ||
+      final matchSearch =
+          q.isEmpty ||
           item.name.toLowerCase().contains(q) ||
           item.description.toLowerCase().contains(q) ||
           item.category.toLowerCase().contains(q) ||
@@ -113,8 +115,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     }).toList();
   }
 
-  int get _cartCount =>
-      _cart.values.fold(0, (sum, ci) => sum + ci.quantity);
+  int get _cartCount => _cart.values.fold(0, (sum, ci) => sum + ci.quantity);
 
   void _addToCart(EquipmentItem item) {
     setState(() {
@@ -142,6 +143,13 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     });
   }
 
+  void _refreshAvailableEquipment() {
+    if (!mounted) return;
+    setState(() {
+      _equipmentFuture = _repo.fetchAvailableEquipment();
+    });
+  }
+
   // Confirm Borrow Dialog
 
   Future<void> _showConfirmDialog(BuildContext context) async {
@@ -151,8 +159,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       barrierDismissible: false,
       builder: (ctx) {
         return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -162,49 +171,67 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                 Row(
                   children: [
                     Expanded(
-                        child: Text(l10n.borrowConfirmTitle,
-                            style: AppTextStyles.h3)),
+                      child: Text(
+                        l10n.borrowConfirmTitle,
+                        style: AppTextStyles.h3,
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.of(ctx).pop(false),
-                      child: const Icon(Icons.close,
-                          size: 20, color: AppColors.textSecondary),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(l10n.borrowConfirmSubtitle,
-                    style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary)),
+                Text(
+                  l10n.borrowConfirmSubtitle,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
                 const Divider(height: 20),
                 // Cart item list
-                ..._cart.values.map((ci) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 34,
-                            height: 34,
-                            decoration: BoxDecoration(
-                              color: _categoryColor(ci.equipment.category)
-                                  .withOpacity(0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              _categoryIcon(ci.equipment.category),
-                              size: 16,
-                              color: _categoryColor(ci.equipment.category),
-                            ),
+                ..._cart.values.map(
+                  (ci) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: _categoryColor(
+                              ci.equipment.category,
+                            ).withOpacity(0.12),
+                            shape: BoxShape.circle,
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: Text(ci.equipment.name,
-                                  style: AppTextStyles.body)),
-                          Text('×${ci.quantity}',
-                              style: AppTextStyles.body.copyWith(
-                                  color: AppColors.textSecondary)),
-                        ],
-                      ),
-                    )),
+                          child: Icon(
+                            _categoryIcon(ci.equipment.category),
+                            size: 16,
+                            color: _categoryColor(ci.equipment.category),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            ci.equipment.name,
+                            style: AppTextStyles.body,
+                          ),
+                        ),
+                        Text(
+                          '×${ci.quantity}',
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -213,7 +240,8 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                         onPressed: () => Navigator.of(ctx).pop(false),
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                         child: Text(l10n.borrowConfirmCancel),
                       ),
@@ -225,11 +253,13 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                        child: Text(l10n.borrowConfirmSubmit,
-                            style: const TextStyle(
-                                color: AppColors.textWhite)),
+                        child: Text(
+                          l10n.borrowConfirmSubmit,
+                          style: const TextStyle(color: AppColors.textWhite),
+                        ),
                       ),
                     ),
                   ],
@@ -254,6 +284,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       await _repo.submitBorrowRequest(
         eventId: widget.event.id,
         eventName: widget.event.name,
+        eventDate: widget.event.eventDate,
         cartItems: _cart.values.toList(),
       );
       if (!mounted) return;
@@ -294,17 +325,16 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SpecialRequestSheet(
-        event: widget.event,
-        repo: _repo,
-      ),
+      builder: (_) => _SpecialRequestSheet(event: widget.event, repo: _repo),
     );
   }
 
-  // Available Tab 
+  // Available Tab
 
   Widget _buildAvailableTab(
-      BuildContext context, List<EquipmentItem> allItems) {
+    BuildContext context,
+    List<EquipmentItem> allItems,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     final filtered = _filterItems(allItems);
 
@@ -318,12 +348,17 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             decoration: InputDecoration(
               hintText: l10n.borrowSearchHint,
               hintStyle: AppTextStyles.caption,
-              prefixIcon: const Icon(Icons.search,
-                  size: 18, color: AppColors.textSecondary),
+              prefixIcon: const Icon(
+                Icons.search,
+                size: 18,
+                color: AppColors.textSecondary,
+              ),
               filled: true,
               fillColor: AppColors.surface,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: AppColors.border),
@@ -354,14 +389,14 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: active ? AppColors.primary : AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: active
-                            ? AppColors.primary
-                            : AppColors.border,
+                        color: active ? AppColors.primary : AppColors.border,
                       ),
                     ),
                     child: Text(
@@ -387,12 +422,18 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.inventory_2_outlined,
-                          size: 48, color: AppColors.border),
+                      const Icon(
+                        Icons.inventory_2_outlined,
+                        size: 48,
+                        color: AppColors.border,
+                      ),
                       const SizedBox(height: 10),
-                      Text(l10n.borrowNoEquipmentFound,
-                          style: AppTextStyles.body
-                              .copyWith(color: AppColors.textSecondary)),
+                      Text(
+                        l10n.borrowNoEquipmentFound,
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -424,7 +465,10 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-              color: AppColors.shadowDark, blurRadius: 4, offset: const Offset(0, 1))
+            color: AppColors.shadowDark,
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
         ],
       ),
       child: Row(
@@ -437,8 +481,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               color: _categoryColor(item.category).withOpacity(0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(_categoryIcon(item.category),
-                size: 18, color: _categoryColor(item.category)),
+            child: Icon(
+              _categoryIcon(item.category),
+              size: 18,
+              color: _categoryColor(item.category),
+            ),
           ),
           const SizedBox(width: 12),
           // Info
@@ -448,16 +495,28 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               children: [
                 Text(item.name, style: AppTextStyles.body),
                 const SizedBox(height: 2),
-                Text(item.description,
-                    style: AppTextStyles.caption,
-                    overflow: TextOverflow.ellipsis),
+                Text(
+                  item.description,
+                  style: AppTextStyles.caption,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
                 if (item.storageLocation.isNotEmpty)
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 11, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 11,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 3),
-                      Expanded(child: Text(item.storageLocation, style: AppTextStyles.caption, overflow: TextOverflow.ellipsis)),
+                      Expanded(
+                        child: Text(
+                          item.storageLocation,
+                          style: AppTextStyles.caption,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 const SizedBox(height: 4),
@@ -485,8 +544,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                       border: Border.all(color: AppColors.border),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.remove,
-                        size: 14, color: AppColors.textPrimary),
+                    child: const Icon(
+                      Icons.remove,
+                      size: 14,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
                 Padding(
@@ -502,14 +564,19 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.add,
-                        size: 14, color: AppColors.textWhite),
+                    child: const Icon(
+                      Icons.add,
+                      size: 14,
+                      color: AppColors.textWhite,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(8),
@@ -534,8 +601,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.add,
-                    size: 18, color: AppColors.textWhite),
+                child: const Icon(
+                  Icons.add,
+                  size: 18,
+                  color: AppColors.textWhite,
+                ),
               ),
             ),
         ],
@@ -551,9 +621,10 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-              color: AppColors.shadowDark,
-              blurRadius: 8,
-              offset: const Offset(0, -2))
+            color: AppColors.shadowDark,
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
         ],
       ),
       child: Column(
@@ -563,9 +634,14 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isSubmitting ? null : () => _showConfirmDialog(context),
-                icon: const Icon(Icons.shopping_basket_outlined,
-                    size: 18, color: AppColors.textWhite),
+                onPressed: _isSubmitting
+                    ? null
+                    : () => _showConfirmDialog(context),
+                icon: const Icon(
+                  Icons.shopping_basket_outlined,
+                  size: 18,
+                  color: AppColors.textWhite,
+                ),
                 label: Text(
                   l10n.borrowItemsButton(_cartCount),
                   style: const TextStyle(color: AppColors.textWhite),
@@ -574,7 +650,8 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -586,7 +663,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.border, width: 1.5),
                 backgroundColor: AppColors.surface,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: Text(
@@ -659,24 +738,38 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                       children: [
                         GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
-                          child: const Icon(Icons.arrow_back,
-                              color: AppColors.textWhite),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            color: AppColors.textWhite,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(l10n.borrowEquipTitle,
-                                  style: AppTextStyles.h2.copyWith(
-                                      color: AppColors.textWhite)),
-                              Text(widget.event.name,
-                                  style: AppTextStyles.caption.copyWith(
-                                      color: AppColors.textWhite.withValues(alpha: 0.7))),
+                              Text(
+                                l10n.borrowEquipTitle,
+                                style: AppTextStyles.h2.copyWith(
+                                  color: AppColors.textWhite,
+                                ),
+                              ),
+                              Text(
+                                widget.event.name,
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textWhite.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        LanguageToggle(selectedLocale: localeController.value, onLocaleChanged: (locale) => localeController.value = locale),
+                        LanguageToggle(
+                          selectedLocale: localeController.value,
+                          onLocaleChanged: (locale) =>
+                              localeController.value = locale,
+                        ),
                       ],
                     ),
                   ),
@@ -684,6 +777,8 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   // Tab bar
                   TabBar(
                     controller: _tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.center,
                     indicator: BoxDecoration(
                       color: AppColors.textWhite,
                       borderRadius: BorderRadius.circular(30),
@@ -691,13 +786,15 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelColor: AppColors.primary,
                     unselectedLabelColor: AppColors.textWhite,
-                    labelStyle: AppTextStyles.body
-                        .copyWith(fontWeight: FontWeight.w700),
+                    labelStyle: AppTextStyles.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     dividerColor: Colors.transparent,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     tabs: [
                       Tab(text: l10n.borrowTabAvailable),
                       Tab(text: l10n.borrowTabBorrowed),
+                      Tab(text: l10n.borrowTabSpecialRequests),
                     ],
                   ),
                 ],
@@ -707,33 +804,33 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
           // Tab Content
           Expanded(
-            child: FutureBuilder<List<EquipmentItem>>(
-              future: _equipmentFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                      child: Text(l10n.borrowLoadError,
-                          style: AppTextStyles.body));
-                }
-                final items = snapshot.data ?? [];
-
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    // Tab 1: Available (this file's responsibility)
-                    _buildAvailableTab(context, items),
-
-                    // Tab 2: Borrowed â€” handled by teammate; placeholder below
-                    Center(
-                      child: Text(l10n.borrowTabBorrowedPlaceholder,
-                          style: AppTextStyles.body),
-                    ),
-                  ],
-                );
-              },
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                FutureBuilder<List<EquipmentItem>>(
+                  future: _equipmentFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          l10n.borrowLoadError,
+                          style: AppTextStyles.body,
+                        ),
+                      );
+                    }
+                    return _buildAvailableTab(context, snapshot.data ?? []);
+                  },
+                ),
+                BorrowedEquipmentTab(
+                  event: widget.event,
+                  repository: _repo,
+                  onInventoryChanged: _refreshAvailableEquipment,
+                ),
+                SpecialRequestsTab(event: widget.event, repository: _repo),
+              ],
             ),
           ),
         ],
@@ -741,6 +838,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 }
+
 // Special Equipment Request bottom sheet
 class _SpecialRequestSheet extends StatefulWidget {
   final EligibleEvent event;
@@ -852,20 +950,28 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
               // Title
               Text(l10n.specialRequestTitle, style: AppTextStyles.h2),
               const SizedBox(height: 4),
-              Text(l10n.specialRequestSubtitle,
-                  style: AppTextStyles.caption
-                      .copyWith(color: AppColors.textSecondary)),
+              Text(
+                l10n.specialRequestSubtitle,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const SizedBox(height: 16),
 
               // Event label (read-only)
-              Text(l10n.specialRequestEventLabel,
-                  style: AppTextStyles.label
-                      .copyWith(color: AppColors.textSecondary)),
+              Text(
+                l10n.specialRequestEventLabel,
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const SizedBox(height: 6),
               Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceSoft,
                   borderRadius: BorderRadius.circular(10),
@@ -881,20 +987,23 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 decoration: BoxDecoration(
                   color: AppColors.warning.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                      color: AppColors.warning.withOpacity(0.4)),
+                  border: Border.all(color: AppColors.warning.withOpacity(0.4)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline,
-                        size: 16, color: AppColors.warning),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: AppColors.warning,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l10n.specialRequestPendingNote,
                         style: AppTextStyles.caption.copyWith(
-                            color: AppColors.warning,
-                            fontWeight: FontWeight.w500),
+                          color: AppColors.warning,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -903,8 +1012,10 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
               const SizedBox(height: 16),
 
               // Item Name
-              Text(l10n.specialRequestItemNameLabel,
-                  style: AppTextStyles.label),
+              Text(
+                l10n.specialRequestItemNameLabel,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _itemNameController,
@@ -920,8 +1031,10 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
               const SizedBox(height: 12),
 
               // Quantity
-              Text(l10n.specialRequestQuantityLabel,
-                  style: AppTextStyles.label),
+              Text(
+                l10n.specialRequestQuantityLabel,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _quantityController,
@@ -970,7 +1083,8 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Text(l10n.specialRequestCancel),
                     ),
@@ -983,7 +1097,8 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: _isSubmitting
                           ? const SizedBox(
@@ -994,9 +1109,12 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                                 strokeWidth: 2,
                               ),
                             )
-                          : Text(l10n.specialRequestSubmit,
+                          : Text(
+                              l10n.specialRequestSubmit,
                               style: const TextStyle(
-                                  color: AppColors.textWhite)),
+                                color: AppColors.textWhite,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -1009,36 +1127,26 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
   }
 
   InputDecoration _inputDecoration(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle:
-            AppTextStyles.caption.copyWith(color: AppColors.textMuted),
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-      );
+    hintText: hint,
+    hintStyle: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+    filled: true,
+    fillColor: AppColors.surface,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.border),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.border),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.primary),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.error),
+    ),
+  );
 }
-
-
-
-
-
-
-
-

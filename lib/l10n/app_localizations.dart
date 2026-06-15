@@ -2767,6 +2767,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to submit request. Please try again.'**
   String get specialRequestSubmitError;
+
+  /// No description provided for @borrowTabSpecialRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Requests'**
+  String get borrowTabSpecialRequests;
+
+  /// No description provided for @borrowFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get borrowFilterAll;
+
+  /// No description provided for @borrowFilterBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed'**
+  String get borrowFilterBorrowed;
+
+  /// No description provided for @borrowFilterReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get borrowFilterReturned;
+
+  /// No description provided for @specialFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get specialFilterPending;
+
+  /// No description provided for @specialFilterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get specialFilterApproved;
+
+  /// No description provided for @specialFilterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get specialFilterRejected;
+
+  /// No description provided for @statusBorrowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrowed'**
+  String get statusBorrowed;
+
+  /// No description provided for @statusReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get statusReturned;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @statusPendingEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPendingEquipment;
+
+  /// No description provided for @statusApprovedEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get statusApprovedEquipment;
+
+  /// No description provided for @statusRejectedEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejectedEquipment;
+
+  /// No description provided for @borrowQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get borrowQuantity;
+
+  /// No description provided for @borrowDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow date'**
+  String get borrowDate;
+
+  /// No description provided for @borrowEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get borrowEvent;
+
+  /// No description provided for @returnDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Return deadline'**
+  String get returnDeadline;
+
+  /// No description provided for @returnInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Return within 24 hours after the event'**
+  String get returnInstruction;
+
+  /// No description provided for @returnEquipmentAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get returnEquipmentAction;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get cancelRequest;
+
+  /// No description provided for @borrowedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No borrowed equipment found.'**
+  String get borrowedEmpty;
+
+  /// No description provided for @borrowedLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load borrowed equipment.'**
+  String get borrowedLoadError;
+
+  /// No description provided for @borrowCancelSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow request cancelled.'**
+  String get borrowCancelSuccess;
+
+  /// No description provided for @borrowCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to cancel this borrow request.'**
+  String get borrowCancelError;
+
+  /// No description provided for @specialRequestReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get specialRequestReason;
+
+  /// No description provided for @specialCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested on'**
+  String get specialCreatedAt;
+
+  /// No description provided for @specialRequestsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No special requests found.'**
+  String get specialRequestsEmpty;
+
+  /// No description provided for @specialRequestsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load special requests.'**
+  String get specialRequestsLoadError;
+
+  /// No description provided for @specialCancelSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Special request cancelled.'**
+  String get specialCancelSuccess;
+
+  /// No description provided for @specialCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to cancel this special request.'**
+  String get specialCancelError;
+
+  /// No description provided for @returnEquipmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Return Equipment'**
+  String get returnEquipmentTitle;
+
+  /// No description provided for @returnPhotoEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Evidence'**
+  String get returnPhotoEvidence;
+
+  /// No description provided for @returnPhotoEvidenceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear photo showing the equipment being returned.'**
+  String get returnPhotoEvidenceHint;
+
+  /// No description provided for @returnUploadPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Photo'**
+  String get returnUploadPhoto;
+
+  /// No description provided for @returnPhotoRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo evidence is required before submitting.'**
+  String get returnPhotoRequired;
+
+  /// No description provided for @returnSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Return'**
+  String get returnSubmit;
+
+  /// No description provided for @returnSubmitSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment returned successfully.'**
+  String get returnSubmitSuccess;
+
+  /// No description provided for @returnSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to return equipment. Please try again.'**
+  String get returnSubmitError;
+
+  /// No description provided for @specialRequestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Request'**
+  String get specialRequestBadge;
+
+  /// No description provided for @borrowQuantityShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get borrowQuantityShort;
+
+  /// No description provided for @returnEquipmentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit return evidence'**
+  String get returnEquipmentSubtitle;
+
+  /// No description provided for @returnEquipmentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'EQUIPMENT DETAILS'**
+  String get returnEquipmentDetails;
+
+  /// No description provided for @returnUploadPhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'PNG or JPG · Tap to choose a photo'**
+  String get returnUploadPhotoHint;
+
+  /// No description provided for @returnCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get returnCancel;
 }
 
 class _AppLocalizationsDelegate

@@ -8,7 +8,7 @@ class SpecialEquipmentRequest {
   final String itemName;
   final int quantityRequired;
   final String reason;
-  final String status; // 'pending', 'approved', 'rejected'
+  final String status; // 'pending', 'approved', 'rejected', 'cancelled'
   final String? adminNote; // rejection reason or approval location note
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -39,7 +39,7 @@ class SpecialEquipmentRequest {
       reason: data['reason'] ?? '',
       status: data['status'] ?? 'pending',
       adminNote: data['adminNote'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()
           : null,
@@ -60,6 +60,8 @@ class SpecialEquipmentRequest {
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
   }
+
+  Map<String, dynamic> toMap() => toFirestore();
 
   SpecialEquipmentRequest copyWith({
     String? id,
