@@ -1605,4 +1605,21 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get returnCancel => 'Batal';
+
+  @override
+  String get borrowTabUpcoming => 'Akan Datang';
+
+  @override
+  String get borrowTabPastEvents => 'Acara Lepas';
+
+  @override
+  String get borrowEventNoPastEvents =>
+      'Tiada acara lepas dengan peralatan dipinjam ditemui.';
+
+  @override
+  String get borrowEventPastBadge => 'Tamat';
+
+  @override
+  String get borrowEventAvailableTabLocked =>
+      'Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan.';
 }

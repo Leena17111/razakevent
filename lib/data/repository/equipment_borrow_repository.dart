@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -423,5 +423,91 @@ class EquipmentBorrowRepository {
       await upload.ref.delete().catchError((_) {});
       rethrow;
     }
+  }
+
+  // Completed Events With Borrowed Items
+
+  /// Fetches past events (eventDateTime in past OR status == 'Completed')
+  /// that have at least one borrow request (regular or special).
+  Future<List<EligibleEvent>> fetchCompletedEventsWithBorrowedItems() async {
+    final user = _auth.currentUser;
+    if (user == null) return [];
+
+    final now = DateTime.now();
+
+    // 4 parallel queries instead of N×2 sequential ones
+    final results = await Future.wait([
+      // Query 1: completed status events
+      _firestore
+          .collection('events')
+          .where('createdBy', isEqualTo: user.uid)
+          .where('status', isEqualTo: 'Completed')
+          .get(),
+      // Query 2: all events by this user (we filter by past date in Dart)
+      _firestore
+          .collection('events')
+          .where('createdBy', isEqualTo: user.uid)
+          .get(),
+      // Query 3: all borrow requests by this user
+      _firestore
+          .collection('equipmentBorrowRequests')
+          .where('organizerHeadId', isEqualTo: user.uid)
+          .get(),
+      // Query 4: all special requests by this user
+      _firestore
+          .collection('specialEquipmentRequests')
+          .where('organizerHeadId', isEqualTo: user.uid)
+          .get(),
+    ]);
+
+    // Build sets of eventIds that have at least one borrow or special request
+    final borrowedEventIds = results[2].docs.map((d) => d.data()['eventId'] as String? ?? '').toSet();
+    final specialEventIds = results[3].docs.map((d) => d.data()['eventId'] as String? ?? '').toSet();
+    final allBorrowedEventIds = {...borrowedEventIds, ...specialEventIds};
+
+    // Count per event for borrowedItemsCount
+    final borrowCountMap = <String, int>{};
+    for (final doc in results[2].docs) {
+      final id = doc.data()['eventId'] as String? ?? '';
+      borrowCountMap[id] = (borrowCountMap[id] ?? 0) + 1;
+    }
+    for (final doc in results[3].docs) {
+      final id = doc.data()['eventId'] as String? ?? '';
+      borrowCountMap[id] = (borrowCountMap[id] ?? 0) + 1;
+    }
+
+    // Merge and deduplicate events
+    final Map<String, QueryDocumentSnapshot<Map<String, dynamic>>> merged = {};
+    for (final doc in results[0].docs) {
+      merged[doc.id] = doc;
+    }
+    for (final doc in results[1].docs) {
+      final ts = doc.data()['eventDateTime'];
+      if (ts is Timestamp && ts.toDate().isBefore(now)) {
+        merged[doc.id] = doc;
+      }
+    }
+
+    final List<EligibleEvent> result = [];
+
+    for (final doc in merged.values) {
+      // Skip if no borrow activity
+      if (!allBorrowedEventIds.contains(doc.id)) continue;
+
+      final data = doc.data();
+      final Timestamp? ts = data['eventDateTime'] as Timestamp?;
+      if (ts == null) continue;
+
+      result.add(EligibleEvent(
+        id: doc.id,
+        name: data['title'] ?? '',
+        eventDate: ts.toDate(),
+        venue: data['venue'] ?? '',
+        borrowedItemsCount: borrowCountMap[doc.id] ?? 0,
+      ));
+    }
+
+    result.sort((a, b) => b.eventDate.compareTo(a.eventDate));
+    return result;
   }
 }

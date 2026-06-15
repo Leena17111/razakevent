@@ -14,12 +14,14 @@ class BorrowedEquipmentTab extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repository;
   final VoidCallback onInventoryChanged;
+  final bool isCompleted;
 
   const BorrowedEquipmentTab({
     super.key,
     required this.event,
     required this.repository,
     required this.onInventoryChanged,
+    this.isCompleted = false,
   });
 
   @override
@@ -102,6 +104,7 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
                         return _BorrowedCard(
                           request: request,
                           eventDate: eventDate,
+                          isCompleted: widget.isCompleted,
                           onCancel: () => _cancel(request),
                           onReturn: () async {
                             final returned = await Navigator.of(context)
@@ -136,11 +139,13 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
 class SpecialRequestsTab extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repository;
+  final bool isCompleted;
 
   const SpecialRequestsTab({
     super.key,
     required this.event,
     required this.repository,
+    this.isCompleted = false,
   });
 
   @override
@@ -214,6 +219,7 @@ class _SpecialRequestsTabState extends State<SpecialRequestsTab> {
                       itemCount: items.length,
                       itemBuilder: (context, index) => _SpecialRequestCard(
                         request: items[index],
+                        isCompleted: widget.isCompleted,
                         onCancel: () => _cancel(items[index]),
                       ),
                     ),
@@ -273,12 +279,14 @@ class _FilterBar extends StatelessWidget {
 class _BorrowedCard extends StatelessWidget {
   final BorrowedEquipmentRequestModel request;
   final DateTime eventDate;
+  final bool isCompleted;
   final VoidCallback onCancel;
   final VoidCallback onReturn;
 
   const _BorrowedCard({
     required this.request,
     required this.eventDate,
+    this.isCompleted = false,
     required this.onCancel,
     required this.onReturn,
   });
@@ -321,15 +329,17 @@ class _BorrowedCard extends StatelessWidget {
                   onPressed: onReturn,
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _OutlinedActionButton(
-                  label: l10n.cancelRequest,
-                  icon: Icons.close,
-                  color: AppColors.error,
-                  onPressed: onCancel,
+              if (!isCompleted) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _OutlinedActionButton(
+                    label: l10n.cancelRequest,
+                    icon: Icons.close,
+                    color: AppColors.error,
+                    onPressed: onCancel,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ],
@@ -375,9 +385,10 @@ class _ReturnReminder extends StatelessWidget {
 
 class _SpecialRequestCard extends StatelessWidget {
   final SpecialEquipmentRequest request;
+  final bool isCompleted;
   final VoidCallback onCancel;
 
-  const _SpecialRequestCard({required this.request, required this.onCancel});
+  const _SpecialRequestCard({required this.request, this.isCompleted = false, required this.onCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -402,7 +413,7 @@ class _SpecialRequestCard extends StatelessWidget {
           const SizedBox(height: 10),
           _RequestNote(text: note, isRejected: request.status == 'rejected'),
         ],
-        if (request.status == 'pending') ...[
+        if (request.status == 'pending' && !isCompleted) ...[
           const Divider(height: 22, color: AppColors.borderLight),
           SizedBox(
             width: double.infinity,
