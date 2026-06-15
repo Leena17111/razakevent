@@ -101,6 +101,7 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
                         );
                         return _BorrowedCard(
                           request: request,
+                          eventDate: eventDate,
                           onCancel: () => _cancel(request),
                           onReturn: () async {
                             final returned = await Navigator.of(context)
@@ -271,11 +272,13 @@ class _FilterBar extends StatelessWidget {
 
 class _BorrowedCard extends StatelessWidget {
   final BorrowedEquipmentRequestModel request;
+  final DateTime eventDate;
   final VoidCallback onCancel;
   final VoidCallback onReturn;
 
   const _BorrowedCard({
     required this.request,
+    required this.eventDate,
     required this.onCancel,
     required this.onReturn,
   });
@@ -283,15 +286,30 @@ class _BorrowedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final elapsedSinceEvent = DateTime.now().difference(eventDate);
+    final isBorrowed = request.status == 'borrowed';
+    final isOverdue =
+        isBorrowed && elapsedSinceEvent >= const Duration(hours: 48);
+    final showReturnReminder =
+        isBorrowed && elapsedSinceEvent >= const Duration(hours: 24);
     return _EquipmentCard(
       icon: _categoryIcon(request.category),
       iconColor: _categoryColor(request.category),
       title: request.equipmentName,
       quantity: request.quantity,
       date: request.createdAt,
-      status: request.status,
+      status: isOverdue ? 'overdue' : request.status,
       children: [
-        if (request.status == 'borrowed') ...[
+        if (showReturnReminder) ...[
+          const SizedBox(height: 10),
+          _ReturnReminder(
+            message: isOverdue
+                ? l10n.returnRequiredMessage
+                : l10n.returnReminderMessage,
+            isOverdue: isOverdue,
+          ),
+        ],
+        if (isBorrowed) ...[
           const Divider(height: 22, color: AppColors.borderLight),
           Row(
             children: [
@@ -316,6 +334,41 @@ class _BorrowedCard extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _ReturnReminder extends StatelessWidget {
+  final String message;
+  final bool isOverdue;
+
+  const _ReturnReminder({required this.message, required this.isOverdue});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isOverdue ? const Color(0xFFB91C1C) : const Color(0xFFD97706);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: isOverdue ? const Color(0xFFFEF2F2) : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.notifications_none_outlined, size: 15, color: color),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTextStyles.bodySm.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -634,6 +687,8 @@ String _statusLabel(AppLocalizations l10n, String status) {
   switch (status) {
     case 'borrowed':
       return l10n.statusBorrowed;
+    case 'overdue':
+      return l10n.statusOverdue;
     case 'returned':
       return l10n.statusReturned;
     case 'approved':
@@ -654,6 +709,8 @@ IconData _statusIcon(String status) {
     case 'rejected':
     case 'cancelled':
       return Icons.cancel_outlined;
+    case 'overdue':
+      return Icons.warning_amber_rounded;
     case 'approved':
       return Icons.check_circle_outline;
     default:
@@ -680,6 +737,7 @@ IconData _statusIcon(String status) {
         foreground: const Color(0xFFE11D48),
       );
     case 'cancelled':
+    case 'overdue':
       return (
         background: const Color(0xFFFEE2E2),
         foreground: const Color(0xFFB91C1C),

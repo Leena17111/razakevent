@@ -1458,6 +1458,8 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get certificatesPdfNotReady =>
       'PDF sijil belum sedia. Sila cuba lagi kemudian.';
+
+  @override
   String get borrowTabSpecialRequests => 'Permintaan Khas';
 
   @override
@@ -1480,6 +1482,9 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get statusBorrowed => 'Dipinjam';
+
+  @override
+  String get statusOverdue => 'Lewat Dipulangkan';
 
   @override
   String get statusReturned => 'Dipulangkan';
@@ -1510,6 +1515,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get returnInstruction => 'Pulangkan dalam masa 24 jam selepas acara';
+
+  @override
+  String get returnReminderMessage =>
+      'Peringatan pemulangan: sila pulangkan peralatan ini.';
+
+  @override
+  String get returnRequiredMessage => 'Pemulangan diperlukan secepat mungkin.';
 
   @override
   String get returnEquipmentAction => 'Pulangkan';

@@ -1451,6 +1451,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get certificatesPdfNotReady =>
       'Certificate PDF is not ready yet. Please try again later.';
+
+  @override
   String get borrowTabSpecialRequests => 'Special Requests';
 
   @override
@@ -1473,6 +1475,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusBorrowed => 'Borrowed';
+
+  @override
+  String get statusOverdue => 'Overdue';
 
   @override
   String get statusReturned => 'Returned';
@@ -1503,6 +1508,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get returnInstruction => 'Return within 24 hours after the event';
+
+  @override
+  String get returnReminderMessage =>
+      'Return reminder: please return this equipment.';
+
+  @override
+  String get returnRequiredMessage => 'Return required as soon as possible.';
 
   @override
   String get returnEquipmentAction => 'Return';
