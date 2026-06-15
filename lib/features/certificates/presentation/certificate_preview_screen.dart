@@ -9,10 +9,12 @@ class CertificatePreviewScreen extends StatelessWidget {
     super.key,
     required this.cert,
     required this.studentName,
+    required this.locale,        // ← added
   });
 
   final CertificateModel cert;
   final String studentName;
+  final String locale;           // ← added
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class CertificatePreviewScreen extends StatelessWidget {
         build: (format) => CertificatePdfService().generate(
           cert: cert,
           studentName: studentName,
+          locale: locale,          // ← added
         ),
         allowPrinting: true,
         allowSharing: true,
