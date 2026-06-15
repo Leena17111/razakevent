@@ -2839,6 +2839,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Certificate PDF is not ready yet. Please try again later.'**
   String get certificatesPdfNotReady;
+
   /// No description provided for @borrowTabSpecialRequests.
   ///
   /// In en, this message translates to:
@@ -2886,6 +2887,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Borrowed'**
   String get statusBorrowed;
+
+  /// No description provided for @statusOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get statusOverdue;
 
   /// No description provided for @statusReturned.
   ///
@@ -2946,6 +2953,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Return within 24 hours after the event'**
   String get returnInstruction;
+
+  /// No description provided for @returnReminderMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Return reminder: please return this equipment.'**
+  String get returnReminderMessage;
+
+  /// No description provided for @returnRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Return required as soon as possible.'**
+  String get returnRequiredMessage;
 
   /// No description provided for @returnEquipmentAction.
   ///
