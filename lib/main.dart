@@ -1,13 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart'; // Stripe: initialize before runApp
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'core/constants/app_colors.dart';
 import 'core/localization/locale_controller.dart';
 import 'core/routes/app_routes.dart';
 import 'features/auth/presentation/forgot_password_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
+import 'features/certificates/presentation/view_certificates_screen.dart';
 import 'features/documents/presentation/document_details_screen.dart';
 import 'features/documents/presentation/document_status_screen.dart';
 import 'features/documents/presentation/edit_document_screen.dart';
@@ -40,8 +41,6 @@ import 'features/equipment/presentation/return_borrowed_equipment_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Stripe: only initialize on mobile â€” flutter_stripe does not support web.
-  // On web, the payment button will show a message directing users to the app.
   if (!kIsWeb) {
     Stripe.publishableKey =
         'pk_test_51Ta6LqJCG09jyIk1UrF7IMTwCppku8SkbAbE9kspuX1jCTVUZe4JviBF95E0ilZQ9heGKSmk8AQiuJZlBOaB2QoB00qJkpXxyd';
@@ -159,10 +158,8 @@ class RazakEventApp extends StatelessWidget {
             // Organizer Volunteer Recruitment
             AppRoutes.volunteerManagement: (_) =>
                 const VolunteerEventSelectScreen(mode: 'add'),
-
             AppRoutes.addVolunteerPosition: (_) =>
                 const VolunteerEventSelectScreen(mode: 'add'),
-
             AppRoutes.reviewApplications: (_) =>
                 const VolunteerEventSelectScreen(mode: 'review'),
             AppRoutes.studentVolunteerPositions: (_) =>
@@ -208,10 +205,8 @@ class RazakEventApp extends StatelessWidget {
               body: Center(child: Text('Cancel Borrowed Equipment')),
             ),
 
-            // Sprint 4 â€” Epic 2: Certification Management
-            AppRoutes.certificates: (_) =>
-                const Scaffold(body: Center(child: Text('Certificates'))),
-
+            // Sprint 4 — Epic 2: Certification Management
+            AppRoutes.certificates:       (_) => const ViewCertificatesScreen(),
             AppRoutes.certificatePreview: (_) => const Scaffold(
               body: Center(child: Text('Certificate Preview')),
             ),

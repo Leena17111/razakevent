@@ -59,6 +59,13 @@ dependencies:
   # Supports PayPal accounts and direct Visa/Mastercard (no PayPal account needed).
   http: ^1.6.0
 
+  # Certificate PDF generation & viewing/sharing
+  # pdf: builds the certificate PDF document (layout, text, borders)
+  # printing: renders the generated PDF for in-app preview and handles
+  # download/share/print across web, mobile, and desktop
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

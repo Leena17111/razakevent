@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../../../data/models/volunteer_application_model.dart';
 import '../../../data/models/volunteer_position_model.dart';
 import '../../../data/repository/volunteer_repository.dart';
+import '../../certificates/logic/certificate_trigger_service.dart';
 
 class ReviewApplicationsController extends ChangeNotifier {
   final VolunteerRepository _repository = VolunteerRepository();
@@ -30,6 +30,8 @@ class ReviewApplicationsController extends ChangeNotifier {
     required String applicationId,
     required String positionId,
     required String reviewerUid,
+    required String applicantUserId,
+    required String eventId,
   }) async {
     isUpdating = true;
     errorKey = null;
@@ -41,6 +43,13 @@ class ReviewApplicationsController extends ChangeNotifier {
         positionId: positionId,
         reviewerUid: reviewerUid,
       );
+
+      // AD-191 — auto-issue volunteer certificate if event has ended
+      await CertificateTriggerService().onVolunteerApproved(
+        userId: applicantUserId,
+        eventId: eventId,
+      );
+
       return true;
     } catch (e) {
       errorKey = _cleanErrorKey(e);

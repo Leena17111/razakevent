@@ -201,9 +201,9 @@
       }
     }
   },
-
   "signedDocumentRequired": "Please upload a signed document before approving.",
   "documentAlreadyReviewed": "This document has already been reviewed and cannot be submitted again.",
+
   "browseEvents": "Browse Events",
   "browseEventsSubtitle": "Discover events at KTR",
   "studentLabel": "Student",
@@ -321,9 +321,8 @@
   "hours": "hours",
   "hour": "hour",
   "remaining": "remaining",
-  "filterAll": "All",
   "filter3DaysLeft": "3 days left",
-  "filter2DaysLeft": "2 days left", 
+  "filter2DaysLeft": "2 days left",
   "filterLessThanDay": "Less than a day",
   "filterDaysRemaining": "days remaining",
   "filterDayRemaining": "day remaining",
@@ -378,21 +377,16 @@
   "searchEquipmentHint": "Search equipment...",
   "addEquipment": "Add Equipment",
   "editEquipment": "Edit Equipment",
-  "category": "Category",
   "itemName": "Item Name",
   "totalQuantity": "Total Quantity",
   "descriptionOptional": "Description (Optional)",
   "storageLocation": "Storage Location",
   "save": "Save",
-  "cancel": "Cancel",
-  "filterAll": "All",
   "categoryAudio": "Audio",
   "categoryPresentation": "Presentation",
   "categoryFurniture": "Furniture",
   "categoryDecoration": "Decoration",
-  "categorySports": "Sports",
   "categoryElectrical": "Electrical",
-  "categoryOthers": "Others",
   "quantityTotal": "Total",
   "quantityBorrowed": "Borrowed",
   "quantityAvailable": "Available",
@@ -414,7 +408,6 @@
   "storageLocationHint": "e.g. Store Room A, Level 1",
   "markUnavailable": "Mark Unavailable",
   "markAvailable": "Mark Available",
-  "available": "Available",
   "unavailable": "Unavailable",
   "equipmentMarkedUnavailable": "Equipment marked as unavailable.",
   "equipmentMarkedAvailable": "Equipment marked as available.",
@@ -423,15 +416,37 @@
   "markUnavailableMessage": "This item will be hidden from new borrow requests. Existing borrowed items are not affected.",
   "markAvailableMessage": "This item will appear again for new borrow requests.",
   "borrowedItemsWarning": "{count} item(s) are currently borrowed and must still be returned.",
+  "@borrowedItemsWarning": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
   "confirm": "Confirm",
   "appFooter": "Kolej Tun Razak · UTM",
+
   "borrowEventTitle": "Borrow Equipment",
   "borrowEventSubtitle": "Select an event to borrow equipment for.",
   "borrowEventEligibilityNote": "Only events within the next 3 days are eligible for equipment borrowing.",
   "borrowEventBadgeToday": "Today",
   "borrowEventBadgeTomorrow": "Tomorrow",
   "borrowEventBadgeInDays": "In {days} days",
+  "@borrowEventBadgeInDays": {
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
   "borrowEventItemsBorrowed": "{count} item(s) borrowed",
+  "@borrowEventItemsBorrowed": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
   "borrowEventNoEvents": "No eligible events found.\nOnly events within the next 3 days will appear here.",
   "borrowEventLoadError": "Failed to load events. Please try again.",
   "borrowEquipTitle": "Borrow Equipment",
@@ -448,10 +463,31 @@
   "borrowCategoryElectrical": "Electrical",
   "borrowCategoryOthers": "Others",
   "borrowAvailableCount": "{count} available",
+  "@borrowAvailableCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
   "borrowAdded": "Added ({count})",
+  "@borrowAdded": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
   "borrowNoEquipmentFound": "No equipment found",
   "borrowLoadError": "Failed to load equipment. Please try again.",
   "borrowItemsButton": "Borrow Items ({count} selected)",
+  "@borrowItemsButton": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
   "borrowRequestSpecial": "+ Request Special Equipment",
   "borrowConfirmTitle": "Confirm Borrow",
   "borrowConfirmSubtitle": "Borrowed equipment must be returned within 24 hours after the event.",
@@ -459,6 +495,7 @@
   "borrowConfirmSubmit": "Confirm Borrow",
   "borrowSubmitSuccess": "Borrow request submitted successfully!",
   "borrowSubmitError": "Failed to submit borrow request. Please try again.",
+
   "specialRequestTitle": "Special Equipment Request",
   "specialRequestSubtitle": "Request equipment not in inventory",
   "specialRequestEventLabel": "EVENT",
@@ -477,6 +514,19 @@
   "specialRequestSubmit": "Submit Request",
   "specialRequestSubmitSuccess": "Special request submitted successfully!",
   "specialRequestSubmitError": "Failed to submit request. Please try again.",
+
+  "certificatesTitle": "My Certificates",
+  "certificatesSubtitle": "Your earned certificates",
+  "certificatesNote": "Certificates are auto-generated after the event ends and feedback is submitted.",
+  "certificatesParticipation": "Participation",
+  "certificatesVolunteer": "Volunteer",
+  "certificatesIssued": "Issued",
+  "certificatesView": "View",
+  "certificatesDownload": "Download",
+  "certificatesEmpty": "No Certificates Yet",
+  "certificatesEmptyDesc": "Complete feedback for eligible events, or be approved as a volunteer, to receive certificates.",
+  "certificatesDownloading": "Downloading certificate...",
+  "certificatesPdfNotReady": "Certificate PDF is not ready yet. Please try again later.",
   "borrowTabSpecialRequests": "Special Requests",
   "borrowFilterAll": "All",
   "borrowFilterBorrowed": "Borrowed",

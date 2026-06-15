@@ -1421,6 +1421,43 @@ class AppLocalizationsMs extends AppLocalizations {
       'Gagal menghantar permintaan. Sila cuba lagi.';
 
   @override
+  String get certificatesTitle => 'Sijil Saya';
+
+  @override
+  String get certificatesSubtitle => 'Sijil yang telah anda perolehi';
+
+  @override
+  String get certificatesNote =>
+      'Sijil dijana automatik selepas acara tamat dan maklum balas dihantar.';
+
+  @override
+  String get certificatesParticipation => 'Penyertaan';
+
+  @override
+  String get certificatesVolunteer => 'Sukarelawan';
+
+  @override
+  String get certificatesIssued => 'Dikeluarkan';
+
+  @override
+  String get certificatesView => 'Lihat';
+
+  @override
+  String get certificatesDownload => 'Muat Turun';
+
+  @override
+  String get certificatesEmpty => 'Tiada Sijil Lagi';
+
+  @override
+  String get certificatesEmptyDesc =>
+      'Lengkapkan maklum balas untuk acara yang layak, atau diluluskan sebagai sukarelawan, untuk menerima sijil.';
+
+  @override
+  String get certificatesDownloading => 'Memuat turun sijil...';
+
+  @override
+  String get certificatesPdfNotReady =>
+      'PDF sijil belum sedia. Sila cuba lagi kemudian.';
   String get borrowTabSpecialRequests => 'Permintaan Khas';
 
   @override

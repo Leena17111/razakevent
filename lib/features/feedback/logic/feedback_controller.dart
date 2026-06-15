@@ -1,4 +1,3 @@
-// lib/features/feedback/logic/feedback_controller.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,7 +11,6 @@ class FeedbackController extends ChangeNotifier {
   final _storage   = FirebaseStorage.instance;
   final _auth      = FirebaseAuth.instance;
 
-  // ── State ────────────────────────────────────────────────────────
   bool _isLoading  = false;
   bool _isSaving   = false;
   String? _errorMessage;
@@ -28,7 +26,6 @@ class FeedbackController extends ChangeNotifier {
 
   List<EventModel> _events = [];
 
-  // ── Getters ──────────────────────────────────────────────────────
   bool     get isLoading      => _isLoading;
   bool     get isSaving       => _isSaving;
   String?  get errorMessage   => _errorMessage;
@@ -41,7 +38,6 @@ class FeedbackController extends ChangeNotifier {
   bool     get useQrCode      => _useQrCode;
   List<EventModel> get events => _events;
 
-  // ── Load Events ──────────────────────────────────────────────────
   Future<void> loadEvents() async {
     _isLoading    = true;
     _errorMessage = null;
@@ -53,7 +49,6 @@ class FeedbackController extends ChangeNotifier {
 
       if (uid == null) throw Exception('Not authenticated');
 
-      // Step 1 — fetch all events created by this organizer
       final eventsSnapshot = await _firestore
           .collection('events')
           .where('createdBy', isEqualTo: uid)
@@ -62,20 +57,17 @@ class FeedbackController extends ChangeNotifier {
 
       debugPrint('=== FeedbackController: Events found: ${eventsSnapshot.docs.length} ===');
 
-      // Step 2 — fetch all feedback forms already created by this organizer
       final formsSnapshot = await _firestore
           .collection('feedbackForms')
           .where('createdBy', isEqualTo: uid)
           .get();
 
-      // Step 3 — collect event IDs that already have a feedback form
       final usedEventIds = formsSnapshot.docs
           .map((doc) => doc.data()['eventId'] as String)
           .toSet();
 
       debugPrint('=== FeedbackController: Events with existing forms: $usedEventIds ===');
 
-      // Step 4 — only show events that don't have a feedback form yet
       _events = eventsSnapshot.docs
           .map((doc) => EventModel.fromFirestore(
               doc as DocumentSnapshot<Map<String, dynamic>>))
@@ -93,14 +85,12 @@ class FeedbackController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Select Event ─────────────────────────────────────────────────
   void selectEvent(EventModel event) {
     _selectedEvent = event;
     _errorMessage  = null;
     notifyListeners();
   }
 
-  // ── Custom Questions ─────────────────────────────────────────────
   void addCustomQuestion(String question) {
     final trimmed = question.trim();
     if (trimmed.isEmpty) return;
@@ -115,7 +105,6 @@ class FeedbackController extends ChangeNotifier {
     }
   }
 
-  // ── Merit Mode ───────────────────────────────────────────────────
   void setUseQrCode(bool value) {
     _useQrCode = value;
     notifyListeners();
@@ -126,7 +115,6 @@ class FeedbackController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── QR Code Image ────────────────────────────────────────────────
   Future<void> pickQrCode() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(
@@ -156,7 +144,6 @@ class FeedbackController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Validate ─────────────────────────────────────────────────────
   bool _validate() {
     if (_selectedEvent == null) {
       _errorMessage = 'Please select an event.';
@@ -172,7 +159,6 @@ class FeedbackController extends ChangeNotifier {
     return true;
   }
 
-  // ── Save Feedback Form ───────────────────────────────────────────
   Future<bool> saveFeedbackForm() async {
     if (!_validate()) return false;
 
@@ -224,7 +210,6 @@ class FeedbackController extends ChangeNotifier {
       _isSaving       = false;
       notifyListeners();
 
-      // Reload events to remove the one that just got a form
       await loadEvents();
 
       return true;
@@ -237,7 +222,6 @@ class FeedbackController extends ChangeNotifier {
     }
   }
 
-  // ── Preview Data ─────────────────────────────────────────────────
   Map<String, dynamic> buildPreviewData(List<String> builtInQuestions) {
     return {
       'eventTitle':       _selectedEvent?.title ?? '—',
