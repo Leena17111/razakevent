@@ -1451,4 +1451,137 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get certificatesPdfNotReady =>
       'Certificate PDF is not ready yet. Please try again later.';
+  String get borrowTabSpecialRequests => 'Special Requests';
+
+  @override
+  String get borrowFilterAll => 'All';
+
+  @override
+  String get borrowFilterBorrowed => 'Borrowed';
+
+  @override
+  String get borrowFilterReturned => 'Returned';
+
+  @override
+  String get specialFilterPending => 'Pending';
+
+  @override
+  String get specialFilterApproved => 'Approved';
+
+  @override
+  String get specialFilterRejected => 'Rejected';
+
+  @override
+  String get statusBorrowed => 'Borrowed';
+
+  @override
+  String get statusReturned => 'Returned';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get statusPendingEquipment => 'Pending';
+
+  @override
+  String get statusApprovedEquipment => 'Approved';
+
+  @override
+  String get statusRejectedEquipment => 'Rejected';
+
+  @override
+  String get borrowQuantity => 'Quantity';
+
+  @override
+  String get borrowDate => 'Borrow date';
+
+  @override
+  String get borrowEvent => 'Event';
+
+  @override
+  String get returnDeadline => 'Return deadline';
+
+  @override
+  String get returnInstruction => 'Return within 24 hours after the event';
+
+  @override
+  String get returnEquipmentAction => 'Return';
+
+  @override
+  String get cancelRequest => 'Cancel Request';
+
+  @override
+  String get borrowedEmpty => 'No borrowed equipment found.';
+
+  @override
+  String get borrowedLoadError => 'Failed to load borrowed equipment.';
+
+  @override
+  String get borrowCancelSuccess => 'Borrow request cancelled.';
+
+  @override
+  String get borrowCancelError => 'Unable to cancel this borrow request.';
+
+  @override
+  String get specialRequestReason => 'Reason';
+
+  @override
+  String get specialCreatedAt => 'Requested on';
+
+  @override
+  String get specialRequestsEmpty => 'No special requests found.';
+
+  @override
+  String get specialRequestsLoadError => 'Failed to load special requests.';
+
+  @override
+  String get specialCancelSuccess => 'Special request cancelled.';
+
+  @override
+  String get specialCancelError => 'Unable to cancel this special request.';
+
+  @override
+  String get returnEquipmentTitle => 'Return Equipment';
+
+  @override
+  String get returnPhotoEvidence => 'Photo Evidence';
+
+  @override
+  String get returnPhotoEvidenceHint =>
+      'Upload a clear photo showing the equipment being returned.';
+
+  @override
+  String get returnUploadPhoto => 'Upload Photo';
+
+  @override
+  String get returnPhotoRequired =>
+      'Photo evidence is required before submitting.';
+
+  @override
+  String get returnSubmit => 'Submit Return';
+
+  @override
+  String get returnSubmitSuccess => 'Equipment returned successfully.';
+
+  @override
+  String get returnSubmitError =>
+      'Failed to return equipment. Please try again.';
+
+  @override
+  String get specialRequestBadge => 'Special Request';
+
+  @override
+  String get borrowQuantityShort => 'Qty';
+
+  @override
+  String get returnEquipmentSubtitle => 'Submit return evidence';
+
+  @override
+  String get returnEquipmentDetails => 'EQUIPMENT DETAILS';
+
+  @override
+  String get returnUploadPhotoHint => 'PNG or JPG · Tap to choose a photo';
+
+  @override
+  String get returnCancel => 'Cancel';
 }
