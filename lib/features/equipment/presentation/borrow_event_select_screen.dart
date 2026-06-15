@@ -1,13 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/repository/equipment_borrow_repository.dart';
-import 'borrow_equipment_screen.dart';
 import '../../../core/widgets/language_toggle.dart';
 import '../../../core/localization/locale_controller.dart';
+import 'borrow_equipment_screen.dart';
 
 class BorrowEventSelectScreen extends StatefulWidget {
   const BorrowEventSelectScreen({super.key});
@@ -17,18 +17,36 @@ class BorrowEventSelectScreen extends StatefulWidget {
       _BorrowEventSelectScreenState();
 }
 
-class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
+class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen>
+    with SingleTickerProviderStateMixin {
   final EquipmentBorrowRepository _repo = EquipmentBorrowRepository();
 
-  late Future<List<EligibleEvent>> _eventsFuture;
+  late TabController _tabController;
+  late Future<List<EligibleEvent>> _upcomingFuture;
+  late Future<List<EligibleEvent>> _pastFuture;
 
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _repo.fetchEligibleEvents();
+    _tabController = TabController(length: 2, vsync: this);
+    _upcomingFuture = _repo.fetchEligibleEvents();
+    _pastFuture = _repo.fetchCompletedEventsWithBorrowedItems();
   }
 
-  /// Returns the number of days until the event date (0 = today, 1 = tomorrowâ€¦)
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _reload() {
+    if (!mounted) return;
+    setState(() {
+      _upcomingFuture = _repo.fetchEligibleEvents();
+      _pastFuture = _repo.fetchCompletedEventsWithBorrowedItems();
+    });
+  }
+
   int _daysUntil(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -38,11 +56,9 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
 
   Widget _buildDayBadge(BuildContext context, int days) {
     final l10n = AppLocalizations.of(context)!;
-
     String label;
     Color bg;
     Color fg;
-
     if (days == 0) {
       label = l10n.borrowEventBadgeToday;
       bg = AppColors.error.withOpacity(0.15);
@@ -56,38 +72,41 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
       bg = AppColors.primarySoft;
       fg = AppColors.primary;
     }
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(label,
-          style: AppTextStyles.caption.copyWith(
-            color: fg,
-            fontWeight: FontWeight.w700,
-          )),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      child: Text(label, style: AppTextStyles.caption.copyWith(color: fg, fontWeight: FontWeight.w700)),
     );
   }
 
-  Widget _buildEventCard(BuildContext context, EligibleEvent event) {
+  Widget _buildPastBadge(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final days = _daysUntil(event.eventDate);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.textSecondary.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        l10n.borrowEventPastBadge,
+        style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget _buildEventCard(BuildContext context, EligibleEvent event, {required bool isCompleted}) {
+    final l10n = AppLocalizations.of(context)!;
     final dateStr = DateFormat('d MMM yyyy').format(event.eventDate);
+    final days = _daysUntil(event.eventDate);
 
     return GestureDetector(
       onTap: () async {
         await Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => BorrowEquipmentScreen(event: event),
+            builder: (_) => BorrowEquipmentScreen(event: event, isCompleted: isCompleted),
           ),
         );
-        if (mounted) {
-          setState(() {
-            _eventsFuture = _repo.fetchEligibleEvents();
-          });
-        }
+        _reload();
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -95,13 +114,7 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowDark,
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            )
-          ],
+          boxShadow: [BoxShadow(color: AppColors.shadowDark, blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -110,42 +123,29 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: Text(event.name,
-                        style: AppTextStyles.h3.copyWith(fontSize: 15)),
-                  ),
+                  Expanded(child: Text(event.name, style: AppTextStyles.h3.copyWith(fontSize: 15))),
                   const SizedBox(width: 8),
-                  _buildDayBadge(context, days),
+                  isCompleted ? _buildPastBadge(context) : _buildDayBadge(context, days),
                 ],
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined,
-                      size: 13, color: AppColors.textSecondary),
-                  const SizedBox(width: 5),
-                  Text(dateStr, style: AppTextStyles.caption),
-                ],
-              ),
+              Row(children: [
+                const Icon(Icons.calendar_today_outlined, size: 13, color: AppColors.textSecondary),
+                const SizedBox(width: 5),
+                Text(dateStr, style: AppTextStyles.caption),
+              ]),
               const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(Icons.location_on_outlined,
-                      size: 13, color: AppColors.textSecondary),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Text(event.venue,
-                        style: AppTextStyles.caption,
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                ],
-              ),
+              Row(children: [
+                const Icon(Icons.location_on_outlined, size: 13, color: AppColors.textSecondary),
+                const SizedBox(width: 5),
+                Expanded(child: Text(event.venue, style: AppTextStyles.caption, overflow: TextOverflow.ellipsis)),
+              ]),
               if (event.borrowedItemsCount > 0) ...[
                 const SizedBox(height: 8),
                 Text(
                   l10n.borrowEventItemsBorrowed(event.borrowedItemsCount),
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.primary,
+                    color: isCompleted ? AppColors.textSecondary : AppColors.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -157,6 +157,39 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
     );
   }
 
+  Widget _buildEventList(
+    BuildContext context,
+    Future<List<EligibleEvent>> future, {
+    required bool isCompleted,
+    required String emptyMessage,
+  }) {
+    return FutureBuilder<List<EligibleEvent>>(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text(AppLocalizations.of(context)!.borrowEventLoadError, style: AppTextStyles.body));
+        }
+        final events = snapshot.data ?? [];
+        if (events.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Text(emptyMessage, style: AppTextStyles.body, textAlign: TextAlign.center),
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          itemCount: events.length,
+          itemBuilder: (context, index) => _buildEventCard(context, events[index], isCompleted: isCompleted),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -165,6 +198,7 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
+          // Header
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -177,8 +211,7 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -186,28 +219,22 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
                       children: [
                         GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
-                          child: const Icon(Icons.arrow_back,
-                              color: AppColors.textWhite),
+                          child: const Icon(Icons.arrow_back, color: AppColors.textWhite),
                         ),
                         const Spacer(),
-                        // EN / BM toggle â€” wired to provider in real app;
-                        // widget shown for visual consistency with mockup.
-                        LanguageToggle(selectedLocale: localeController.value, onLocaleChanged: (locale) => localeController.value = locale),
+                        LanguageToggle(
+                          selectedLocale: localeController.value,
+                          onLocaleChanged: (locale) => localeController.value = locale,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(l10n.borrowEventTitle,
-                        style: AppTextStyles.heading
-                            .copyWith(color: AppColors.textWhite)),
+                    Text(l10n.borrowEventTitle, style: AppTextStyles.heading.copyWith(color: AppColors.textWhite)),
                     const SizedBox(height: 4),
-                    Text(l10n.borrowEventSubtitle,
-                        style: AppTextStyles.subtitle
-                            .copyWith(color: AppColors.textWhite.withValues(alpha: 0.7))),
+                    Text(l10n.borrowEventSubtitle, style: AppTextStyles.subtitle.copyWith(color: AppColors.textWhite.withValues(alpha: 0.7))),
                     const SizedBox(height: 10),
-                    // Eligibility note chip
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 7),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                       decoration: BoxDecoration(
                         color: AppColors.textWhite.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
@@ -215,19 +242,30 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.info_outline,
-                              size: 14, color: AppColors.textWhite),
+                          const Icon(Icons.info_outline, size: 14, color: AppColors.textWhite),
                           const SizedBox(width: 6),
                           Flexible(
                             child: Text(
                               l10n.borrowEventEligibilityNote,
-                              style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textWhite,
-                                  fontWeight: FontWeight.w500),
+                              style: AppTextStyles.caption.copyWith(color: AppColors.textWhite, fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 14),
+                    TabBar(
+                      controller: _tabController,
+                      indicator: BoxDecoration(color: AppColors.textWhite, borderRadius: BorderRadius.circular(30)),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelColor: AppColors.primary,
+                      unselectedLabelColor: AppColors.textWhite,
+                      labelStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        Tab(text: l10n.borrowTabUpcoming),
+                        Tab(text: l10n.borrowTabPastEvents),
+                      ],
                     ),
                   ],
                 ),
@@ -235,51 +273,21 @@ class _BorrowEventSelectScreenState extends State<BorrowEventSelectScreen> {
             ),
           ),
 
-          // Event list 
+          // Tab content
           Expanded(
-            child: FutureBuilder<List<EligibleEvent>>(
-              future: _eventsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(l10n.borrowEventLoadError,
-                        style: AppTextStyles.body),
-                  );
-                }
-                final events = snapshot.data ?? [];
-                if (events.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Text(
-                        l10n.borrowEventNoEvents,
-                        style: AppTextStyles.body,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) =>
-                      _buildEventCard(context, events[index]),
-                );
-              },
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildEventList(context, _upcomingFuture, isCompleted: false, emptyMessage: l10n.borrowEventNoEvents),
+                _buildEventList(context, _pastFuture, isCompleted: true, emptyMessage: l10n.borrowEventNoPastEvents),
+              ],
             ),
           ),
 
           // Footer
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              l10n.appFooter,
-              style: AppTextStyles.caption,
-              textAlign: TextAlign.center,
-            ),
+            child: Text(l10n.appFooter, style: AppTextStyles.caption, textAlign: TextAlign.center),
           ),
         ],
       ),

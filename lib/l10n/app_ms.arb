@@ -573,5 +573,10 @@
   "returnEquipmentSubtitle": "Hantar bukti pemulangan",
   "returnEquipmentDetails": "BUTIRAN PERALATAN",
   "returnUploadPhotoHint": "PNG atau JPG · Ketik untuk memilih foto",
-  "returnCancel": "Batal"
+  "returnCancel": "Batal",
+  "borrowTabUpcoming": "Akan Datang",
+  "borrowTabPastEvents": "Acara Lepas",
+  "borrowEventNoPastEvents": "Tiada acara lepas dengan peralatan dipinjam ditemui.",
+  "borrowEventPastBadge": "Tamat",
+  "borrowEventAvailableTabLocked": "Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan."
 }

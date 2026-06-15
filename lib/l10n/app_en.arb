@@ -573,5 +573,10 @@
   "returnEquipmentSubtitle": "Submit return evidence",
   "returnEquipmentDetails": "EQUIPMENT DETAILS",
   "returnUploadPhotoHint": "PNG or JPG · Tap to choose a photo",
-  "returnCancel": "Cancel"
+  "returnCancel": "Cancel",
+  "borrowTabUpcoming": "Upcoming",
+  "borrowTabPastEvents": "Past Events",
+  "borrowEventNoPastEvents": "No past events with borrowed equipment found.",
+  "borrowEventPastBadge": "Ended",
+  "borrowEventAvailableTabLocked": "This event has ended. You can no longer borrow equipment."
 }

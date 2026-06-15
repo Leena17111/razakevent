@@ -3121,6 +3121,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get returnCancel;
+
+  /// No description provided for @borrowTabUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get borrowTabUpcoming;
+
+  /// No description provided for @borrowTabPastEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Events'**
+  String get borrowTabPastEvents;
+
+  /// No description provided for @borrowEventNoPastEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No past events with borrowed equipment found.'**
+  String get borrowEventNoPastEvents;
+
+  /// No description provided for @borrowEventPastBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get borrowEventPastBadge;
+
+  /// No description provided for @borrowEventAvailableTabLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This event has ended. You can no longer borrow equipment.'**
+  String get borrowEventAvailableTabLocked;
 }
 
 class _AppLocalizationsDelegate

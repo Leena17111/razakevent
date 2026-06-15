@@ -1596,4 +1596,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get returnCancel => 'Cancel';
+
+  @override
+  String get borrowTabUpcoming => 'Upcoming';
+
+  @override
+  String get borrowTabPastEvents => 'Past Events';
+
+  @override
+  String get borrowEventNoPastEvents =>
+      'No past events with borrowed equipment found.';
+
+  @override
+  String get borrowEventPastBadge => 'Ended';
+
+  @override
+  String get borrowEventAvailableTabLocked =>
+      'This event has ended. You can no longer borrow equipment.';
 }
