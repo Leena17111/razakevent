@@ -335,23 +335,27 @@ class _CertCardState extends State<_CertCard> {
   bool _isGenerating = false;
 
   Future<void> _viewCertificate() async {
+    final locale = Localizations.localeOf(context).languageCode;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => CertificatePreviewScreen(
           cert: widget.cert,
           studentName: widget.studentName,
+          locale: locale,
         ),
       ),
     );
   }
 
   Future<void> _downloadCertificate() async {
+    final locale = Localizations.localeOf(context).languageCode;
     setState(() => _isGenerating = true);
     try {
       final bytes = await CertificatePdfService().generate(
         cert: widget.cert,
         studentName: widget.studentName,
+        locale: locale,
       );
       final safeName =
           widget.cert.eventName.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
