@@ -425,7 +425,6 @@ class EquipmentBorrowRepository {
     }
   }
 
-<<<<<<< Updated upstream
   // Completed Events With Borrowed Items
 
   /// Fetches past events (eventDateTime in past OR status == 'Completed')
@@ -509,8 +508,7 @@ class EquipmentBorrowRepository {
     }
 
     result.sort((a, b) => b.eventDate.compareTo(a.eventDate));
-    return result;
-=======
+    return result; }
   // ── Admin: Review Special Requests ───────────────────────────────────────
 
   /// Streams ALL special equipment requests for admin review, ordered newest first.
@@ -556,6 +554,5 @@ class EquipmentBorrowRepository {
       'adminNote': reason.trim(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
->>>>>>> Stashed changes
   }
-}
+} 

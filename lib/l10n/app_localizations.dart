@@ -3122,7 +3122,6 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get returnCancel;
 
-<<<<<<< Updated upstream
   /// No description provided for @borrowTabUpcoming.
   ///
   /// In en, this message translates to:
@@ -3152,7 +3151,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This event has ended. You can no longer borrow equipment.'**
   String get borrowEventAvailableTabLocked;
-=======
+
   /// No description provided for @specialRequestsTitle.
   ///
   /// In en, this message translates to:
@@ -3272,7 +3271,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancelBtn;
->>>>>>> Stashed changes
 }
 
 class _AppLocalizationsDelegate

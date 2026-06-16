@@ -576,15 +576,11 @@
   "returnEquipmentDetails": "EQUIPMENT DETAILS",
   "returnUploadPhotoHint": "PNG or JPG · Tap to choose a photo",
   "returnCancel": "Cancel",
-<<<<<<< Updated upstream
   "borrowTabUpcoming": "Upcoming",
   "borrowTabPastEvents": "Past Events",
   "borrowEventNoPastEvents": "No past events with borrowed equipment found.",
   "borrowEventPastBadge": "Ended",
-  "borrowEventAvailableTabLocked": "This event has ended. You can no longer borrow equipment."
-}
-=======
-
+  "borrowEventAvailableTabLocked": "This event has ended. You can no longer borrow equipment.",
   "specialRequestsTitle": "Special Equipment Requests",
   "specialRequestsSubtitle": "Review and action requests",
   "approveRequest": "Approve",
@@ -607,4 +603,3 @@
   "collectionLocation": "Collection Location",
   "cancelBtn": "Cancel"
 }
->>>>>>> Stashed changes

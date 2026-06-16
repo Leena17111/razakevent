@@ -1597,7 +1597,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnCancel => 'Cancel';
 
   @override
-<<<<<<< Updated upstream
   String get borrowTabUpcoming => 'Upcoming';
 
   @override
@@ -1613,7 +1612,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get borrowEventAvailableTabLocked =>
       'This event has ended. You can no longer borrow equipment.';
-=======
+
+  @override
   String get specialRequestsTitle => 'Special Equipment Requests';
 
   @override
@@ -1675,5 +1675,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelBtn => 'Cancel';
->>>>>>> Stashed changes
 }

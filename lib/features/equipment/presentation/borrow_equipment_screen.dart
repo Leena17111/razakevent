@@ -51,7 +51,11 @@ class BorrowEquipmentScreen extends StatefulWidget {
   final EligibleEvent event;
   final bool isCompleted;
 
-  const BorrowEquipmentScreen({super.key, required this.event, this.isCompleted = false});
+  const BorrowEquipmentScreen({
+    super.key,
+    required this.event,
+    this.isCompleted = false,
+  });
 
   @override
   State<BorrowEquipmentScreen> createState() => _BorrowEquipmentScreenState();
@@ -71,8 +75,14 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   String _searchQuery = '';
 
   static const List<String> _categories = [
-    'All', 'Audio', 'Presentation', 'Furniture',
-    'Decoration', 'Sports', 'Electrical', 'Others',
+    'All',
+    'Audio',
+    'Presentation',
+    'Furniture',
+    'Decoration',
+    'Sports',
+    'Electrical',
+    'Others',
   ];
 
   @override
@@ -95,10 +105,12 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
   List<EquipmentItem> _filterItems(List<EquipmentItem> all) {
     return all.where((item) {
-      final matchCat = _selectedCategory == 'All' ||
+      final matchCat =
+          _selectedCategory == 'All' ||
           item.category.toLowerCase() == _selectedCategory.toLowerCase();
       final q = _searchQuery.toLowerCase().trim();
-      final matchSearch = q.isEmpty ||
+      final matchSearch =
+          q.isEmpty ||
           item.name.toLowerCase().contains(q) ||
           item.description.toLowerCase().contains(q) ||
           item.category.toLowerCase().contains(q) ||
@@ -143,10 +155,6 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     });
   }
 
-<<<<<<< Updated upstream
-  // Confirm Borrow Dialog
-=======
->>>>>>> Stashed changes
   Future<void> _showConfirmDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
@@ -154,7 +162,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
       barrierDismissible: false,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -163,32 +173,30 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(l10n.borrowConfirmTitle, style: AppTextStyles.h3)),
+                    Expanded(
+                      child: Text(
+                        l10n.borrowConfirmTitle,
+                        style: AppTextStyles.h3,
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.of(ctx).pop(false),
-                      child: const Icon(Icons.close, size: 20, color: AppColors.textSecondary),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(l10n.borrowConfirmSubtitle,
-                    style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                Text(
+                  l10n.borrowConfirmSubtitle,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
                 const Divider(height: 20),
-<<<<<<< Updated upstream
-                ..._cart.values.map((ci) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 34,
-                            height: 34,
-                            decoration: BoxDecoration(
-                              color: _categoryColor(ci.equipment.category).withOpacity(0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(_categoryIcon(ci.equipment.category),
-                                size: 16, color: _categoryColor(ci.equipment.category)),
-=======
                 ..._cart.values.map(
                   (ci) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
@@ -202,15 +210,30 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                               ci.equipment.category,
                             ).withOpacity(0.12),
                             shape: BoxShape.circle,
->>>>>>> Stashed changes
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(ci.equipment.name, style: AppTextStyles.body)),
-                          Text('Ã—${ci.quantity}',
-                              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
-                        ],
-                      ),
-                    )),
+                          child: Icon(
+                            _categoryIcon(ci.equipment.category),
+                            size: 16,
+                            color: _categoryColor(ci.equipment.category),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            ci.equipment.name,
+                            style: AppTextStyles.body,
+                          ),
+                        ),
+                        Text(
+                          '×${ci.quantity}',
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -218,7 +241,10 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
                         style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         child: Text(l10n.borrowConfirmCancel),
                       ),
                     ),
@@ -228,10 +254,14 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                         onPressed: () => Navigator.of(ctx).pop(true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                        child: Text(l10n.borrowConfirmSubmit,
-                            style: const TextStyle(color: AppColors.textWhite)),
+                        child: Text(
+                          l10n.borrowConfirmSubmit,
+                          style: const TextStyle(color: AppColors.textWhite),
+                        ),
                       ),
                     ),
                   ],
@@ -242,13 +272,18 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         );
       },
     );
-    if (confirmed == true) await _submitBorrow(context);
+
+    if (confirmed == true) {
+      await _submitBorrow(context);
+    }
   }
 
   Future<void> _submitBorrow(BuildContext context) async {
     if (_isSubmitting) return;
     final l10n = AppLocalizations.of(context)!;
+
     setState(() => _isSubmitting = true);
+
     try {
       await _repo.submitBorrowRequest(
         eventId: widget.event.id,
@@ -256,29 +291,40 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         eventDate: widget.event.eventDate,
         cartItems: _cart.values.toList(),
       );
+
       if (!mounted) return;
+
       setState(() {
         _cart.clear();
         _isSubmitting = false;
         _equipmentFuture = _repo.fetchAvailableEquipment();
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: [
-          const Icon(Icons.check_circle, color: Colors.white),
-          const SizedBox(width: 10),
-          Text(l10n.borrowSubmitSuccess),
-        ]),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(l10n.borrowSubmitSuccess),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
+
       setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.borrowSubmitError),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.borrowSubmitError),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
@@ -291,10 +337,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 
-<<<<<<< Updated upstream
-  // Locked Available Tab â€” shown when event is completed
   Widget _buildLockedAvailableTab(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -305,7 +350,9 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             const SizedBox(height: 12),
             Text(
               l10n.borrowEventAvailableTabLocked,
-              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -314,14 +361,10 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 
-  // Available Tab
-  Widget _buildAvailableTab(BuildContext context, List<EquipmentItem> allItems) {
-=======
   Widget _buildAvailableTab(
     BuildContext context,
     List<EquipmentItem> allItems,
   ) {
->>>>>>> Stashed changes
     final l10n = AppLocalizations.of(context)!;
     final filtered = _filterItems(allItems);
 
@@ -334,16 +377,25 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             decoration: InputDecoration(
               hintText: l10n.borrowSearchHint,
               hintStyle: AppTextStyles.caption,
-              prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.textSecondary),
+              prefixIcon: const Icon(
+                Icons.search,
+                size: 18,
+                color: AppColors.textSecondary,
+              ),
               filled: true,
               fillColor: AppColors.surface,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.border)),
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: AppColors.border),
+              ),
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.border)),
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: AppColors.border),
+              ),
             ),
           ),
         ),
@@ -359,20 +411,28 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               itemBuilder: (context, index) {
                 final cat = _categories[index];
                 final active = _selectedCategory == cat;
+
                 return GestureDetector(
                   onTap: () => setState(() => _selectedCategory = cat),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: active ? AppColors.primary : AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: active ? AppColors.primary : AppColors.border),
+                      border: Border.all(
+                        color: active ? AppColors.primary : AppColors.border,
+                      ),
                     ),
                     child: Text(
                       _localizeCategory(context, cat),
                       style: AppTextStyles.caption.copyWith(
-                        color: active ? AppColors.textWhite : AppColors.textSecondary,
+                        color: active
+                            ? AppColors.textWhite
+                            : AppColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -388,17 +448,26 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.inventory_2_outlined, size: 48, color: AppColors.border),
+                      const Icon(
+                        Icons.inventory_2_outlined,
+                        size: 48,
+                        color: AppColors.border,
+                      ),
                       const SizedBox(height: 10),
-                      Text(l10n.borrowNoEquipmentFound,
-                          style: AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
+                      Text(
+                        l10n.borrowNoEquipmentFound,
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                   itemCount: filtered.length,
-                  itemBuilder: (context, index) => _buildEquipmentCard(context, filtered[index]),
+                  itemBuilder: (context, index) =>
+                      _buildEquipmentCard(context, filtered[index]),
                 ),
         ),
         _buildBottomBar(context),
@@ -418,7 +487,13 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
-        boxShadow: [BoxShadow(color: AppColors.shadowDark, blurRadius: 4, offset: const Offset(0, 1))],
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowDark,
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -429,7 +504,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               color: _categoryColor(item.category).withOpacity(0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(_categoryIcon(item.category), size: 18, color: _categoryColor(item.category)),
+            child: Icon(
+              _categoryIcon(item.category),
+              size: 18,
+              color: _categoryColor(item.category),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -438,22 +517,37 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               children: [
                 Text(item.name, style: AppTextStyles.body),
                 const SizedBox(height: 2),
-                Text(item.description, style: AppTextStyles.caption, overflow: TextOverflow.ellipsis),
+                Text(
+                  item.description,
+                  style: AppTextStyles.caption,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
                 if (item.storageLocation.isNotEmpty)
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 11, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 11,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 3),
                       Expanded(
-                          child: Text(item.storageLocation,
-                              style: AppTextStyles.caption, overflow: TextOverflow.ellipsis)),
+                        child: Text(
+                          item.storageLocation,
+                          style: AppTextStyles.caption,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 const SizedBox(height: 4),
                 Text(
                   l10n.borrowAvailableCount(item.availableQuantity),
-                  style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -465,9 +559,17 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                 GestureDetector(
                   onTap: () => _decrementCart(item),
                   child: Container(
-                    width: 28, height: 28,
-                    decoration: BoxDecoration(border: Border.all(color: AppColors.border), shape: BoxShape.circle),
-                    child: const Icon(Icons.remove, size: 14, color: AppColors.textPrimary),
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.border),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.remove,
+                      size: 14,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
                 Padding(
@@ -477,17 +579,36 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                 GestureDetector(
                   onTap: () => _addToCart(item),
                   child: Container(
-                    width: 28, height: 28,
-                    decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                    child: const Icon(Icons.add, size: 14, color: AppColors.textWhite),
+                    width: 28,
+                    height: 28,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      size: 14,
+                      color: AppColors.textWhite,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(8)),
-                  child: Text(l10n.borrowAdded(cartQty),
-                      style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l10n.borrowAdded(cartQty),
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ],
             )
@@ -495,9 +616,17 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             GestureDetector(
               onTap: () => _addToCart(item),
               child: Container(
-                width: 32, height: 32,
-                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                child: const Icon(Icons.add, size: 18, color: AppColors.textWhite),
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.add,
+                  size: 18,
+                  color: AppColors.textWhite,
+                ),
               ),
             ),
         ],
@@ -507,11 +636,18 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
   Widget _buildBottomBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        boxShadow: [BoxShadow(color: AppColors.shadowDark, blurRadius: 8, offset: const Offset(0, -2))],
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowDark,
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -520,14 +656,24 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isSubmitting ? null : () => _showConfirmDialog(context),
-                icon: const Icon(Icons.shopping_basket_outlined, size: 18, color: AppColors.textWhite),
-                label: Text(l10n.borrowItemsButton(_cartCount),
-                    style: const TextStyle(color: AppColors.textWhite)),
+                onPressed: _isSubmitting
+                    ? null
+                    : () => _showConfirmDialog(context),
+                icon: const Icon(
+                  Icons.shopping_basket_outlined,
+                  size: 18,
+                  color: AppColors.textWhite,
+                ),
+                label: Text(
+                  l10n.borrowItemsButton(_cartCount),
+                  style: const TextStyle(color: AppColors.textWhite),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -539,11 +685,18 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.border, width: 1.5),
                 backgroundColor: AppColors.surface,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: Text(l10n.borrowRequestSpecial,
-                  style: AppTextStyles.body.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
+              child: Text(
+                l10n.borrowRequestSpecial,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],
@@ -553,16 +706,26 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
   String _localizeCategory(BuildContext context, String cat) {
     final l10n = AppLocalizations.of(context)!;
+
     switch (cat) {
-      case 'All': return l10n.borrowCategoryAll;
-      case 'Audio': return l10n.borrowCategoryAudio;
-      case 'Presentation': return l10n.borrowCategoryPresentation;
-      case 'Furniture': return l10n.borrowCategoryFurniture;
-      case 'Decoration': return l10n.borrowCategoryDecoration;
-      case 'Sports': return l10n.borrowCategorySports;
-      case 'Electrical': return l10n.borrowCategoryElectrical;
-      case 'Others': return l10n.borrowCategoryOthers;
-      default: return cat;
+      case 'All':
+        return l10n.borrowCategoryAll;
+      case 'Audio':
+        return l10n.borrowCategoryAudio;
+      case 'Presentation':
+        return l10n.borrowCategoryPresentation;
+      case 'Furniture':
+        return l10n.borrowCategoryFurniture;
+      case 'Decoration':
+        return l10n.borrowCategoryDecoration;
+      case 'Sports':
+        return l10n.borrowCategorySports;
+      case 'Electrical':
+        return l10n.borrowCategoryElectrical;
+      case 'Others':
+        return l10n.borrowCategoryOthers;
+      default:
+        return cat;
     }
   }
 
@@ -593,24 +756,37 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                       children: [
                         GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
-                          child: const Icon(Icons.arrow_back, color: AppColors.textWhite),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            color: AppColors.textWhite,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(l10n.borrowEquipTitle,
-                                  style: AppTextStyles.h2.copyWith(color: AppColors.textWhite)),
-                              Text(widget.event.name,
-                                  style: AppTextStyles.caption
-                                      .copyWith(color: AppColors.textWhite.withValues(alpha: 0.7))),
+                              Text(
+                                l10n.borrowEquipTitle,
+                                style: AppTextStyles.h2.copyWith(
+                                  color: AppColors.textWhite,
+                                ),
+                              ),
+                              Text(
+                                widget.event.name,
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textWhite.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         LanguageToggle(
                           selectedLocale: localeController.value,
-                          onLocaleChanged: (locale) => localeController.value = locale,
+                          onLocaleChanged: (locale) =>
+                              localeController.value = locale,
                         ),
                       ],
                     ),
@@ -621,11 +797,15 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                     isScrollable: true,
                     tabAlignment: TabAlignment.center,
                     indicator: BoxDecoration(
-                        color: AppColors.textWhite, borderRadius: BorderRadius.circular(30)),
+                      color: AppColors.textWhite,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelColor: AppColors.primary,
                     unselectedLabelColor: AppColors.textWhite,
-                    labelStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
+                    labelStyle: AppTextStyles.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     dividerColor: Colors.transparent,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     tabs: [
@@ -647,13 +827,26 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                     : FutureBuilder<List<EquipmentItem>>(
                         future: _equipmentFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
+
                           if (snapshot.hasError) {
-                            return Center(child: Text(l10n.borrowLoadError, style: AppTextStyles.body));
+                            return Center(
+                              child: Text(
+                                l10n.borrowLoadError,
+                                style: AppTextStyles.body,
+                              ),
+                            );
                           }
-                          return _buildAvailableTab(context, snapshot.data ?? []);
+
+                          return _buildAvailableTab(
+                            context,
+                            snapshot.data ?? [],
+                          );
                         },
                       ),
                 BorrowedEquipmentTab(
@@ -662,7 +855,11 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                   onInventoryChanged: _refreshAvailableEquipment,
                   isCompleted: widget.isCompleted,
                 ),
-                SpecialRequestsTab(event: widget.event, repository: _repo, isCompleted: widget.isCompleted),
+                SpecialRequestsTab(
+                  event: widget.event,
+                  repository: _repo,
+                  isCompleted: widget.isCompleted,
+                ),
               ],
             ),
           ),
@@ -672,13 +869,14 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   }
 }
 
-// ── Special Request Sheet ─────────────────────────────────────────────────────
-
 class _SpecialRequestSheet extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repo;
 
-  const _SpecialRequestSheet({required this.event, required this.repo});
+  const _SpecialRequestSheet({
+    required this.event,
+    required this.repo,
+  });
 
   @override
   State<_SpecialRequestSheet> createState() => _SpecialRequestSheetState();
@@ -701,12 +899,11 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_formKey.currentState!.validate()) return;
-<<<<<<< Updated upstream
-=======
 
-    // ✅ Use repo's currentUserId to ensure same auth instance
+    if (!_formKey.currentState!.validate()) return;
+
     final uid = widget.repo.currentUserId;
+
     if (uid.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -718,8 +915,8 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
       return;
     }
 
->>>>>>> Stashed changes
     setState(() => _isSubmitting = true);
+
     try {
       final request = SpecialEquipmentRequest(
         eventId: widget.event.id,
@@ -730,25 +927,36 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
         reason: _reasonController.text.trim(),
         createdAt: DateTime.now(),
       );
+
       await widget.repo.submitSpecialEquipmentRequest(request);
+
       if (!mounted) return;
+
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: [
-          const Icon(Icons.check_circle, color: Colors.white),
-          const SizedBox(width: 10),
-          Text(l10n.specialRequestSubmitSuccess),
-        ]),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(l10n.specialRequestSubmitSuccess),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.specialRequestSubmitError),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.specialRequestSubmitError),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -764,7 +972,9 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.only(
-        left: 20, right: 20, top: 20,
+        left: 20,
+        right: 20,
+        top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: SingleChildScrollView(
@@ -776,31 +986,37 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
             children: [
               Center(
                 child: Container(
-                  width: 40, height: 4,
-                  decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               Text(l10n.specialRequestTitle, style: AppTextStyles.h2),
               const SizedBox(height: 4),
-              Text(l10n.specialRequestSubtitle,
-                  style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+              Text(
+                l10n.specialRequestSubtitle,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const SizedBox(height: 16),
-<<<<<<< Updated upstream
-              Text(l10n.specialRequestEventLabel,
-                  style: AppTextStyles.label.copyWith(color: AppColors.textSecondary)),
-=======
               Text(
                 l10n.specialRequestEventLabel,
                 style: AppTextStyles.label.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
->>>>>>> Stashed changes
               const SizedBox(height: 6),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceSoft,
                   borderRadius: BorderRadius.circular(10),
@@ -814,45 +1030,46 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 decoration: BoxDecoration(
                   color: AppColors.warning.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.warning.withOpacity(0.4)),
+                  border: Border.all(
+                    color: AppColors.warning.withOpacity(0.4),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, size: 16, color: AppColors.warning),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: AppColors.warning,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(l10n.specialRequestPendingNote,
-                          style: AppTextStyles.caption.copyWith(
-                              color: AppColors.warning, fontWeight: FontWeight.w500)),
+                      child: Text(
+                        l10n.specialRequestPendingNote,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.warning,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-<<<<<<< Updated upstream
               Text(l10n.specialRequestItemNameLabel, style: AppTextStyles.label),
-=======
-              Text(
-                l10n.specialRequestItemNameLabel,
-                style: AppTextStyles.label,
-              ),
->>>>>>> Stashed changes
               const SizedBox(height: 6),
               TextFormField(
                 controller: _itemNameController,
                 style: AppTextStyles.body,
                 decoration: _inputDecoration(l10n.specialRequestItemNameHint),
-                validator: (v) => (v == null || v.trim().isEmpty) ? l10n.specialRequestItemNameRequired : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l10n.specialRequestItemNameRequired
+                    : null,
               ),
               const SizedBox(height: 12),
-<<<<<<< Updated upstream
-              Text(l10n.specialRequestQuantityLabel, style: AppTextStyles.label),
-=======
               Text(
                 l10n.specialRequestQuantityLabel,
                 style: AppTextStyles.label,
               ),
->>>>>>> Stashed changes
               const SizedBox(height: 6),
               TextFormField(
                 controller: _quantityController,
@@ -860,14 +1077,24 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 keyboardType: TextInputType.number,
                 decoration: _inputDecoration('1'),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return l10n.specialRequestQuantityRequired;
+                  if (v == null || v.trim().isEmpty) {
+                    return l10n.specialRequestQuantityRequired;
+                  }
+
                   final n = int.tryParse(v.trim());
-                  if (n == null || n < 1) return l10n.specialRequestQuantityInvalid;
+
+                  if (n == null || n < 1) {
+                    return l10n.specialRequestQuantityInvalid;
+                  }
+
                   return null;
                 },
               ),
               const SizedBox(height: 12),
-              Text(l10n.specialRequestReasonLabel, style: AppTextStyles.label),
+              Text(
+                l10n.specialRequestReasonLabel,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _reasonController,
@@ -875,8 +1102,14 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 maxLines: 4,
                 decoration: _inputDecoration(l10n.specialRequestReasonHint),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return l10n.specialRequestReasonRequired;
-                  if (v.trim().length < 10) return l10n.specialRequestReasonTooShort;
+                  if (v == null || v.trim().isEmpty) {
+                    return l10n.specialRequestReasonRequired;
+                  }
+
+                  if (v.trim().length < 10) {
+                    return l10n.specialRequestReasonTooShort;
+                  }
+
                   return null;
                 },
               ),
@@ -888,7 +1121,9 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Text(l10n.specialRequestCancel),
                     ),
@@ -900,14 +1135,25 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: _isSubmitting
                           ? const SizedBox(
-                              width: 18, height: 18,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Text(l10n.specialRequestSubmit,
-                              style: const TextStyle(color: AppColors.textWhite)),
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              l10n.specialRequestSubmit,
+                              style: const TextStyle(
+                                color: AppColors.textWhite,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -920,19 +1166,31 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
   }
 
   InputDecoration _inputDecoration(String hint) => InputDecoration(
-    hintText: hint,
-    hintStyle: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
-    filled: true,
-    fillColor: AppColors.surface,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.primary)),
-    errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error)),
-  );
-<<<<<<< Updated upstream
+        hintText: hint,
+        hintStyle: AppTextStyles.caption.copyWith(
+          color: AppColors.textMuted,
+        ),
+        filled: true,
+        fillColor: AppColors.surface,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.primary),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.error),
+        ),
+      );
 }
-
-=======
-}
->>>>>>> Stashed changes

@@ -576,14 +576,11 @@
   "returnEquipmentDetails": "BUTIRAN PERALATAN",
   "returnUploadPhotoHint": "PNG atau JPG · Ketik untuk memilih foto",
   "returnCancel": "Batal",
-<<<<<<< Updated upstream
   "borrowTabUpcoming": "Akan Datang",
   "borrowTabPastEvents": "Acara Lepas",
   "borrowEventNoPastEvents": "Tiada acara lepas dengan peralatan dipinjam ditemui.",
   "borrowEventPastBadge": "Tamat",
-  "borrowEventAvailableTabLocked": "Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan."
-}
-=======
+  "borrowEventAvailableTabLocked": "Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan.",
 
   "specialRequestsTitle": "Permohonan Peralatan Khas",
   "specialRequestsSubtitle": "Semak dan tindak permohonan",
@@ -607,4 +604,3 @@
   "collectionLocation": "Lokasi Pengambilan",
   "cancelBtn": "Batal"
 }
->>>>>>> Stashed changes
