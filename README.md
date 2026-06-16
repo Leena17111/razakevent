@@ -18,11 +18,11 @@ Allows students to browse and register for approved events, complete payment of 
 ### Sprint 3 — Volunteer Recruitment Module
 Allows students to apply for volunteer positions and track their application status. Organizer heads can manage volunteer slots, and review volunteer applications.
 
-### Sprint 4 — Equipment Management *(planned)*
-Will allow Organizer Heads to submit equipment borrowing requests, and Admins to approve requests and issue certificates to event participants.
+### Sprint 4 — Equipment Borrowing Management 
+Allows Admins to manage equipment inventory by adding, editing, and updating equipment availability status. Organizer Heads can borrow equipment for eligible events, submit special equipment requests form for admin review, view borrowed equipment, and upload photo evidence when returning borrowed items. Admins can review and approve or reject special equipment requests.
 
-### Sprint 4 — Certification Management *(planned)*
-Will allow Admins to issue certificates to event participants and volunteers.
+### Sprint 4 — Certification Module
+Allows Students to view and download automatically generated certificates issued for event participation and volunteer involvement.
 
 ---
 
@@ -30,11 +30,10 @@ Will allow Admins to issue certificates to event participants and volunteers.
 
 | Role | Description |
 |---|---|
-| Student | Browse events, register, submit feedback, apply for volunteer positions |
-| Organizer Head | Manage events, view registration and feedback responses, manage volunteer slots and applications |
-| Secretary | Upload and track event official documents |
-| Admin | Review event official documents, approve equipment requests, issue certificates |
-
+| Student | Browse events, register for events, submit feedback, apply for volunteer positions, track application status, and view certificates |
+| Organizer Head | Manage event details, create feedback forms, view registration and feedback responses, manage volunteer positions and applications, borrow equipment, request special equipment, view borrowed equipment, and submit return evidence |
+| Secretary | Upload and track official event documents |
+| Admin | Review event documents, manage equipment inventory, review special equipment requests, and oversee the overall event management process |
 ---
 
 ## Tech Stack
@@ -99,6 +98,12 @@ lib/
     └── volunteer/          # Volunteer slots, applications, and review
         ├── logic/          # Controllers for volunteer recruitment
         └── presentation/   # Screens for volunteer recruitment
+    ├── equipment/          # Equipment inventory, borrowing, return, and special requests
+        │   ├── logic/          # Controllers for equipment management
+        │   └── presentation/   # Screens for equipment management
+    └── certificates/       # Certificate generation, viewing, and download
+        ├── logic/          # Controllers and trigger services for certificates
+        └── presentation/   # Screens for certificate viewing and preview
 ```
 
 ---
@@ -107,12 +112,19 @@ lib/
 
 | Collection | Description |
 |---|---|
-| `users` | User profiles and roles |
+| `certificates` | Generated certificates for event participants and volunteers |
+| `documents` | Official event documents uploaded by Secretaries and reviewed by Admin |
+| `equipment` | Equipment inventory records managed by Admin |
+| `equipmentBorrowRequests` | Equipment borrowing records and return status |
+| `eventRegistrations` | Student event registration records |
 | `events` | Event details created by Organizer Heads |
-| `registrations` | Student event registrations |
-| `feedback` | Student feedback responses per event |
-| `volunteerSlots` | Volunteer positions created per event |
+| `feedbackForms` | Feedback forms created by Organizer Heads |
+| `feedbackResponses` | Student feedback responses submitted for events |
+| `registrationCodes` | Verification codes used for role-based registration |
+| `specialEquipmentRequests` | Special equipment requests submitted by Organizer Heads and reviewed by Admin |
+| `users` | User profiles, roles, and account information |
 | `volunteerApplications` | Student applications for volunteer positions |
+| `volunteerPositions` | Volunteer positions created for events |
 
 ---
 
