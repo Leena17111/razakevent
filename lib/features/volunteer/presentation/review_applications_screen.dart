@@ -792,7 +792,7 @@ class _ReviewApplicationsScreenState extends State<ReviewApplicationsScreen> {
           borderRadius: BorderRadius.circular(22),
         ),
         title: Text(
-          l10n.confirmApprove,
+          l10n.confirmApproveVolunteer,
           style: AppTextStyles.subtitle.copyWith(
             fontWeight: FontWeight.w900,
           ),
@@ -930,7 +930,7 @@ Future<void> _showRejectDialog(
                   controller: reasonController,
                   maxLines: 4,
                   decoration: InputDecoration(
-                    hintText: l10n.rejectionReasonHint,
+                    hintText: l10n.volunteerRejectionReasonHint,
                     errorText: errorText,
                     filled: true,
                     fillColor: AppColors.background,
@@ -983,7 +983,7 @@ Future<void> _showRejectDialog(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: Text(l10n.confirmReject),
+                      child: Text(l10n.confirmRejectVolunteer),
                     ),
                   ),
                 ],

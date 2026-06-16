@@ -349,8 +349,8 @@
   "approved": "Diluluskan",
   "rejected": "Ditolak",
   "rejectApplication": "Tolak Permohonan",
-  "rejectionReasonHint": "cth. Semua slot telah dipenuhi. Terima kasih atas minat anda.",
-  "confirmReject": "Sahkan Tolak",
+  "volunteerRejectionReasonHint": "cth. Semua slot telah dipenuhi. Terima kasih atas minat anda.",
+  "confirmRejectVolunteer": "Sahkan Tolak",
   "applicationApprovedSuccessfully": "Permohonan berjaya diluluskan.",
   "applicationRejectedSuccessfully": "Permohonan berjaya ditolak.",
   "failedToApproveApplication": "Gagal meluluskan permohonan.",
@@ -360,7 +360,7 @@
   "volunteerSlotsFull": "Slot sukarelawan telah penuh.",
   "applicationAlreadyReviewed": "Permohonan ini telah disemak.",
   "applicationOrPositionNotFound": "Permohonan atau jawatan tidak dijumpai.",
-  "confirmApprove": "Sahkan Lulus",
+  "confirmApproveVolunteer": "Sahkan Lulus",
   "approveApplicationQuestion": "Adakah anda pasti ingin meluluskan permohonan ini? Jika kelulusan ini memenuhi semua kekosongan sukarelawan yang diperlukan, semua permohonan yang masih berstatus Pending untuk jawatan ini akan ditolak secara automatik.",
   "noExperienceProvided": "Tiada pengalaman diberikan",
   "experience": "Pengalaman",
@@ -527,6 +527,7 @@
   "certificatesEmptyDesc": "Lengkapkan maklum balas untuk acara yang layak, atau diluluskan sebagai sukarelawan, untuk menerima sijil.",
   "certificatesDownloading": "Memuat turun sijil...",
   "certificatesPdfNotReady": "PDF sijil belum sedia. Sila cuba lagi kemudian.",
+
   "borrowTabSpecialRequests": "Permintaan Khas",
   "borrowFilterAll": "Semua",
   "borrowFilterBorrowed": "Dipinjam",
@@ -560,6 +561,7 @@
   "specialRequestsLoadError": "Gagal memuatkan permintaan khas.",
   "specialCancelSuccess": "Permintaan khas dibatalkan.",
   "specialCancelError": "Tidak dapat membatalkan permintaan khas ini.",
+
   "returnEquipmentTitle": "Pulangkan Peralatan",
   "returnPhotoEvidence": "Bukti Foto",
   "returnPhotoEvidenceHint": "Muat naik foto jelas yang menunjukkan peralatan sedang dipulangkan.",
@@ -574,9 +576,35 @@
   "returnEquipmentDetails": "BUTIRAN PERALATAN",
   "returnUploadPhotoHint": "PNG atau JPG · Ketik untuk memilih foto",
   "returnCancel": "Batal",
+<<<<<<< Updated upstream
   "borrowTabUpcoming": "Akan Datang",
   "borrowTabPastEvents": "Acara Lepas",
   "borrowEventNoPastEvents": "Tiada acara lepas dengan peralatan dipinjam ditemui.",
   "borrowEventPastBadge": "Tamat",
   "borrowEventAvailableTabLocked": "Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan."
 }
+=======
+
+  "specialRequestsTitle": "Permohonan Peralatan Khas",
+  "specialRequestsSubtitle": "Semak dan tindak permohonan",
+  "approveRequest": "Luluskan",
+  "rejectRequest": "Tolak",
+  "confirmApproveSpecial": "Sahkan Kelulusan",
+  "confirmRejectSpecial": "Sahkan Tolakan",
+  "itemLocation": "Lokasi Item",
+  "itemLocationHint": "cth. Bilik Stor B, Aras 2",
+  "itemLocationRequired": "Lokasi diperlukan",
+  "additionalNote": "Nota Tambahan",
+  "additionalNoteHint": "Sebarang arahan untuk pemohon...",
+  "specialRejectionReason": "Sebab Penolakan",
+  "specialRejectionReasonHint": "Terangkan sebab permohonan ini ditolak...",
+  "specialRejectionReasonRequired": "Sebab penolakan diperlukan",
+  "noRequests": "Tiada Permohonan",
+  "noRequestsDesc": "Tiada permohonan {filter} dijumpai.",
+  "@noRequestsDesc": { "placeholders": { "filter": { "type": "String" } } },
+  "requestApprovedSuccess": "Permohonan berjaya diluluskan!",
+  "requestRejected": "Permohonan ditolak.",
+  "collectionLocation": "Lokasi Pengambilan",
+  "cancelBtn": "Batal"
+}
+>>>>>>> Stashed changes

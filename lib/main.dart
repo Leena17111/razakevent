@@ -37,6 +37,7 @@ import 'features/equipment/presentation/manage_equipment_screen.dart';
 import 'features/equipment/presentation/equipment_form_screen.dart';
 import 'features/equipment/presentation/borrow_event_select_screen.dart';
 import 'features/equipment/presentation/return_borrowed_equipment_screen.dart';
+import 'features/equipment/presentation/review_special_requests_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -174,9 +175,7 @@ class RazakEventApp extends StatelessWidget {
 
             AppRoutes.editEquipment: (_) => const EquipmentFormScreen(),
 
-            AppRoutes.reviewSpecialEquipmentRequests: (_) => const Scaffold(
-              body: Center(child: Text('Review Special Equipment Requests')),
-            ),
+            AppRoutes.reviewSpecialEquipmentRequests: (_) => const ReviewSpecialRequestsScreen(),
 
             // Organizer Equipment
             AppRoutes.selectEquipmentEvent: (_) =>

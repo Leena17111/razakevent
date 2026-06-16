@@ -558,8 +558,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please provide an admin comment when requesting correction.';
 
   @override
-  String get rejectionReasonRequired =>
-      'Please provide a reason for rejection.';
+  String get rejectionReasonRequired => 'Rejection reason is required';
 
   @override
   String get userNotAuthenticated => 'User is not authenticated.';
@@ -1020,11 +1019,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectApplication => 'Reject Application';
 
   @override
-  String get rejectionReasonHint =>
+  String get volunteerRejectionReasonHint =>
       'e.g. All slots have been filled. Thank you for your interest.';
 
   @override
-  String get confirmReject => 'Confirm Reject';
+  String get confirmRejectVolunteer => 'Confirm Reject';
 
   @override
   String get applicationApprovedSuccessfully =>
@@ -1060,7 +1059,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Application or position not found.';
 
   @override
-  String get confirmApprove => 'Confirm Approve';
+  String get confirmApproveVolunteer => 'Confirm Approve';
 
   @override
   String get approveApplicationQuestion =>
@@ -1598,6 +1597,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnCancel => 'Cancel';
 
   @override
+<<<<<<< Updated upstream
   String get borrowTabUpcoming => 'Upcoming';
 
   @override
@@ -1613,4 +1613,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get borrowEventAvailableTabLocked =>
       'This event has ended. You can no longer borrow equipment.';
+=======
+  String get specialRequestsTitle => 'Special Equipment Requests';
+
+  @override
+  String get specialRequestsSubtitle => 'Review and action requests';
+
+  @override
+  String get approveRequest => 'Approve';
+
+  @override
+  String get rejectRequest => 'Reject';
+
+  @override
+  String get confirmApproveSpecial => 'Confirm Approval';
+
+  @override
+  String get confirmRejectSpecial => 'Confirm Rejection';
+
+  @override
+  String get itemLocation => 'Item Location';
+
+  @override
+  String get itemLocationHint => 'e.g. Store Room B, Level 2';
+
+  @override
+  String get itemLocationRequired => 'Location is required';
+
+  @override
+  String get additionalNote => 'Additional Note';
+
+  @override
+  String get additionalNoteHint => 'Any instructions for the requester...';
+
+  @override
+  String get specialRejectionReason => 'Rejection Reason';
+
+  @override
+  String get specialRejectionReasonHint =>
+      'Explain why this request is being rejected...';
+
+  @override
+  String get specialRejectionReasonRequired => 'Rejection reason is required';
+
+  @override
+  String get noRequests => 'No Requests';
+
+  @override
+  String noRequestsDesc(String filter) {
+    return 'No $filter requests found.';
+  }
+
+  @override
+  String get requestApprovedSuccess => 'Request approved successfully!';
+
+  @override
+  String get requestRejected => 'Request rejected.';
+
+  @override
+  String get collectionLocation => 'Collection Location';
+
+  @override
+  String get cancelBtn => 'Cancel';
+>>>>>>> Stashed changes
 }
