@@ -1169,7 +1169,7 @@ abstract class AppLocalizations {
   /// No description provided for @rejectionReasonRequired.
   ///
   /// In en, this message translates to:
-  /// **'Please provide a reason for rejection.'**
+  /// **'Rejection reason is required'**
   String get rejectionReasonRequired;
 
   /// No description provided for @userNotAuthenticated.
@@ -2048,17 +2048,17 @@ abstract class AppLocalizations {
   /// **'Reject Application'**
   String get rejectApplication;
 
-  /// No description provided for @rejectionReasonHint.
+  /// No description provided for @volunteerRejectionReasonHint.
   ///
   /// In en, this message translates to:
   /// **'e.g. All slots have been filled. Thank you for your interest.'**
-  String get rejectionReasonHint;
+  String get volunteerRejectionReasonHint;
 
-  /// No description provided for @confirmReject.
+  /// No description provided for @confirmRejectVolunteer.
   ///
   /// In en, this message translates to:
   /// **'Confirm Reject'**
-  String get confirmReject;
+  String get confirmRejectVolunteer;
 
   /// No description provided for @applicationApprovedSuccessfully.
   ///
@@ -2114,11 +2114,11 @@ abstract class AppLocalizations {
   /// **'Application or position not found.'**
   String get applicationOrPositionNotFound;
 
-  /// No description provided for @confirmApprove.
+  /// No description provided for @confirmApproveVolunteer.
   ///
   /// In en, this message translates to:
   /// **'Confirm Approve'**
-  String get confirmApprove;
+  String get confirmApproveVolunteer;
 
   /// No description provided for @approveApplicationQuestion.
   ///
@@ -3122,6 +3122,7 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get returnCancel;
 
+<<<<<<< Updated upstream
   /// No description provided for @borrowTabUpcoming.
   ///
   /// In en, this message translates to:
@@ -3151,6 +3152,127 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This event has ended. You can no longer borrow equipment.'**
   String get borrowEventAvailableTabLocked;
+=======
+  /// No description provided for @specialRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Equipment Requests'**
+  String get specialRequestsTitle;
+
+  /// No description provided for @specialRequestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and action requests'**
+  String get specialRequestsSubtitle;
+
+  /// No description provided for @approveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approveRequest;
+
+  /// No description provided for @rejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectRequest;
+
+  /// No description provided for @confirmApproveSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Approval'**
+  String get confirmApproveSpecial;
+
+  /// No description provided for @confirmRejectSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Rejection'**
+  String get confirmRejectSpecial;
+
+  /// No description provided for @itemLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Location'**
+  String get itemLocation;
+
+  /// No description provided for @itemLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Store Room B, Level 2'**
+  String get itemLocationHint;
+
+  /// No description provided for @itemLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is required'**
+  String get itemLocationRequired;
+
+  /// No description provided for @additionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Note'**
+  String get additionalNote;
+
+  /// No description provided for @additionalNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Any instructions for the requester...'**
+  String get additionalNoteHint;
+
+  /// No description provided for @specialRejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get specialRejectionReason;
+
+  /// No description provided for @specialRejectionReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why this request is being rejected...'**
+  String get specialRejectionReasonHint;
+
+  /// No description provided for @specialRejectionReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason is required'**
+  String get specialRejectionReasonRequired;
+
+  /// No description provided for @noRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No Requests'**
+  String get noRequests;
+
+  /// No description provided for @noRequestsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No {filter} requests found.'**
+  String noRequestsDesc(String filter);
+
+  /// No description provided for @requestApprovedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request approved successfully!'**
+  String get requestApprovedSuccess;
+
+  /// No description provided for @requestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request rejected.'**
+  String get requestRejected;
+
+  /// No description provided for @collectionLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Location'**
+  String get collectionLocation;
+
+  /// No description provided for @cancelBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelBtn;
+>>>>>>> Stashed changes
 }
 
 class _AppLocalizationsDelegate

@@ -7,7 +7,6 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/repository/equipment_borrow_repository.dart';
 import '../../../data/models/special_equipment_request_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'equipment_request_tabs.dart';
 
 IconData _categoryIcon(String category) {
@@ -48,7 +47,6 @@ Color _categoryColor(String category) {
   }
 }
 
-// BorrowEquipmentScreen
 class BorrowEquipmentScreen extends StatefulWidget {
   final EligibleEvent event;
   final bool isCompleted;
@@ -145,7 +143,10 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     });
   }
 
+<<<<<<< Updated upstream
   // Confirm Borrow Dialog
+=======
+>>>>>>> Stashed changes
   Future<void> _showConfirmDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
@@ -173,6 +174,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                 Text(l10n.borrowConfirmSubtitle,
                     style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
                 const Divider(height: 20),
+<<<<<<< Updated upstream
                 ..._cart.values.map((ci) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(
@@ -186,6 +188,21 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
                             ),
                             child: Icon(_categoryIcon(ci.equipment.category),
                                 size: 16, color: _categoryColor(ci.equipment.category)),
+=======
+                ..._cart.values.map(
+                  (ci) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: _categoryColor(
+                              ci.equipment.category,
+                            ).withOpacity(0.12),
+                            shape: BoxShape.circle,
+>>>>>>> Stashed changes
                           ),
                           const SizedBox(width: 10),
                           Expanded(child: Text(ci.equipment.name, style: AppTextStyles.body)),
@@ -274,6 +291,7 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
     );
   }
 
+<<<<<<< Updated upstream
   // Locked Available Tab â€” shown when event is completed
   Widget _buildLockedAvailableTab(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -298,6 +316,12 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
 
   // Available Tab
   Widget _buildAvailableTab(BuildContext context, List<EquipmentItem> allItems) {
+=======
+  Widget _buildAvailableTab(
+    BuildContext context,
+    List<EquipmentItem> allItems,
+  ) {
+>>>>>>> Stashed changes
     final l10n = AppLocalizations.of(context)!;
     final filtered = _filterItems(allItems);
 
@@ -648,7 +672,8 @@ class _BorrowEquipmentScreenState extends State<BorrowEquipmentScreen>
   }
 }
 
-// Special Equipment Request bottom sheet
+// ── Special Request Sheet ─────────────────────────────────────────────────────
+
 class _SpecialRequestSheet extends StatefulWidget {
   final EligibleEvent event;
   final EquipmentBorrowRepository repo;
@@ -677,12 +702,29 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+<<<<<<< Updated upstream
+=======
+
+    // ✅ Use repo's currentUserId to ensure same auth instance
+    final uid = widget.repo.currentUserId;
+    if (uid.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.specialRequestSubmitError),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+>>>>>>> Stashed changes
     setState(() => _isSubmitting = true);
     try {
       final request = SpecialEquipmentRequest(
         eventId: widget.event.id,
         eventName: widget.event.name,
-        organizerHeadId: FirebaseAuth.instance.currentUser?.uid ?? '',
+        organizerHeadId: uid,
         itemName: _itemNameController.text.trim(),
         quantityRequired: int.parse(_quantityController.text.trim()),
         reason: _reasonController.text.trim(),
@@ -744,8 +786,17 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
               Text(l10n.specialRequestSubtitle,
                   style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
+<<<<<<< Updated upstream
               Text(l10n.specialRequestEventLabel,
                   style: AppTextStyles.label.copyWith(color: AppColors.textSecondary)),
+=======
+              Text(
+                l10n.specialRequestEventLabel,
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+>>>>>>> Stashed changes
               const SizedBox(height: 6),
               Container(
                 width: double.infinity,
@@ -778,7 +829,14 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 ),
               ),
               const SizedBox(height: 16),
+<<<<<<< Updated upstream
               Text(l10n.specialRequestItemNameLabel, style: AppTextStyles.label),
+=======
+              Text(
+                l10n.specialRequestItemNameLabel,
+                style: AppTextStyles.label,
+              ),
+>>>>>>> Stashed changes
               const SizedBox(height: 6),
               TextFormField(
                 controller: _itemNameController,
@@ -787,7 +845,14 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
                 validator: (v) => (v == null || v.trim().isEmpty) ? l10n.specialRequestItemNameRequired : null,
               ),
               const SizedBox(height: 12),
+<<<<<<< Updated upstream
               Text(l10n.specialRequestQuantityLabel, style: AppTextStyles.label),
+=======
+              Text(
+                l10n.specialRequestQuantityLabel,
+                style: AppTextStyles.label,
+              ),
+>>>>>>> Stashed changes
               const SizedBox(height: 6),
               TextFormField(
                 controller: _quantityController,
@@ -865,5 +930,9 @@ class _SpecialRequestSheetState extends State<_SpecialRequestSheet> {
     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.primary)),
     errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error)),
   );
+<<<<<<< Updated upstream
 }
 
+=======
+}
+>>>>>>> Stashed changes

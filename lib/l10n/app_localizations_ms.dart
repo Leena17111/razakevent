@@ -1027,11 +1027,11 @@ class AppLocalizationsMs extends AppLocalizations {
   String get rejectApplication => 'Tolak Permohonan';
 
   @override
-  String get rejectionReasonHint =>
+  String get volunteerRejectionReasonHint =>
       'cth. Semua slot telah dipenuhi. Terima kasih atas minat anda.';
 
   @override
-  String get confirmReject => 'Sahkan Tolak';
+  String get confirmRejectVolunteer => 'Sahkan Tolak';
 
   @override
   String get applicationApprovedSuccessfully =>
@@ -1065,7 +1065,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Permohonan atau jawatan tidak dijumpai.';
 
   @override
-  String get confirmApprove => 'Sahkan Lulus';
+  String get confirmApproveVolunteer => 'Sahkan Lulus';
 
   @override
   String get approveApplicationQuestion =>
@@ -1607,6 +1607,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get returnCancel => 'Batal';
 
   @override
+<<<<<<< Updated upstream
   String get borrowTabUpcoming => 'Akan Datang';
 
   @override
@@ -1622,4 +1623,67 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get borrowEventAvailableTabLocked =>
       'Acara ini telah tamat. Anda tidak boleh lagi meminjam peralatan.';
+=======
+  String get specialRequestsTitle => 'Permohonan Peralatan Khas';
+
+  @override
+  String get specialRequestsSubtitle => 'Semak dan tindak permohonan';
+
+  @override
+  String get approveRequest => 'Luluskan';
+
+  @override
+  String get rejectRequest => 'Tolak';
+
+  @override
+  String get confirmApproveSpecial => 'Sahkan Kelulusan';
+
+  @override
+  String get confirmRejectSpecial => 'Sahkan Tolakan';
+
+  @override
+  String get itemLocation => 'Lokasi Item';
+
+  @override
+  String get itemLocationHint => 'cth. Bilik Stor B, Aras 2';
+
+  @override
+  String get itemLocationRequired => 'Lokasi diperlukan';
+
+  @override
+  String get additionalNote => 'Nota Tambahan';
+
+  @override
+  String get additionalNoteHint => 'Sebarang arahan untuk pemohon...';
+
+  @override
+  String get specialRejectionReason => 'Sebab Penolakan';
+
+  @override
+  String get specialRejectionReasonHint =>
+      'Terangkan sebab permohonan ini ditolak...';
+
+  @override
+  String get specialRejectionReasonRequired => 'Sebab penolakan diperlukan';
+
+  @override
+  String get noRequests => 'Tiada Permohonan';
+
+  @override
+  String noRequestsDesc(String filter) {
+    return 'Tiada permohonan $filter dijumpai.';
+  }
+
+  @override
+  String get requestApprovedSuccess => 'Permohonan berjaya diluluskan!';
+
+  @override
+  String get requestRejected => 'Permohonan ditolak.';
+
+  @override
+  String get collectionLocation => 'Lokasi Pengambilan';
+
+  @override
+  String get cancelBtn => 'Batal';
+>>>>>>> Stashed changes
 }

@@ -9,7 +9,8 @@ class SpecialEquipmentRequest {
   final int quantityRequired;
   final String reason;
   final String status; // 'pending', 'approved', 'rejected', 'cancelled'
-  final String? adminNote; // rejection reason or approval location note
+  final String? approvalLocation; // set on approval
+  final String? adminNote;        // additional note on approval OR rejection reason
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -22,6 +23,7 @@ class SpecialEquipmentRequest {
     required this.quantityRequired,
     required this.reason,
     this.status = 'pending',
+    this.approvalLocation,
     this.adminNote,
     required this.createdAt,
     this.updatedAt,
@@ -35,14 +37,13 @@ class SpecialEquipmentRequest {
       eventName: data['eventName'] ?? '',
       organizerHeadId: data['organizerHeadId'] ?? '',
       itemName: data['itemName'] ?? '',
-      quantityRequired: data['quantityRequired'] ?? 1,
+      quantityRequired: (data['quantityRequired'] as num?)?.toInt() ?? 1,
       reason: data['reason'] ?? '',
       status: data['status'] ?? 'pending',
+      approvalLocation: data['approvalLocation'],
       adminNote: data['adminNote'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: data['updatedAt'] != null
-          ? (data['updatedAt'] as Timestamp).toDate()
-          : null,
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -55,13 +56,12 @@ class SpecialEquipmentRequest {
       'quantityRequired': quantityRequired,
       'reason': reason,
       'status': status,
+      'approvalLocation': approvalLocation,
       'adminNote': adminNote,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
   }
-
-  Map<String, dynamic> toMap() => toFirestore();
 
   SpecialEquipmentRequest copyWith({
     String? id,
@@ -72,6 +72,7 @@ class SpecialEquipmentRequest {
     int? quantityRequired,
     String? reason,
     String? status,
+    String? approvalLocation,
     String? adminNote,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -85,6 +86,7 @@ class SpecialEquipmentRequest {
       quantityRequired: quantityRequired ?? this.quantityRequired,
       reason: reason ?? this.reason,
       status: status ?? this.status,
+      approvalLocation: approvalLocation ?? this.approvalLocation,
       adminNote: adminNote ?? this.adminNote,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

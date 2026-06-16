@@ -425,6 +425,7 @@ class EquipmentBorrowRepository {
     }
   }
 
+<<<<<<< Updated upstream
   // Completed Events With Borrowed Items
 
   /// Fetches past events (eventDateTime in past OR status == 'Completed')
@@ -509,5 +510,52 @@ class EquipmentBorrowRepository {
 
     result.sort((a, b) => b.eventDate.compareTo(a.eventDate));
     return result;
+=======
+  // ── Admin: Review Special Requests ───────────────────────────────────────
+
+  /// Streams ALL special equipment requests for admin review, ordered newest first.
+  Stream<List<SpecialEquipmentRequest>> watchAllSpecialRequests() {
+    return _firestore
+        .collection('specialEquipmentRequests')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map(SpecialEquipmentRequest.fromFirestore)
+            .toList());
+  }
+
+  /// Approves a special equipment request.
+  /// [location] is where the item can be collected (required).
+  /// [note] is an optional message to the organizer.
+  Future<void> approveSpecialRequest({
+    required String requestId,
+    required String location,
+    String? note,
+  }) async {
+    await _firestore
+        .collection('specialEquipmentRequests')
+        .doc(requestId)
+        .update({
+      'status': 'approved',
+      'approvalLocation': location.trim(),
+      'adminNote': note?.trim().isNotEmpty == true ? note!.trim() : null,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Rejects a special equipment request with a mandatory reason.
+  Future<void> rejectSpecialRequest({
+    required String requestId,
+    required String reason,
+  }) async {
+    await _firestore
+        .collection('specialEquipmentRequests')
+        .doc(requestId)
+        .update({
+      'status': 'rejected',
+      'adminNote': reason.trim(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+>>>>>>> Stashed changes
   }
 }

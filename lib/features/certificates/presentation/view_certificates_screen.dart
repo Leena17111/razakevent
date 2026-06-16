@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/locale_controller.dart';
+import '../../../core/widgets/language_toggle.dart';
 import '../../../data/models/certificate_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../logic/certificate_controller.dart';
@@ -16,15 +18,13 @@ class ViewCertificatesScreen extends StatefulWidget {
 
 class _ViewCertificatesScreenState extends State<ViewCertificatesScreen> {
   final _controller = CertificateController();
-
-  // null = show all, false = participation only, true = volunteer only
   bool? _filterVolunteer;
 
   List<CertificateModel> get _filtered {
     if (_filterVolunteer == null) return _controller.certificates;
-    return _controller.certificates.where((c) =>
-      (c.certType == CertificateType.volunteer) == _filterVolunteer
-    ).toList();
+    return _controller.certificates
+        .where((c) => (c.certType == CertificateType.volunteer) == _filterVolunteer)
+        .toList();
   }
 
   @override
@@ -42,81 +42,88 @@ class _ViewCertificatesScreenState extends State<ViewCertificatesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    return ValueListenableBuilder<Locale>(
+      valueListenable: localeController,
+      builder: (context, currentLocale, _) {
+        final l = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: _controller.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            )
-          : _controller.error != null
-              ? _ErrorState(
-                  message: l.somethingWentWrong,
-                  onRetry: _controller.fetchCertificates,
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: _controller.isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
                 )
-              : CustomScrollView(
-                  slivers: [
-                    _buildAppBar(l),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          const SizedBox(height: 16),
-                          _StatsRow(
-                            controller: _controller,
-                            l: l,
-                            filterVolunteer: _filterVolunteer,
-                            onFilterChanged: (val) =>
-                                setState(() => _filterVolunteer = val),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l.certificatesNote,
-                            style: const TextStyle(
-                              color: AppColors.textMuted,
-                              fontSize: 12,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          if (_filtered.isEmpty)
-                            _EmptyState(l: l)
-                          else
-                            ..._filtered.map(
-                              (cert) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: _CertCard(
-                                  cert: cert,
-                                  l: l,
-                                  studentName: _controller.studentName,
+              : _controller.error != null
+                  ? _ErrorState(
+                      message: l.somethingWentWrong,
+                      onRetry: _controller.fetchCertificates,
+                    )
+                  : CustomScrollView(
+                      slivers: [
+                        _buildAppBar(context, l, currentLocale),
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate([
+                              const SizedBox(height: 16),
+                              _StatsRow(
+                                controller: _controller,
+                                l: l,
+                                filterVolunteer: _filterVolunteer,
+                                onFilterChanged: (val) =>
+                                    setState(() => _filterVolunteer = val),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                l.certificatesNote,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 12,
+                                  fontStyle: FontStyle.italic,
                                 ),
                               ),
-                            ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: Text(
-                              l.appFooter,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 16),
+                              if (_filtered.isEmpty)
+                                _EmptyState(l: l)
+                              else
+                                ..._filtered.map(
+                                  (cert) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: _CertCard(
+                                      cert: cert,
+                                      l: l,
+                                      studentName: _controller.studentName,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 16),
+                              Center(
+                                child: Text(
+                                  l.appFooter,
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ]),
                           ),
-                        ]),
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+        );
+      },
     );
   }
 
-  SliverAppBar _buildAppBar(AppLocalizations l) {
+  SliverAppBar _buildAppBar(
+      BuildContext context, AppLocalizations l, Locale currentLocale) {
     return SliverAppBar(
       expandedHeight: 180,
       pinned: true,
       backgroundColor: AppColors.primary,
+      automaticallyImplyLeading: false,
       leading: GestureDetector(
         onTap: () => Navigator.of(context).pop(),
         child: Container(
@@ -128,6 +135,19 @@ class _ViewCertificatesScreenState extends State<ViewCertificatesScreen> {
           child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: Center(
+            child: LanguageToggle(
+              selectedLocale: currentLocale,
+              onLocaleChanged: (locale) {
+                localeController.value = locale;
+              },
+            ),
+          ),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: const BoxDecoration(
@@ -168,7 +188,7 @@ class _ViewCertificatesScreenState extends State<ViewCertificatesScreen> {
   }
 }
 
-// ── Stats Row ────────────────────────────────────────────────────────────────
+// ── Stats Row ─────────────────────────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
   const _StatsRow({
@@ -195,10 +215,7 @@ class _StatsRow extends StatelessWidget {
           iconColor: AppColors.primary,
           countColor: AppColors.primary,
           isActive: filterVolunteer == false,
-          // tap participation: if already filtering participation, clear; else filter
-          onTap: () => onFilterChanged(
-            filterVolunteer == false ? null : false,
-          ),
+          onTap: () => onFilterChanged(filterVolunteer == false ? null : false),
         ),
         const SizedBox(width: 12),
         _StatBox(
@@ -209,10 +226,7 @@ class _StatsRow extends StatelessWidget {
           iconColor: AppColors.secretaryBadgeText,
           countColor: AppColors.secretaryBadgeText,
           isActive: filterVolunteer == true,
-          // tap volunteer: if already filtering volunteer, clear; else filter
-          onTap: () => onFilterChanged(
-            filterVolunteer == true ? null : true,
-          ),
+          onTap: () => onFilterChanged(filterVolunteer == true ? null : true),
         ),
       ],
     );
@@ -323,6 +337,7 @@ class _CertCard extends StatefulWidget {
     required this.l,
     required this.studentName,
   });
+
   final CertificateModel cert;
   final AppLocalizations l;
   final String studentName;
@@ -335,7 +350,7 @@ class _CertCardState extends State<_CertCard> {
   bool _isGenerating = false;
 
   Future<void> _viewCertificate() async {
-    final locale = Localizations.localeOf(context).languageCode;
+    final locale = localeController.value.languageCode;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -349,7 +364,7 @@ class _CertCardState extends State<_CertCard> {
   }
 
   Future<void> _downloadCertificate() async {
-    final locale = Localizations.localeOf(context).languageCode;
+    final locale = localeController.value.languageCode;
     setState(() => _isGenerating = true);
     try {
       final bytes = await CertificatePdfService().generate(

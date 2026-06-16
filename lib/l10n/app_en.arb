@@ -188,7 +188,7 @@
   "documentNotFound": "Document not found.",
   "selectReviewActionError": "Please select a review action.",
   "correctionCommentRequired": "Please provide an admin comment when requesting correction.",
-  "rejectionReasonRequired": "Please provide a reason for rejection.",
+  "rejectionReasonRequired": "Rejection reason is required",
   "userNotAuthenticated": "User is not authenticated.",
   "unableToReadSelectedPdf": "Unable to read selected PDF file.",
   "submissionFailed": "Submission failed. Please try again.",
@@ -349,8 +349,8 @@
   "approved": "Approved",
   "rejected": "Rejected",
   "rejectApplication": "Reject Application",
-  "rejectionReasonHint": "e.g. All slots have been filled. Thank you for your interest.",
-  "confirmReject": "Confirm Reject",
+  "volunteerRejectionReasonHint": "e.g. All slots have been filled. Thank you for your interest.",
+  "confirmRejectVolunteer": "Confirm Reject",
   "applicationApprovedSuccessfully": "Application approved successfully.",
   "applicationRejectedSuccessfully": "Application rejected successfully.",
   "failedToApproveApplication": "Failed to approve application.",
@@ -360,7 +360,7 @@
   "volunteerSlotsFull": "Volunteer slots are already full.",
   "applicationAlreadyReviewed": "This application has already been reviewed.",
   "applicationOrPositionNotFound": "Application or position not found.",
-  "confirmApprove": "Confirm Approve",
+  "confirmApproveVolunteer": "Confirm Approve",
   "approveApplicationQuestion": "Are you sure you want to approve this application? If this approval fills all volunteer slots, all remaining pending applications for this position will be automatically rejected.",
   "noExperienceProvided": "No experience provided",
   "experience": "Experience",
@@ -527,6 +527,7 @@
   "certificatesEmptyDesc": "Complete feedback for eligible events, or be approved as a volunteer, to receive certificates.",
   "certificatesDownloading": "Downloading certificate...",
   "certificatesPdfNotReady": "Certificate PDF is not ready yet. Please try again later.",
+
   "borrowTabSpecialRequests": "Special Requests",
   "borrowFilterAll": "All",
   "borrowFilterBorrowed": "Borrowed",
@@ -560,6 +561,7 @@
   "specialRequestsLoadError": "Failed to load special requests.",
   "specialCancelSuccess": "Special request cancelled.",
   "specialCancelError": "Unable to cancel this special request.",
+
   "returnEquipmentTitle": "Return Equipment",
   "returnPhotoEvidence": "Photo Evidence",
   "returnPhotoEvidenceHint": "Upload a clear photo showing the equipment being returned.",
@@ -574,9 +576,35 @@
   "returnEquipmentDetails": "EQUIPMENT DETAILS",
   "returnUploadPhotoHint": "PNG or JPG · Tap to choose a photo",
   "returnCancel": "Cancel",
+<<<<<<< Updated upstream
   "borrowTabUpcoming": "Upcoming",
   "borrowTabPastEvents": "Past Events",
   "borrowEventNoPastEvents": "No past events with borrowed equipment found.",
   "borrowEventPastBadge": "Ended",
   "borrowEventAvailableTabLocked": "This event has ended. You can no longer borrow equipment."
 }
+=======
+
+  "specialRequestsTitle": "Special Equipment Requests",
+  "specialRequestsSubtitle": "Review and action requests",
+  "approveRequest": "Approve",
+  "rejectRequest": "Reject",
+  "confirmApproveSpecial": "Confirm Approval",
+  "confirmRejectSpecial": "Confirm Rejection",
+  "itemLocation": "Item Location",
+  "itemLocationHint": "e.g. Store Room B, Level 2",
+  "itemLocationRequired": "Location is required",
+  "additionalNote": "Additional Note",
+  "additionalNoteHint": "Any instructions for the requester...",
+  "specialRejectionReason": "Rejection Reason",
+  "specialRejectionReasonHint": "Explain why this request is being rejected...",
+  "specialRejectionReasonRequired": "Rejection reason is required",
+  "noRequests": "No Requests",
+  "noRequestsDesc": "No {filter} requests found.",
+  "@noRequestsDesc": { "placeholders": { "filter": { "type": "String" } } },
+  "requestApprovedSuccess": "Request approved successfully!",
+  "requestRejected": "Request rejected.",
+  "collectionLocation": "Collection Location",
+  "cancelBtn": "Cancel"
+}
+>>>>>>> Stashed changes
