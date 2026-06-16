@@ -1282,6 +1282,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get borrowTabBorrowedPlaceholder => 'Borrowed items will appear here.';
 
   @override
+  String get borrowedReturnPolicyNote =>
+      'All borrowed equipment must be returned within 24 hours after the event.';
+
+  @override
   String get borrowSearchHint => 'Search equipment...';
 
   @override
@@ -1509,11 +1513,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnInstruction => 'Return within 24 hours after the event';
 
   @override
+  String returnBy(Object deadline) {
+    return 'Return by: $deadline';
+  }
+
+  @override
   String get returnReminderMessage =>
       'Return reminder: please return this equipment.';
 
   @override
-  String get returnRequiredMessage => 'Return required as soon as possible.';
+  String get returnRequiredMessage =>
+      'Overdue: Please return this equipment as soon as possible.';
 
   @override
   String get returnEquipmentAction => 'Return';

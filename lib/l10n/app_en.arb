@@ -453,6 +453,7 @@
   "borrowTabAvailable": "Available",
   "borrowTabBorrowed": "Borrowed",
   "borrowTabBorrowedPlaceholder": "Borrowed items will appear here.",
+  "borrowedReturnPolicyNote": "All borrowed equipment must be returned within 24 hours after the event.",
   "borrowSearchHint": "Search equipment...",
   "borrowCategoryAll": "All",
   "borrowCategoryAudio": "Audio",
@@ -547,8 +548,16 @@
   "borrowEvent": "Event",
   "returnDeadline": "Return deadline",
   "returnInstruction": "Return within 24 hours after the event",
+  "returnBy": "Return by: {deadline}",
+  "@returnBy": {
+    "placeholders": {
+      "deadline": {
+        "type": "Object"
+      }
+    }
+  },
   "returnReminderMessage": "Return reminder: please return this equipment.",
-  "returnRequiredMessage": "Return required as soon as possible.",
+  "returnRequiredMessage": "Overdue: Please return this equipment as soon as possible.",
   "returnEquipmentAction": "Return",
   "cancelRequest": "Cancel Request",
   "borrowedEmpty": "No borrowed equipment found.",

@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -268,6 +268,15 @@ class EquipmentBorrowRepository {
                 ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return requests;
         });
+  }
+
+  Stream<DateTime> watchEventDate(String eventId, DateTime fallbackDate) {
+    if (eventId.isEmpty) return Stream.value(fallbackDate);
+    return _firestore.collection('events').doc(eventId).snapshots().map((doc) {
+      final eventDateTime = doc.data()?['eventDateTime'];
+      if (eventDateTime is Timestamp) return eventDateTime.toDate();
+      return fallbackDate;
+    });
   }
 
   Stream<List<SpecialEquipmentRequest>> watchSpecialRequestsForEvent(

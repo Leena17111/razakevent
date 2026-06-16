@@ -453,6 +453,7 @@
   "borrowTabAvailable": "Tersedia",
   "borrowTabBorrowed": "Dipinjam",
   "borrowTabBorrowedPlaceholder": "Item yang dipinjam akan dipaparkan di sini.",
+  "borrowedReturnPolicyNote": "Semua peralatan yang dipinjam mesti dipulangkan dalam masa 24 jam selepas acara.",
   "borrowSearchHint": "Cari peralatan...",
   "borrowCategoryAll": "Semua",
   "borrowCategoryAudio": "Audio",
@@ -547,8 +548,16 @@
   "borrowEvent": "Acara",
   "returnDeadline": "Tarikh akhir pemulangan",
   "returnInstruction": "Pulangkan dalam masa 24 jam selepas acara",
+  "returnBy": "Pulangkan sebelum: {deadline}",
+  "@returnBy": {
+    "placeholders": {
+      "deadline": {
+        "type": "Object"
+      }
+    }
+  },
   "returnReminderMessage": "Peringatan pemulangan: sila pulangkan peralatan ini.",
-  "returnRequiredMessage": "Pemulangan diperlukan secepat mungkin.",
+  "returnRequiredMessage": "Lewat dipulangkan: Sila pulangkan peralatan ini secepat mungkin.",
   "returnEquipmentAction": "Pulangkan",
   "cancelRequest": "Batalkan Permintaan",
   "borrowedEmpty": "Tiada peralatan dipinjam ditemui.",

@@ -57,79 +57,104 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return StreamBuilder<List<BorrowedEquipmentRequestModel>>(
-      stream: widget.repository.watchBorrowedEquipmentForEvent(widget.event.id),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
+    return StreamBuilder<DateTime>(
+      stream: widget.repository.watchEventDate(
+        widget.event.id,
+        widget.event.eventDate,
+      ),
+      builder: (context, eventDateSnapshot) {
+        final currentEventDate =
+            eventDateSnapshot.data ?? widget.event.eventDate;
+        if (eventDateSnapshot.hasError) {
           return Center(child: Text(l10n.borrowedLoadError));
         }
-        final all = snapshot.data ?? const [];
-        final items = _filter == 'all'
-            ? all
-            : all.where((item) => item.status == _filter).toList();
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _FilterBar(
-                selected: _filter,
-                filters: {
-                  'all': l10n.borrowFilterAll,
-                  'borrowed': l10n.borrowFilterBorrowed,
-                  'returned': l10n.borrowFilterReturned,
-                },
-                onSelected: (value) => setState(() => _filter = value),
-              ),
-            ),
-            Expanded(
-              child: items.isEmpty
-                  ? _EmptyState(
-                      icon: Icons.inventory_2_outlined,
-                      text: l10n.borrowedEmpty,
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final request = items[index];
-                        final eventDate =
-                            request.eventDate ?? widget.event.eventDate;
-                        final arguments = ReturnBorrowedEquipmentArguments(
-                          request: request,
-                          eventDate: eventDate,
-                        );
-                        return _BorrowedCard(
-                          request: request,
-                          eventDate: eventDate,
-                          isCompleted: widget.isCompleted,
-                          onCancel: () => _cancel(request),
-                          onReturn: () async {
-                            final returned = await Navigator.of(context)
-                                .push<bool>(
-                                  MaterialPageRoute<bool>(
-                                    settings: RouteSettings(
-                                      name: AppRoutes.returnBorrowedEquipment,
-                                      arguments: arguments,
-                                    ),
-                                    builder: (_) =>
-                                        ReturnBorrowedEquipmentScreen(
-                                          request: arguments.request,
-                                          eventDate: arguments.eventDate,
+        if (eventDateSnapshot.connectionState == ConnectionState.waiting &&
+            !eventDateSnapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return StreamBuilder<List<BorrowedEquipmentRequestModel>>(
+          stream: widget.repository.watchBorrowedEquipmentForEvent(
+            widget.event.id,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text(l10n.borrowedLoadError));
+            }
+            final all = snapshot.data ?? const [];
+            final items = _filter == 'all'
+                ? all
+                : all.where((item) => item.status == _filter).toList();
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                  child: _BorrowedPolicyNote(
+                    text: l10n.borrowedReturnPolicyNote,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _FilterBar(
+                    selected: _filter,
+                    filters: {
+                      'all': l10n.borrowFilterAll,
+                      'borrowed': l10n.borrowFilterBorrowed,
+                      'returned': l10n.borrowFilterReturned,
+                    },
+                    onSelected: (value) => setState(() => _filter = value),
+                  ),
+                ),
+                Expanded(
+                  child: items.isEmpty
+                      ? _EmptyState(
+                          icon: Icons.inventory_2_outlined,
+                          text: l10n.borrowedEmpty,
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final request = items[index];
+                            final arguments = ReturnBorrowedEquipmentArguments(
+                              request: request,
+                              eventDate: currentEventDate,
+                            );
+                            return _BorrowedCard(
+                              request: request,
+                              eventDate: currentEventDate,
+                              isCompleted: widget.isCompleted,
+                              onCancel: () => _cancel(request),
+                              onReturn: () async {
+                                final returned = await Navigator.of(context)
+                                    .push<bool>(
+                                      MaterialPageRoute<bool>(
+                                        settings: RouteSettings(
+                                          name:
+                                              AppRoutes.returnBorrowedEquipment,
+                                          arguments: arguments,
                                         ),
-                                  ),
-                                );
-                            if (returned == true && mounted) {
-                              widget.onInventoryChanged();
-                            }
+                                        builder: (_) =>
+                                            ReturnBorrowedEquipmentScreen(
+                                              request: arguments.request,
+                                              eventDate: arguments.eventDate,
+                                            ),
+                                      ),
+                                    );
+                                if (returned == true && mounted) {
+                                  widget.onInventoryChanged();
+                                }
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
-            ),
-          ],
+                        ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -294,12 +319,13 @@ class _BorrowedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final elapsedSinceEvent = DateTime.now().difference(eventDate);
+    final returnDeadline = eventDate.add(const Duration(hours: 24));
     final isBorrowed = request.status == 'borrowed';
-    final isOverdue =
-        isBorrowed && elapsedSinceEvent >= const Duration(hours: 48);
-    final showReturnReminder =
-        isBorrowed && elapsedSinceEvent >= const Duration(hours: 24);
+    final isOverdue = isBorrowed && DateTime.now().isAfter(returnDeadline);
+    final deadlineText = DateFormat(
+      'd MMM yyyy, h:mm a',
+      l10n.localeName,
+    ).format(returnDeadline);
     return _EquipmentCard(
       icon: _categoryIcon(request.category),
       iconColor: _categoryColor(request.category),
@@ -308,14 +334,13 @@ class _BorrowedCard extends StatelessWidget {
       date: request.createdAt,
       status: isOverdue ? 'overdue' : request.status,
       children: [
-        if (showReturnReminder) ...[
+        if (isBorrowed) ...[
           const SizedBox(height: 10),
-          _ReturnReminder(
-            message: isOverdue
-                ? l10n.returnRequiredMessage
-                : l10n.returnReminderMessage,
-            isOverdue: isOverdue,
-          ),
+          _ReturnDeadlineLine(text: l10n.returnBy(deadlineText)),
+        ],
+        if (isOverdue) ...[
+          const SizedBox(height: 10),
+          _ReturnReminder(message: l10n.returnRequiredMessage),
         ],
         if (isBorrowed) ...[
           const Divider(height: 22, color: AppColors.borderLight),
@@ -325,7 +350,7 @@ class _BorrowedCard extends StatelessWidget {
                 child: _OutlinedActionButton(
                   label: l10n.returnEquipmentAction,
                   icon: Icons.check_circle_outline,
-                  color: AppColors.success,
+                  color: isOverdue ? AppColors.error : AppColors.success,
                   onPressed: onReturn,
                 ),
               ),
@@ -348,20 +373,85 @@ class _BorrowedCard extends StatelessWidget {
   }
 }
 
-class _ReturnReminder extends StatelessWidget {
-  final String message;
-  final bool isOverdue;
+class _BorrowedPolicyNote extends StatelessWidget {
+  final String text;
 
-  const _ReturnReminder({required this.message, required this.isOverdue});
+  const _BorrowedPolicyNote({required this.text});
 
   @override
   Widget build(BuildContext context) {
-    final color = isOverdue ? const Color(0xFFB91C1C) : const Color(0xFFD97706);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.schedule_outlined,
+            size: 15,
+            color: Color(0xFF2563EB),
+          ),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.bodySm.copyWith(
+                color: const Color(0xFF1E40AF),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReturnDeadlineLine extends StatelessWidget {
+  final String text;
+
+  const _ReturnDeadlineLine({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.event_available_outlined,
+          size: 15,
+          color: Color(0xFF475569),
+        ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Text(
+            text,
+            style: AppTextStyles.bodySm.copyWith(
+              color: const Color(0xFF475569),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ReturnReminder extends StatelessWidget {
+  final String message;
+
+  const _ReturnReminder({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    const color = Color(0xFFB91C1C);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: isOverdue ? const Color(0xFFFEF2F2) : const Color(0xFFFFFBEB),
+        color: const Color(0xFFFEF2F2),
         borderRadius: BorderRadius.circular(13),
       ),
       child: Row(
@@ -388,7 +478,11 @@ class _SpecialRequestCard extends StatelessWidget {
   final bool isCompleted;
   final VoidCallback onCancel;
 
-  const _SpecialRequestCard({required this.request, this.isCompleted = false, required this.onCancel});
+  const _SpecialRequestCard({
+    required this.request,
+    this.isCompleted = false,
+    required this.onCancel,
+  });
 
   @override
   Widget build(BuildContext context) {
