@@ -1290,6 +1290,10 @@ class AppLocalizationsMs extends AppLocalizations {
       'Item yang dipinjam akan dipaparkan di sini.';
 
   @override
+  String get borrowedReturnPolicyNote =>
+      'Semua peralatan yang dipinjam mesti dipulangkan dalam masa 24 jam selepas acara.';
+
+  @override
   String get borrowSearchHint => 'Cari peralatan...';
 
   @override
@@ -1517,11 +1521,17 @@ class AppLocalizationsMs extends AppLocalizations {
   String get returnInstruction => 'Pulangkan dalam masa 24 jam selepas acara';
 
   @override
+  String returnBy(Object deadline) {
+    return 'Pulangkan sebelum: $deadline';
+  }
+
+  @override
   String get returnReminderMessage =>
       'Peringatan pemulangan: sila pulangkan peralatan ini.';
 
   @override
-  String get returnRequiredMessage => 'Pemulangan diperlukan secepat mungkin.';
+  String get returnRequiredMessage =>
+      'Lewat dipulangkan: Sila pulangkan peralatan ini secepat mungkin.';
 
   @override
   String get returnEquipmentAction => 'Pulangkan';

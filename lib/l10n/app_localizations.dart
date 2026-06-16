@@ -2534,6 +2534,12 @@ abstract class AppLocalizations {
   /// **'Borrowed items will appear here.'**
   String get borrowTabBorrowedPlaceholder;
 
+  /// No description provided for @borrowedReturnPolicyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'All borrowed equipment must be returned within 24 hours after the event.'**
+  String get borrowedReturnPolicyNote;
+
   /// No description provided for @borrowSearchHint.
   ///
   /// In en, this message translates to:
@@ -2954,6 +2960,12 @@ abstract class AppLocalizations {
   /// **'Return within 24 hours after the event'**
   String get returnInstruction;
 
+  /// No description provided for @returnBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Return by: {deadline}'**
+  String returnBy(Object deadline);
+
   /// No description provided for @returnReminderMessage.
   ///
   /// In en, this message translates to:
@@ -2963,7 +2975,7 @@ abstract class AppLocalizations {
   /// No description provided for @returnRequiredMessage.
   ///
   /// In en, this message translates to:
-  /// **'Return required as soon as possible.'**
+  /// **'Overdue: Please return this equipment as soon as possible.'**
   String get returnRequiredMessage;
 
   /// No description provided for @returnEquipmentAction.
