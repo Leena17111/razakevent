@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -77,9 +77,52 @@ class EquipmentBorrowRepository {
 
   // Eligible Events
 
+  /// Checks whether an event has been approved by admin via at least one
+  /// approved document (Pre-event Paperwork, Program Report, or Financial
+  /// Report). An event must have completed this approval workflow before it
+  /// can appear anywhere in the Borrow Equipment flow, regardless of its own
+  /// status (Draft, Open, Closed, Completed).
+  Future<Set<String>> _fetchApprovedEventIds(List<String> eventIds) async {
+    if (eventIds.isEmpty) return {};
+
+    const validDocTypes = [
+      'Pre-event Paperwork',
+      'Program Report',
+      'Financial Report',
+    ];
+
+    final approvedIds = <String>{};
+
+    // Only one whereIn allowed at scale; filter documentType in Dart instead.
+    const chunkSize = 30;
+    for (var i = 0; i < eventIds.length; i += chunkSize) {
+      final chunk = eventIds.sublist(
+        i,
+        i + chunkSize > eventIds.length ? eventIds.length : i + chunkSize,
+      );
+
+      final docsSnap = await _firestore
+          .collection('documents')
+          .where('eventId', whereIn: chunk)
+          .where('status', isEqualTo: 'Approved')
+          .get();
+
+      for (final doc in docsSnap.docs) {
+        final data = doc.data();
+        final docType = data['documentType'] as String?;
+        if (docType == null || !validDocTypes.contains(docType)) continue;
+        final eventId = data['eventId'] as String?;
+        if (eventId != null) approvedIds.add(eventId);
+      }
+    }
+
+    return approvedIds;
+  }
+
   /// Fetches events organized by the current user that fall within the next
-  /// 3 days (inclusive). Events further away are excluded so equipment cannot
-  /// be hoarded for distant dates.
+  /// 3 days (inclusive), are still Draft or Open, and have at least one
+  /// admin-approved document. Events further away, not yet approved, or
+  /// already Closed/Completed are excluded.
   Future<List<EligibleEvent>> fetchEligibleEvents() async {
     final user = _auth.currentUser;
     if (user == null) return [];
@@ -87,44 +130,52 @@ class EquipmentBorrowRepository {
     final now = DateTime.now();
     final cutoff = DateTime(now.year, now.month, now.day + 3, 23, 59, 59);
 
-    // Fetch events where this user is the organizer head and the event date
-    // is within the next 3 days.
+    // Fetch events created by this user that are still Draft or Open.
     final snapshot = await _firestore
         .collection('events')
         .where('createdBy', isEqualTo: user.uid)
         .where('status', whereIn: ['Open', 'Draft'])
         .get();
 
+    // Filter down to only those within the 3-day window first, to minimize
+    // the number of event IDs we need to check for paperwork approval.
+    final candidateDocs = snapshot.docs.where((doc) {
+      final ts = doc.data()['eventDateTime'] as Timestamp?;
+      if (ts == null) return false;
+      final eventDate = ts.toDate();
+      return eventDate.isAfter(now) && eventDate.isBefore(cutoff);
+    }).toList();
+
+    if (candidateDocs.isEmpty) return [];
+
+    // Only events with an admin-approved document are eligible.
+    final approvedEventIds = await _fetchApprovedEventIds(
+      candidateDocs.map((d) => d.id).toList(),
+    );
+
     final List<EligibleEvent> eligible = [];
 
-    for (final doc in snapshot.docs) {
+    for (final doc in candidateDocs) {
+      if (!approvedEventIds.contains(doc.id)) continue;
+
       final data = doc.data();
-      final Timestamp? ts = data['eventDateTime'] as Timestamp?;
-      if (ts == null) continue;
-      final eventDate = ts.toDate();
+      final eventDate = (data['eventDateTime'] as Timestamp).toDate();
 
-      // Only include events whose date is today or within the next 3 days.
-      if (eventDate.isAfter(now) && eventDate.isBefore(cutoff)) {
-        // Count borrowed items for this event (in-stock borrow requests).
-        final borrowSnap = await _firestore
-            .collection('equipmentBorrowRequests')
-            .where('eventId', isEqualTo: doc.id)
-            .where('organizerHeadId', isEqualTo: user.uid)
-            .get();
+      final borrowSnap = await _firestore
+          .collection('equipmentBorrowRequests')
+          .where('eventId', isEqualTo: doc.id)
+          .where('organizerHeadId', isEqualTo: user.uid)
+          .get();
 
-        eligible.add(
-          EligibleEvent(
-            id: doc.id,
-            name: data['title'] ?? '',
-            eventDate: eventDate,
-            venue: data['venue'] ?? '',
-            borrowedItemsCount: borrowSnap.docs.length,
-          ),
-        );
-      }
+      eligible.add(EligibleEvent(
+        id: doc.id,
+        name: data['title'] ?? '',
+        eventDate: eventDate,
+        venue: data['venue'] ?? '',
+        borrowedItemsCount: borrowSnap.docs.length,
+      ));
     }
 
-    // Sort by soonest first.
     eligible.sort((a, b) => a.eventDate.compareTo(b.eventDate));
     return eligible;
   }
@@ -437,7 +488,8 @@ class EquipmentBorrowRepository {
   // Completed Events With Borrowed Items
 
   /// Fetches past events (eventDateTime in past OR status == 'Completed')
-  /// that have at least one borrow request (regular or special).
+  /// that have at least one borrow request (regular or special) AND have
+  /// at least one admin-approved document.
   Future<List<EligibleEvent>> fetchCompletedEventsWithBorrowedItems() async {
     final user = _auth.currentUser;
     if (user == null) return [];
@@ -497,11 +549,17 @@ class EquipmentBorrowRepository {
       }
     }
 
+    // Only events with admin-approved paperwork can appear here.
+    final approvedEventIds = await _fetchApprovedEventIds(
+      merged.keys.toList(),
+    );
+
     final List<EligibleEvent> result = [];
 
     for (final doc in merged.values) {
-      // Skip if no borrow activity
+      // Skip if no borrow activity or no approved paperwork.
       if (!allBorrowedEventIds.contains(doc.id)) continue;
+      if (!approvedEventIds.contains(doc.id)) continue;
 
       final data = doc.data();
       final Timestamp? ts = data['eventDateTime'] as Timestamp?;
@@ -517,8 +575,10 @@ class EquipmentBorrowRepository {
     }
 
     result.sort((a, b) => b.eventDate.compareTo(a.eventDate));
-    return result; }
-  // ── Admin: Review Special Requests ───────────────────────────────────────
+    return result;
+  }
+
+  // Admin: Review Special Requests
 
   /// Streams ALL special equipment requests for admin review, ordered newest first.
   Stream<List<SpecialEquipmentRequest>> watchAllSpecialRequests() {
@@ -564,4 +624,4 @@ class EquipmentBorrowRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
-} 
+}
