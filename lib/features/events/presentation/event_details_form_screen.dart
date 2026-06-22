@@ -172,68 +172,65 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
   }
 
   Future<void> _pickRegistrationDeadline() async {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
 
-  final now = DateTime.now();
+    final now = DateTime.now();
 
-  final firstDate = DateTime(
-    now.year,
-    now.month,
-    now.day,
-  );
-
-  final lastDate = DateTime(
-  _selectedDateTime.year,
-  _selectedDateTime.month,
-  _selectedDateTime.day,
-).subtract(const Duration(days: 1));
-
-  final selectedDate = await showDatePicker(
-    context: context,
-    initialDate:
-        _registrationDeadline ?? firstDate,
-    firstDate: firstDate,
-    lastDate: lastDate,
-  );
-
-  if (selectedDate == null || !mounted) {
-    return;
-  }
-
-  final selectedTime = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.fromDateTime(
-      _registrationDeadline ??
-          DateTime.now(),
-    ),
-  );
-
-  if (selectedTime == null) {
-    return;
-  }
-
-  final selectedDeadline = DateTime(
-    selectedDate.year,
-    selectedDate.month,
-    selectedDate.day,
-    selectedTime.hour,
-    selectedTime.minute,
-  );
-
-  if (!selectedDeadline.isBefore(
-    _selectedDateTime,
-  )) {
-    _showError(
-      l10n.deadlineMustBeBeforeEvent,
+    final firstDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
     );
-    return;
-  }
 
-  setState(() {
-    _registrationDeadline =
-        selectedDeadline;
-  });
-}
+    final lastDate = DateTime(
+      _selectedDateTime.year,
+      _selectedDateTime.month,
+      _selectedDateTime.day,
+    ).subtract(const Duration(days: 1));
+
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _registrationDeadline ?? firstDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (selectedDate == null || !mounted) {
+      return;
+    }
+
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(
+        _registrationDeadline ?? DateTime.now(),
+      ),
+    );
+
+    if (selectedTime == null) {
+      return;
+    }
+
+    final selectedDeadline = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    if (!selectedDeadline.isBefore(
+      _selectedDateTime,
+    )) {
+      _showError(
+        l10n.deadlineMustBeBeforeEvent,
+      );
+      return;
+    }
+
+    setState(() {
+      _registrationDeadline = selectedDeadline;
+    });
+  }
 
   Future<void> _saveEvent() async {
     final l10n = AppLocalizations.of(context)!;
@@ -449,71 +446,68 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                child: Transform.translate(
-                  offset: const Offset(0, -22),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(26),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: AppColors.shadowDark,
-                          blurRadius: 18,
-                          offset: Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          EventTextInput(
-                            label: l10n.eventTitle,
-                            controller: _titleController,
-                            hintText: 'Hari Sukan KTR 2026',
-                            validator: _requiredValidator,
-                          ),
-                          const SizedBox(height: 18),
-                          _buildOrganizationField(l10n),
-                          const SizedBox(height: 18),
-                          _buildCategoryDropdown(l10n),
-                          const SizedBox(height: 18),
-                          EventTextInput(
-                            label: l10n.eventDescription,
-                            controller: _descriptionController,
-                            hintText: l10n.describeYourEvent,
-                            maxLines: 4,
-                            validator: _requiredValidator,
-                          ),
-                          const SizedBox(height: 18),
-                          _buildPosterUpload(l10n),
-                          const SizedBox(height: 18),
-                          _responsiveTwoColumns(
-                            context: context,
-                            first: EventDateBox(
-                              label: l10n.eventDateTime,
-                              text: _eventDateText,
-                              onTap: _pickEventDateTime,
-                            ),
-                            second: EventTextInput(
-                              label: l10n.venue,
-                              controller: _venueController,
-                              hintText: 'Dewan KTR',
-                              validator: _requiredValidator,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _buildRegistrationSettings(l10n),
-                          const SizedBox(height: 20),
-                          _buildStatusSelector(l10n),
-                          const SizedBox(height: 26),
-                          _buildActionButtons(l10n, isEditMode),
-                        ],
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(26),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadowDark,
+                        blurRadius: 18,
+                        offset: Offset(0, 8),
                       ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        EventTextInput(
+                          label: l10n.eventTitle,
+                          controller: _titleController,
+                          hintText: 'Hari Sukan KTR 2026',
+                          validator: _requiredValidator,
+                        ),
+                        const SizedBox(height: 18),
+                        _buildOrganizationField(l10n),
+                        const SizedBox(height: 18),
+                        _buildCategoryDropdown(l10n),
+                        const SizedBox(height: 18),
+                        EventTextInput(
+                          label: l10n.eventDescription,
+                          controller: _descriptionController,
+                          hintText: l10n.describeYourEvent,
+                          maxLines: 4,
+                          validator: _requiredValidator,
+                        ),
+                        const SizedBox(height: 18),
+                        _buildPosterUpload(l10n),
+                        const SizedBox(height: 18),
+                        _responsiveTwoColumns(
+                          context: context,
+                          first: EventDateBox(
+                            label: l10n.eventDateTime,
+                            text: _eventDateText,
+                            onTap: _pickEventDateTime,
+                          ),
+                          second: EventTextInput(
+                            label: l10n.venue,
+                            controller: _venueController,
+                            hintText: 'Dewan KTR',
+                            validator: _requiredValidator,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildRegistrationSettings(l10n),
+                        const SizedBox(height: 20),
+                        _buildStatusSelector(l10n),
+                        const SizedBox(height: 26),
+                        _buildActionButtons(l10n, isEditMode),
+                      ],
                     ),
                   ),
                 ),
@@ -837,7 +831,7 @@ class _EventDetailsFormScreenState extends State<EventDetailsFormScreen> {
             onPressed: _isSaving ? null : _saveEvent,
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
-              backgroundColor: AppColors.accent,
+              backgroundColor: AppColors.primary,
               foregroundColor: AppColors.textWhite,
               textStyle: AppTextStyles.button,
               shape: RoundedRectangleBorder(

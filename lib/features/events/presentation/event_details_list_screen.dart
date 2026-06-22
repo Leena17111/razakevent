@@ -91,9 +91,7 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
       if (event.posterStoragePath.isNotEmpty) {
         try {
           await _fileUploadService.deleteFileByPath(event.posterStoragePath);
-        } catch (_) {
-          // If the Storage file is already missing, keep the event deletion successful.
-        }
+        } catch (_) {}
       }
 
       if (!mounted) return;
@@ -122,6 +120,35 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FutureBuilder<OrganizerProfileInfo?>(
+        future: _profileFuture,
+        builder: (context, snapshot) {
+          final profile = snapshot.data;
+
+          if (profile == null || profile.organizationName.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return FloatingActionButton.extended(
+            onPressed: () => _openAddForm(profile),
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textWhite,
+            elevation: 6,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(
+              l10n.addEvent,
+              style: AppTextStyles.button.copyWith(
+                fontWeight: FontWeight.w900,
+                color: AppColors.textWhite,
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          );
+        },
+      ),
       body: SafeArea(
         child: FutureBuilder<OrganizerProfileInfo?>(
           future: _profileFuture,
@@ -176,9 +203,10 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
 
                       return ListView.separated(
                         physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(20, 72, 20, 26),
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                         itemCount: events.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 14),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 14),
                         itemBuilder: (context, index) {
                           final event = events[index];
 
@@ -207,18 +235,16 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
   ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(28),
-        ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -243,52 +269,21 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 26),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              l10n.eventDetails,
-              style: AppTextStyles.title.copyWith(
-                color: AppColors.textWhite,
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
+          const SizedBox(height: 22),
+          Text(
+            l10n.eventDetails,
+            style: AppTextStyles.title.copyWith(
+              color: AppColors.textWhite,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              l10n.manageYourEventInformation,
-              style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.textWhite.withOpacity(0.88),
-                fontSize: 13,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Transform.translate(
-            offset: const Offset(0, 28),
-            child: SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton.icon(
-                onPressed: () => _openAddForm(profile),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.addEvent),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: AppColors.textWhite,
-                  elevation: 9,
-                  shadowColor: AppColors.shadowDark,
-                  textStyle: AppTextStyles.button.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
+          Text(
+            l10n.manageYourEventInformation,
+            style: AppTextStyles.subtitle.copyWith(
+              color: AppColors.textWhite.withOpacity(0.88),
+              fontSize: 13,
             ),
           ),
         ],
@@ -303,55 +298,62 @@ class _EventDetailsListScreenState extends State<EventDetailsListScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(
-                color: AppColors.shadowDark,
-                blurRadius: 16,
-                offset: Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.event_note_rounded,
-                color: AppColors.primary,
-                size: 54,
-              ),
-              const SizedBox(height: 14),
-              Text(
-                l10n.noEventsYet,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.title.copyWith(fontSize: 20),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.addFirstEvent,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.subtitle.copyWith(fontSize: 13),
-              ),
-              const SizedBox(height: 18),
-              ElevatedButton.icon(
-                onPressed: () => _openAddForm(profile),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.addEvent),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: AppColors.textWhite,
-                  textStyle: AppTextStyles.button,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.shadowDark,
+                  blurRadius: 16,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.event_note_rounded,
+                  color: AppColors.primary,
+                  size: 54,
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  l10n.noEventsYet,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.title.copyWith(fontSize: 20),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.addFirstEvent,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.subtitle.copyWith(fontSize: 13),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _openAddForm(profile),
+                    icon: const Icon(Icons.add_rounded),
+                    label: Text(l10n.addEvent),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textWhite,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: AppTextStyles.button,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
