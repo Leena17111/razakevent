@@ -21,15 +21,12 @@ class EventFormHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 54),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 34),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(28),
         ),
       ),
       child: Column(
@@ -54,7 +51,7 @@ class EventFormHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
