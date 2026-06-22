@@ -1,16 +1,8 @@
 // lib/features/profile/presentation/manage_profile_screen.dart
-//
-// Manage Profile screen.
-// Shows current user's profile from Firestore and allows editing basic details.
-// Avatar uses the initial letter of the user's full name instead of profile photo.
-//
-// Role-based fields:
-//   - Student: Full Name, Email, Matric Number, Phone Number
-//   - Organizer Head: Full Name, Email, Matric Number, Phone Number, Organization Type, Organization Name
-//   - Secretary: Full Name, Email, Matric Number, Phone Number
-//   - Admin: Full Name, Email only
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../data/models/user_model.dart';
@@ -22,6 +14,7 @@ const _navyLight = Color(0xFF303F9F);
 const _red = Color(0xFFC8102E);
 const _bg = Color(0xFFF5F6FA);
 const _mint = Color(0xFF4DB6AC);
+const _success = Color(0xFF2E7D32);
 
 class ManageProfileScreen extends StatefulWidget {
   const ManageProfileScreen({super.key});
@@ -83,9 +76,7 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
 
   String _initialFromName(String fullName) {
     final trimmed = fullName.trim();
-
     if (trimmed.isEmpty) return '?';
-
     return trimmed[0].toUpperCase();
   }
 
@@ -123,12 +114,21 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(
+    String message, {
+    bool isSuccess = false,
+    bool isError = false,
+  }) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
+        backgroundColor: isSuccess
+            ? _success
+            : isError
+                ? _red
+                : null,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -145,7 +145,6 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
       Navigator.of(context).pop();
       return;
     }
-
     Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
@@ -165,12 +164,108 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
 
     if (success) {
       setState(() => _isEditing = false);
-      _showSnackBar('Profile updated successfully.');
+      _showSnackBar('Profile updated successfully.', isSuccess: true);
     } else {
       _showSnackBar(
         _profileController.errorMessage ?? 'Profile update failed.',
+        isError: true,
       );
     }
+  }
+
+  Future<void> _pickAndUploadProfileImage() async {
+    final picker = ImagePicker();
+
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+      maxWidth: 800,
+    );
+
+    if (image == null) return;
+
+    final success = await _profileController.uploadProfileImage(image);
+
+    if (!mounted) return;
+
+    _showSnackBar(
+      success
+          ? 'Profile image updated successfully.'
+          : _profileController.errorMessage ?? 'Profile image update failed.',
+      isSuccess: success,
+      isError: !success,
+    );
+  }
+
+  Future<void> _removeProfileImage() async {
+    final success = await _profileController.removeProfileImage();
+
+    if (!mounted) return;
+
+    _showSnackBar(
+      success
+          ? 'Profile image removed successfully.'
+          : _profileController.errorMessage ?? 'Profile image remove failed.',
+      isSuccess: success,
+      isError: !success,
+    );
+  }
+
+  void _showProfileImageOptions(UserModel user) {
+    final hasImage =
+        user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 42,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_rounded, color: _navy),
+                  title: Text(
+                    hasImage ? 'Change profile image' : 'Add profile image',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUploadProfileImage();
+                  },
+                ),
+                if (hasImage)
+                  ListTile(
+                    leading:
+                        const Icon(Icons.delete_outline_rounded, color: _red),
+                    title: const Text(
+                      'Remove profile image',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _removeProfileImage();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _logout() async {
@@ -195,55 +290,63 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final user = _profileController.currentUserProfile;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final contentWidth = screenWidth > 520 ? 460.0 : screenWidth;
+Widget build(BuildContext context) {
+  final user = _profileController.currentUserProfile;
+  final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: _bg,
-      body: Center(
-        child: SizedBox(
-          width: contentWidth,
-          child: _profileController.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: _navy),
-                )
-              : user == null
-                  ? _buildErrorState()
-                  : SafeArea(
-                      child: CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: _buildHeader(user),
-                          ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(18, 14, 18, 18),
-                              child: Column(
-                                children: [
-                                  _buildProfileCard(user),
-                                  const SizedBox(height: 14),
-                                  _buildLogoutButton(),
-                                ],
-                              ),
+ final contentWidth = screenWidth >= 900
+    ? screenWidth * 0.88
+    : screenWidth;
+
+final maxContentWidth = screenWidth >= 900 ? 1280.0 : screenWidth;
+
+final finalContentWidth =
+    contentWidth > maxContentWidth ? maxContentWidth : contentWidth;
+
+  return Scaffold(
+    backgroundColor: _bg,
+    body: Center(
+      child: SizedBox(
+        width: finalContentWidth,
+        child: _profileController.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: _navy),
+              )
+            : user == null
+                ? _buildErrorState()
+                : SafeArea(
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: _buildProfileHeader(user),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+                            child: Column(
+                              children: [
+                                _buildProfileCard(user),
+                                const SizedBox(height: 14),
+                                _buildLogoutButton(),
+                                const SizedBox(height: 8),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-        ),
+                  ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildHeader(UserModel user) {
+  Widget _buildProfileHeader(UserModel user) {
     final roleColor = _roleColor(user.role);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+      margin: const EdgeInsets.fromLTRB(18, 12, 18, 0),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -262,46 +365,52 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
       ),
       child: Column(
         children: [
-          _buildTopBar(user),
-          const SizedBox(height: 12),
-          Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              _initialFromName(user.fullName),
-              style: const TextStyle(
-                color: _navy,
-                fontSize: 31,
-                fontWeight: FontWeight.w900,
+          Row(
+            children: [
+              _circleHeaderButton(
+                icon: Icons.arrow_back_ios_new_rounded,
+                onTap: _goBackToHome,
               ),
-            ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'My Profile',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ),
+              _circleHeaderButton(
+                icon: _isEditing ? Icons.close_rounded : Icons.edit_rounded,
+                onTap: () {
+                  if (_isEditing) {
+                    _cancelEditing(user);
+                  } else {
+                    setState(() => _isEditing = true);
+                  }
+                },
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
+          _buildProfileAvatar(user),
+          const SizedBox(height: 9),
           Text(
             user.fullName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 15.5,
-              fontWeight: FontWeight.w800,
+              fontSize: 16.5,
+              fontWeight: FontWeight.w900,
               letterSpacing: -0.2,
             ),
           ),
           const SizedBox(height: 7),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.92),
               borderRadius: BorderRadius.circular(30),
@@ -327,47 +436,7 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     );
   }
 
-  Widget _buildTopBar(UserModel user) {
-    return Row(
-      children: [
-        _circleIconButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onTap: _goBackToHome,
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Text(
-            'My Profile',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.3,
-            ),
-          ),
-        ),
-        _circleIconButton(
-          icon: Icons.notifications_none_rounded,
-          onTap: () {
-            _showSnackBar('Notifications will be added later.');
-          },
-        ),
-        const SizedBox(width: 8),
-        _circleIconButton(
-          icon: _isEditing ? Icons.close_rounded : Icons.edit_rounded,
-          onTap: () {
-            if (_isEditing) {
-              _cancelEditing(user);
-            } else {
-              setState(() => _isEditing = true);
-            }
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _circleIconButton({
+  Widget _circleHeaderButton({
     required IconData icon,
     required VoidCallback onTap,
   }) {
@@ -387,6 +456,88 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
     );
   }
 
+  Widget _buildProfileAvatar(UserModel user) {
+    final hasImage =
+        user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 74,
+          height: 74,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: hasImage
+              ? CachedNetworkImage(
+                  imageUrl: user.profileImageUrl!,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  errorWidget: (_, __, ___) => _buildInitialAvatar(user),
+                )
+              : _buildInitialAvatar(user),
+        ),
+        Positioned(
+          right: -4,
+          bottom: -4,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(50),
+            onTap: _profileController.isUploadingProfileImage
+                ? null
+                : () => _showProfileImageOptions(user),
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: _red,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2.5),
+              ),
+              child: _profileController.isUploadingProfileImage
+                  ? const Padding(
+                      padding: EdgeInsets.all(7),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.camera_alt_rounded,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInitialAvatar(UserModel user) {
+    return Center(
+      child: Text(
+        _initialFromName(user.fullName),
+        style: const TextStyle(
+          color: _navy,
+          fontSize: 30,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileCard(UserModel user) {
     final isAdmin = _isAdmin(user);
 
@@ -398,9 +549,9 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 16,
-            offset: const Offset(0, 7),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -487,27 +638,13 @@ class _ManageProfileScreenState extends State<ManageProfileScreen> {
           ),
         ),
         const SizedBox(width: 8),
-        const Expanded(
-          child: Text(
-            'PERSONAL INFORMATION',
-            style: TextStyle(
-              color: _navy,
-              fontSize: 12,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.7,
-            ),
-          ),
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 180),
-          child: Text(
-            _isEditing ? 'Editing' : 'Read only',
-            key: ValueKey(_isEditing),
-            style: TextStyle(
-              color: _isEditing ? _red : Colors.grey.shade500,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-            ),
+        const Text(
+          'PERSONAL INFORMATION',
+          style: TextStyle(
+            color: _navy,
+            fontSize: 12,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.7,
           ),
         ),
       ],
