@@ -216,35 +216,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Create Account
                       Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Don't have an account?",
-                              style: AppTextStyles.body.copyWith(
-                                  color: AppColors.textSecondary),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const RegisterScreen()),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                overlayColor: Colors.transparent,
+                        child: // Create Account
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text(
+                                "Don't have an account?",
+                                style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
                               ),
-                              child: Text(
-                                'Create Account',
-                                style: AppTextStyles.body.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w700,
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  overlayColor: Colors.transparent,
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
-                              ),
+                                child: Text(
+                                  'Create Account',
+                                  style: AppTextStyles.body.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                             ),
-                          ],
-                        ),
+                            ],
+                          )
                       ),
                     ],
                   ),

@@ -53,12 +53,10 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Tap background to dismiss
           GestureDetector(
             onTap: () => Navigator.of(context).pop(),
             child: Container(color: Colors.black87),
           ),
-          // Zoomable image
           Center(
             child: InteractiveViewer(
               transformationController: _transformController,
@@ -75,7 +73,6 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
               ),
             ),
           ),
-          // Close button (top-right)
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
             right: 12,
@@ -88,12 +85,10 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
-                child:
-                    const Icon(Icons.close, color: Colors.white, size: 20),
+                child: const Icon(Icons.close, color: Colors.white, size: 20),
               ),
             ),
           ),
-          // Double-tap to reset hint (bottom)
           Positioned(
             bottom: MediaQuery.of(context).padding.bottom + 16,
             left: 0,
@@ -111,8 +106,7 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                   ),
                   child: const Text(
                     'Pinch to zoom  •  Double-tap to reset',
-                    style:
-                        TextStyle(color: Colors.white70, fontSize: 11),
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
                   ),
                 ),
               ),
@@ -145,8 +139,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_eventLoaded) {
-      _event =
-          ModalRoute.of(context)!.settings.arguments as EventModel;
+      _event = ModalRoute.of(context)!.settings.arguments as EventModel;
       _eventLoaded = true;
       _checkAlreadyRegistered();
     }
@@ -190,8 +183,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         children: [
           CustomScrollView(
             slivers: [
-              _buildSliverAppBar(
-                  context, _event, l10n, isBM, categoryColor),
+              _buildSliverAppBar(context, _event, l10n, isBM, categoryColor),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
@@ -208,8 +200,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           .fadeIn(delay: 200.ms)
                           .slideY(begin: 0.1),
                       const SizedBox(height: 14),
-                      _buildFeeCard(_event, l10n, isFull,
-                              isDeadlinePassed, isFree)
+                      _buildFeeCard(_event, l10n, isFull, isDeadlinePassed, isFree)
                           .animate()
                           .fadeIn(delay: 300.ms)
                           .slideY(begin: 0.1),
@@ -219,12 +210,30 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ),
             ],
           ),
+
+          // Transparent tap overlay covering exactly the poster area
+            Positioned(
+            top: MediaQuery.of(context).padding.top + kToolbarHeight,
+            left: 0,
+            right: 0,
+            height: 260 - kToolbarHeight,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                final url = _event.posterUrl.trim();
+                if (url.isNotEmpty) {
+                  _showFullScreenImage(context, url);
+                }
+              },
+            ),
+          ),
+
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: _buildRegisterButton(context, _event, l10n,
-                    canRegister, isFull, isDeadlinePassed)
+            child: _buildRegisterButton(
+                    context, _event, l10n, canRegister, isFull, isDeadlinePassed)
                 .animate()
                 .fadeIn(delay: 400.ms)
                 .slideY(begin: 0.3),
@@ -256,8 +265,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             color: Colors.black.withOpacity(0.3),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.arrow_back,
-              color: Colors.white, size: 20),
+          child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
         ),
       ),
       actions: [
@@ -276,109 +284,89 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           ),
         ),
       ],
-      flexibleSpace: FlexibleSpaceBar(
-        // FIX 1 — CollapseMode.none stops FlexibleSpaceBar from
-        // intercepting touch events meant for the poster GestureDetector.
-        collapseMode: CollapseMode.none,
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            // FIX 2 — onTapUp is more reliable than onTap inside a
-            // CustomScrollView because it wins the gesture arena before
-            // the scroll view can claim a drag. HitTestBehavior.opaque
-            // ensures the full poster area is always hittable.
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapUp: (_) {
-                final url = event.posterUrl.trim();
-                if (url.isNotEmpty) {
-                  _showFullScreenImage(context, url);
-                }
-              },
-              child: _buildPosterImage(event),
-            ),
+      flexibleSpace: Stack(
+        fit: StackFit.expand,
+        children: [
+          _buildPosterImage(event),
 
-            // Gradient overlay
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0.45, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.65),
+          // Gradient overlay
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.45, 1.0],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.65),
+                ],
+              ),
+            ),
+          ),
+
+          // "Tap to zoom" hint badge
+          if (event.posterUrl.trim().isNotEmpty)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.45),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.zoom_in, color: Colors.white70, size: 13),
+                    SizedBox(width: 4),
+                    Text(
+                      'Tap to zoom',
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
+                    ),
                   ],
                 ),
               ),
             ),
 
-            // "Tap to zoom" hint badge
-            if (event.posterUrl.trim().isNotEmpty)
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
+          // Category + title at bottom
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                      horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.45),
+                    color: categoryColor['bg'],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.zoom_in,
-                          color: Colors.white70, size: 13),
-                      SizedBox(width: 4),
-                      Text(
-                        'Tap to zoom',
-                        style: TextStyle(
-                            color: Colors.white70, fontSize: 10),
-                      ),
-                    ],
+                  child: Text(
+                    event.category,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: categoryColor['text'],
+                    ),
                   ),
                 ),
-              ),
-
-            // Category + title at bottom
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: categoryColor['bg'],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      event.category,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: categoryColor['text'],
-                      ),
-                    ),
+                const SizedBox(height: 6),
+                Text(
+                  event.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    event.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -402,8 +390,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             child: Container(color: Colors.white),
           );
         },
-        errorBuilder: (context, error, stackTrace) =>
-            _posterPlaceholder(),
+        errorBuilder: (context, error, stackTrace) => _posterPlaceholder(),
       );
     }
     return _posterPlaceholder();
@@ -420,15 +407,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   }
 
   Widget _langButton(bool isBM, String label) {
-    final isActive =
-        (label == 'BM' && isBM) || (label == 'EN' && !isBM);
+    final isActive = (label == 'BM' && isBM) || (label == 'EN' && !isBM);
     return GestureDetector(
       onTap: () =>
           localeController.value = Locale(label == 'EN' ? 'en' : 'ms'),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         decoration: BoxDecoration(
           color: isActive ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -473,8 +458,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 .format(event.eventDateTime),
           ),
           const Divider(height: 16),
-          _infoRow(Icons.location_on_outlined, l10n.venueLabel,
-              event.venue),
+          _infoRow(Icons.location_on_outlined, l10n.venueLabel, event.venue),
           if (event.participantCapacity != null) ...[
             const Divider(height: 16),
             _infoRow(
@@ -512,8 +496,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: TextStyle(
-                      fontSize: 10, color: Colors.grey.shade500)),
+                  style:
+                      TextStyle(fontSize: 10, color: Colors.grey.shade500)),
               const SizedBox(height: 2),
               Text(value,
                   style: const TextStyle(
@@ -653,11 +637,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     size: 14, color: Colors.red.shade400),
                 const SizedBox(width: 8),
                 Text(
-                  isFull
-                      ? l10n.eventFullMessage
-                      : l10n.registrationClosed,
-                  style: TextStyle(
-                      fontSize: 11, color: Colors.red.shade600),
+                  isFull ? l10n.eventFullMessage : l10n.registrationClosed,
+                  style:
+                      TextStyle(fontSize: 11, color: Colors.red.shade600),
                 ),
               ]),
             ),
@@ -713,8 +695,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     icon: const Icon(Icons.check_circle_outline,
                         size: 18, color: Colors.white),
                     label: Text(
-                      Localizations.localeOf(context).languageCode ==
-                              'ms'
+                      Localizations.localeOf(context).languageCode == 'ms'
                           ? 'Anda sudah mendaftar untuk acara ini'
                           : 'You are already registered for this event',
                       style: const TextStyle(
