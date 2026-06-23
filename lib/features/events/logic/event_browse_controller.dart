@@ -138,6 +138,19 @@ class EventBrowseController extends ChangeNotifier {
     }).toList();
   }
 
+  /// Returns whether [event] matches the controller's current category
+  /// filter and search query. Lets other tabs (e.g. "My Registered")
+  /// respect the same filters as the Browse tab, without duplicating
+  /// the matching logic.
+  bool matchesCurrentFilters(EventModel event) {
+    final matchCategory = _matchesCategory(event);
+    final q = _searchQuery.toLowerCase();
+    final matchSearch = q.isEmpty ||
+        event.title.toLowerCase().contains(q) ||
+        event.organizationName.toLowerCase().contains(q);
+    return matchCategory && matchSearch;
+  }
+
   /// Normalises "Other" (legacy) → "Others" and buckets anything not in the
   /// known list under the "Others" filter chip.
   bool _matchesCategory(EventModel event) {

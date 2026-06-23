@@ -368,7 +368,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           controller: _tabController,
           children: [
             _buildBrowseTab(controller, l10n),
-            _buildRegisteredTab(l10n),
+            _buildRegisteredTab(controller, l10n),
           ],
         );
       },
@@ -405,7 +405,12 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
 
   // ── Registered Tab ──────────────────────────────────────────────────────────
 
-  Widget _buildRegisteredTab(AppLocalizations l10n) {
+  // FIX 3 ── Now takes the controller so the registered-events list can
+  // respect the same category/search filters as the Browse tab, instead
+  // of unconditionally showing every registered event regardless of the
+  // active filter chip.
+  Widget _buildRegisteredTab(
+      EventBrowseController controller, AppLocalizations l10n) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return Center(
@@ -524,10 +529,47 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             }
 
             final eventMap = {for (final e in events) e.eventId: e};
+
+            // FIX 3 ── Apply the same category/search filter the Browse
+            // tab uses, so picking a category chip (or typing a search
+            // query) while on "My Registered" actually narrows this list
+            // too, instead of always showing every registered event.
             final orderedEvents = eventIds
                 .map((id) => eventMap[id])
                 .whereType<EventModel>()
+                .where(controller.matchesCurrentFilters)
                 .toList();
+
+            if (orderedEvents.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.filter_alt_off_outlined,
+                            size: 56, color: Colors.grey.shade300)
+                        .animate()
+                        .fadeIn()
+                        .scale(),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.noRegisteredEvents,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.noRegisteredEventsDesc,
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
 
             return ListView.builder(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),

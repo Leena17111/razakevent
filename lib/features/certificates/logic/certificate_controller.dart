@@ -36,13 +36,16 @@ class CertificateController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Pick up any certificates that haven't been issued yet
-      // (covers old feedback/volunteer approvals + new ones).
+      // Clean up any pre-existing duplicates, then sync new certs.
+      await _repo.cleanupDuplicateCertificates(uid);
       await _triggerService.syncCertificatesForUser(uid);
 
       certificates = await _repo.fetchForUser(uid);
       await _loadStudentName(uid);
-    } catch (_) {
+    } catch (e, st) {
+      // TEMPORARY — verbose logging to find out why this is failing.
+      debugPrint('fetchCertificates error: $e');
+      debugPrint('$st');
       error = 'somethingWentWrong';
     } finally {
       isLoading = false;
