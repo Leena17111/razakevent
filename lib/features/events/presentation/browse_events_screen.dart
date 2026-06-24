@@ -51,8 +51,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         .get();
     if (!mounted) return;
     setState(() {
-      _registeredEventIds =
-          snap.docs.map((d) => d.data()['eventId'] as String).toSet();
+      _registeredEventIds = snap.docs
+          .map((d) => d.data()['eventId'] as String)
+          .toSet();
     });
   }
 
@@ -95,8 +96,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
 
   Widget _langButton(String label, bool isActive) {
     return GestureDetector(
-      onTap: () =>
-          localeController.value = Locale(label == 'EN' ? 'en' : 'ms'),
+      onTap: () => localeController.value = Locale(label == 'EN' ? 'en' : 'ms'),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -134,7 +134,6 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             ],
           ),
         ),
-        bottomNavigationBar: _buildBottomNav(l10n),
       ),
     );
   }
@@ -147,11 +146,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1A237E),
-            Color(0xFF283593),
-            Color(0xFF3949AB),
-          ],
+          colors: [Color(0xFF1A237E), Color(0xFF283593), Color(0xFF3949AB)],
         ),
       ),
       padding: const EdgeInsets.fromLTRB(4, 8, 16, 20),
@@ -246,8 +241,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
         dividerColor: Colors.transparent,
         // Active label: primary colour (readable on white pill)
         labelColor: AppColors.primary,
-        labelStyle:
-            const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
         // Inactive label: white (readable on translucent dark background)
         unselectedLabelColor: Colors.white,
         unselectedLabelStyle: const TextStyle(fontSize: 11),
@@ -315,7 +309,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               final key = keys[index];
               final isActive =
                   controller.selectedCategory.trim().toLowerCase() ==
-                      key.trim().toLowerCase();
+                  key.trim().toLowerCase();
               final label = _getCategoryLabel(key, l10n);
               return GestureDetector(
                 onTap: () => controller.setCategory(key),
@@ -323,7 +317,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 4),
+                    horizontal: 14,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isActive ? AppColors.primary : Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -338,7 +334,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                               color: AppColors.primary.withOpacity(0.3),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
-                            )
+                            ),
                           ]
                         : [],
                   ),
@@ -376,7 +372,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   }
 
   Widget _buildBrowseTab(
-      EventBrowseController controller, AppLocalizations l10n) {
+    EventBrowseController controller,
+    AppLocalizations l10n,
+  ) {
     if (controller.isLoading) return _buildShimmerList();
     if (controller.error != null) {
       return _buildErrorState(controller, l10n);
@@ -410,7 +408,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   // of unconditionally showing every registered event regardless of the
   // active filter chip.
   Widget _buildRegisteredTab(
-      EventBrowseController controller, AppLocalizations l10n) {
+    EventBrowseController controller,
+    AppLocalizations l10n,
+  ) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return Center(
@@ -445,11 +445,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.event_available_outlined,
-                        size: 56, color: Colors.grey.shade300)
-                    .animate()
-                    .fadeIn()
-                    .scale(),
+                Icon(
+                  Icons.event_available_outlined,
+                  size: 56,
+                  color: Colors.grey.shade300,
+                ).animate().fadeIn().scale(),
                 const SizedBox(height: 12),
                 Text(
                   l10n.noRegisteredEvents,
@@ -470,23 +470,26 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           );
         }
 
-        final registrations = List<QueryDocumentSnapshot>.from(
-          regSnapshot.data!.docs,
-        )..sort((a, b) {
-            final aData = a.data() as Map<String, dynamic>;
-            final bData = b.data() as Map<String, dynamic>;
-            final aTime =
-                (aData['registeredAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+        final registrations =
+            List<QueryDocumentSnapshot>.from(regSnapshot.data!.docs)
+              ..sort((a, b) {
+                final aData = a.data() as Map<String, dynamic>;
+                final bData = b.data() as Map<String, dynamic>;
+                final aTime =
+                    (aData['registeredAt'] as Timestamp?)
+                        ?.millisecondsSinceEpoch ??
                     0;
-            final bTime =
-                (bData['registeredAt'] as Timestamp?)?.millisecondsSinceEpoch ??
+                final bTime =
+                    (bData['registeredAt'] as Timestamp?)
+                        ?.millisecondsSinceEpoch ??
                     0;
-            return bTime.compareTo(aTime);
-          });
+                return bTime.compareTo(aTime);
+              });
 
         final eventIds = registrations
-            .map((d) =>
-                (d.data() as Map<String, dynamic>)['eventId'] as String?)
+            .map(
+              (d) => (d.data() as Map<String, dynamic>)['eventId'] as String?,
+            )
             .whereType<String>()
             .toList();
 
@@ -510,8 +513,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               return Center(
                 child: Text(
                   l10n.errorLoadingEvents,
-                  style:
-                      TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                 ),
               );
             }
@@ -522,8 +524,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               return Center(
                 child: Text(
                   l10n.noRegisteredEvents,
-                  style:
-                      TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
               );
             }
@@ -545,11 +546,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.filter_alt_off_outlined,
-                            size: 56, color: Colors.grey.shade300)
-                        .animate()
-                        .fadeIn()
-                        .scale(),
+                    Icon(
+                      Icons.filter_alt_off_outlined,
+                      size: 56,
+                      color: Colors.grey.shade300,
+                    ).animate().fadeIn().scale(),
                     const SizedBox(height: 12),
                     Text(
                       l10n.noRegisteredEvents,
@@ -562,8 +563,10 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     const SizedBox(height: 4),
                     Text(
                       l10n.noRegisteredEventsDesc,
-                      style:
-                          TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -584,11 +587,16 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 final regData = reg.data() as Map<String, dynamic>;
                 final paymentStatus =
                     regData['paymentStatus'] as String? ?? 'free';
-                final registeredAt =
-                    (regData['registeredAt'] as Timestamp?)?.toDate();
+                final registeredAt = (regData['registeredAt'] as Timestamp?)
+                    ?.toDate();
 
                 return _buildRegisteredCard(
-                        event, paymentStatus, registeredAt, l10n, index)
+                      event,
+                      paymentStatus,
+                      registeredAt,
+                      l10n,
+                      index,
+                    )
                     .animate()
                     .fadeIn(delay: (index * 60).ms, duration: 400.ms)
                     .slideY(begin: 0.15, curve: Curves.easeOut);
@@ -616,9 +624,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               .where(FieldPath.documentId, whereIn: chunk)
               .snapshots()
               .map(
-                (snap) => snap.docs
-                    .map((d) => EventModel.fromFirestore(d))
-                    .toList(),
+                (snap) =>
+                    snap.docs.map((d) => EventModel.fromFirestore(d)).toList(),
               ),
         )
         .toList();
@@ -646,11 +653,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     final categoryColor = _getCategoryColor(event.category);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.eventDetail,
-        arguments: event,
-      ),
+      onTap: () =>
+          Navigator.pushNamed(context, AppRoutes.eventDetail, arguments: event),
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
@@ -668,8 +672,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: SizedBox(
                 height: 140,
                 width: double.infinity,
@@ -681,7 +686,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: categoryColor['bg'],
                           borderRadius: BorderRadius.circular(12),
@@ -701,7 +708,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                       right: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green.shade600,
                           borderRadius: BorderRadius.circular(12),
@@ -709,8 +718,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.check_circle,
-                                size: 10, color: Colors.white),
+                            const Icon(
+                              Icons.check_circle,
+                              size: 10,
+                              color: Colors.white,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               l10n.registeredLabel,
@@ -746,43 +758,59 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   const SizedBox(height: 2),
                   Text(
                     event.organizationName,
-                    style:
-                        TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                    style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
                   ),
                   const SizedBox(height: 6),
-                  Row(children: [
-                    Icon(Icons.calendar_today_outlined,
-                        size: 11, color: Colors.grey.shade500),
-                    const SizedBox(width: 4),
-                    Text(
-                      DateFormat('d MMM yyyy • h:mm a')
-                          .format(event.eventDateTime),
-                      style: TextStyle(
-                          fontSize: 10, color: Colors.grey.shade500),
-                    ),
-                  ]),
-                  const SizedBox(height: 3),
-                  Row(children: [
-                    Icon(Icons.location_on_outlined,
-                        size: 11, color: Colors.grey.shade500),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        event.venue,
-                        style: TextStyle(
-                            fontSize: 10, color: Colors.grey.shade500),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 11,
+                        color: Colors.grey.shade500,
                       ),
-                    ),
-                  ]),
+                      const SizedBox(width: 4),
+                      Text(
+                        DateFormat(
+                          'd MMM yyyy • h:mm a',
+                        ).format(event.eventDateTime),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 11,
+                        color: Colors.grey.shade500,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          event.venue,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: isFree
                               ? const Color(0xFFDBEAFE)
@@ -793,8 +821,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                           isFree
                               ? l10n.freeEvent
                               : isPaid
-                                  ? l10n.paid
-                                  : 'RM ${event.registrationFee.toStringAsFixed(2)}',
+                              ? l10n.paid
+                              : 'RM ${event.registrationFee.toStringAsFixed(2)}',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -808,7 +836,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                         Text(
                           '${l10n.registeredOn} ${DateFormat('d MMM yyyy').format(registeredAt)}',
                           style: TextStyle(
-                              fontSize: 10, color: Colors.grey.shade400),
+                            fontSize: 10,
+                            color: Colors.grey.shade400,
+                          ),
                         ),
                     ],
                   ),
@@ -839,11 +869,8 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     final alreadyRegistered = _registeredEventIds.contains(event.eventId);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.eventDetail,
-        arguments: event,
-      ),
+      onTap: () =>
+          Navigator.pushNamed(context, AppRoutes.eventDetail, arguments: event),
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
@@ -861,10 +888,21 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCardImage(
-                event, isFull, isFree, remaining, categoryColor, l10n,
-                alreadyRegistered: alreadyRegistered),
-            _buildCardBody(event, progress, isFree, l10n,
-                alreadyRegistered: alreadyRegistered),
+              event,
+              isFull,
+              isFree,
+              remaining,
+              categoryColor,
+              l10n,
+              alreadyRegistered: alreadyRegistered,
+            ),
+            _buildCardBody(
+              event,
+              progress,
+              isFree,
+              l10n,
+              alreadyRegistered: alreadyRegistered,
+            ),
           ],
         ),
       ),
@@ -912,8 +950,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               top: 8,
               left: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: categoryColor['bg'],
                   borderRadius: BorderRadius.circular(12),
@@ -936,7 +973,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 right: 8,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.shade600,
                     borderRadius: BorderRadius.circular(12),
@@ -944,8 +983,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.check_circle,
-                          size: 10, color: Colors.white),
+                      const Icon(
+                        Icons.check_circle,
+                        size: 10,
+                        color: Colors.white,
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         l10n.registeredLabel,
@@ -966,7 +1008,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   right: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green.shade600,
                       borderRadius: BorderRadius.circular(12),
@@ -986,7 +1030,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 right: 8,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: isFull
                         ? Colors.red.withOpacity(0.9)
@@ -994,9 +1040,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    isFull
-                        ? l10n.eventFull
-                        : '$remaining ${l10n.slotsLeft}',
+                    isFull ? l10n.eventFull : '$remaining ${l10n.slotsLeft}',
                     style: const TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -1058,13 +1102,18 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.image_outlined,
-              size: 36, color: AppColors.primary.withOpacity(0.3)),
+          Icon(
+            Icons.image_outlined,
+            size: 36,
+            color: AppColors.primary.withOpacity(0.3),
+          ),
           const SizedBox(height: 4),
           Text(
             'No poster',
             style: TextStyle(
-                fontSize: 10, color: AppColors.primary.withOpacity(0.3)),
+              fontSize: 10,
+              color: AppColors.primary.withOpacity(0.3),
+            ),
           ),
         ],
       ),
@@ -1096,33 +1145,44 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
-          Text(event.organizationName,
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+          Text(
+            event.organizationName,
+            style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+          ),
           const SizedBox(height: 6),
-          Row(children: [
-            Icon(Icons.calendar_today_outlined,
-                size: 11, color: Colors.grey.shade500),
-            const SizedBox(width: 4),
-            Text(
-              DateFormat('d MMM yyyy • h:mm a').format(event.eventDateTime),
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
-            ),
-          ]),
-          const SizedBox(height: 3),
-          Row(children: [
-            Icon(Icons.location_on_outlined,
-                size: 11, color: Colors.grey.shade500),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                event.venue,
-                style:
-                    TextStyle(fontSize: 10, color: Colors.grey.shade500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 11,
+                color: Colors.grey.shade500,
               ),
-            ),
-          ]),
+              const SizedBox(width: 4),
+              Text(
+                DateFormat('d MMM yyyy • h:mm a').format(event.eventDateTime),
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3),
+          Row(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 11,
+                color: Colors.grey.shade500,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  event.venue,
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
           if (event.participantCapacity != null) ...[
             const SizedBox(height: 8),
             Row(
@@ -1130,12 +1190,13 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               children: [
                 Text(
                   '${event.registeredCount} / ${event.participantCapacity} ${l10n.registeredCount}',
-                  style:
-                      TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 2),
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: isFree
                         ? Colors.green.shade50
@@ -1164,9 +1225,7 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                 value: progress,
                 backgroundColor: Colors.grey.shade100,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  progress > 0.8
-                      ? const Color(0xFFC8102E)
-                      : AppColors.primary,
+                  progress > 0.8 ? const Color(0xFFC8102E) : AppColors.primary,
                 ),
                 minHeight: 5,
               ),
@@ -1192,7 +1251,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               if (alreadyRegistered)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(8),
@@ -1201,8 +1262,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.check_circle_outline,
-                          size: 11, color: Colors.green.shade700),
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 11,
+                        color: Colors.green.shade700,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         l10n.registeredLabel,
@@ -1222,18 +1286,23 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
                     AppRoutes.eventDetail,
                     arguments: event,
                   ),
-                  child: Row(children: [
-                    Text(
-                      l10n.detailsButton,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                  child: Row(
+                    children: [
+                      Text(
+                        l10n.detailsButton,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        size: 14,
                         color: AppColors.primary,
                       ),
-                    ),
-                    Icon(Icons.chevron_right,
-                        size: 14, color: AppColors.primary),
-                  ]),
+                    ],
+                  ),
                 ),
             ],
           ),
@@ -1257,40 +1326,44 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Column(children: [
-            Container(
-              height: 200,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(16)),
+          child: Column(
+            children: [
+              Container(
+                height: 200,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
                       height: 14,
                       width: double.infinity,
-                      color: Colors.white),
-                  const SizedBox(height: 6),
-                  Container(height: 10, width: 120, color: Colors.white),
-                  const SizedBox(height: 8),
-                  Container(
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 6),
+                    Container(height: 10, width: 120, color: Colors.white),
+                    const SizedBox(height: 8),
+                    Container(
                       height: 10,
                       width: double.infinity,
-                      color: Colors.white),
-                  const SizedBox(height: 4),
-                  Container(
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
                       height: 5,
                       width: double.infinity,
-                      color: Colors.white),
-                ],
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );
@@ -1301,11 +1374,11 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.event_busy_outlined,
-                  size: 56, color: Colors.grey.shade300)
-              .animate()
-              .fadeIn()
-              .scale(begin: const Offset(0.8, 0.8)),
+          Icon(
+            Icons.event_busy_outlined,
+            size: 56,
+            color: Colors.grey.shade300,
+          ).animate().fadeIn().scale(begin: const Offset(0.8, 0.8)),
           const SizedBox(height: 12),
           Text(
             l10n.noEventsAvailable,
@@ -1326,15 +1399,18 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   }
 
   Widget _buildErrorState(
-      EventBrowseController controller, AppLocalizations l10n) {
+    EventBrowseController controller,
+    AppLocalizations l10n,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.wifi_off_rounded, size: 56, color: Colors.grey.shade300)
-              .animate()
-              .fadeIn()
-              .shake(),
+          Icon(
+            Icons.wifi_off_rounded,
+            size: 56,
+            color: Colors.grey.shade300,
+          ).animate().fadeIn().shake(),
           const SizedBox(height: 12),
           Text(
             l10n.errorLoadingEvents,
@@ -1349,85 +1425,10 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Bottom Nav ──────────────────────────────────────────────────────────────
-
-  Widget _buildBottomNav(AppLocalizations l10n) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _navItem(Icons.event, l10n.navEvents, true, () {}),
-              _navItem(
-                Icons.volunteer_activism_outlined,
-                l10n.navVolunteer,
-                false,
-                () => Navigator.pushNamed(
-                    context, AppRoutes.volunteerPositions),
-              ),
-              _navItem(
-                Icons.person_outline,
-                l10n.navProfile,
-                false,
-                () => Navigator.pushNamed(context, AppRoutes.profile),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _navItem(
-      IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon,
-              size: 22,
-              color: isActive ? AppColors.primary : Colors.grey.shade400),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isActive ? AppColors.primary : Colors.grey.shade400,
-            ),
-          ),
-          if (isActive)
-            Container(
-              margin: const EdgeInsets.only(top: 3),
-              width: 16,
-              height: 2,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -1441,15 +1442,9 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
       'Academic': {'bg': Color(0xFFD1FAE5), 'text': Color(0xFF059669)},
       'Spiritual': {'bg': Color(0xFFE0E7FF), 'text': Color(0xFF6366F1)},
       'Welfare': {'bg': Color(0xFFFCE7F3), 'text': Color(0xFFDB2777)},
-      'Entrepreneurship': {
-        'bg': Color(0xFFFEF3C7),
-        'text': Color(0xFFD97706),
-      },
+      'Entrepreneurship': {'bg': Color(0xFFFEF3C7), 'text': Color(0xFFD97706)},
       'Culture': {'bg': Color(0xFFEDE9FE), 'text': Color(0xFF7C3AED)},
-      'Arts & Media': {
-        'bg': Color(0xFFFFE4E6),
-        'text': Color(0xFFE11D48),
-      },
+      'Arts & Media': {'bg': Color(0xFFFFE4E6), 'text': Color(0xFFE11D48)},
       'Food': {'bg': Color(0xFFD1FAE5), 'text': Color(0xFF10B981)},
       'Safety': {'bg': Color(0xFFFEE2E2), 'text': Color(0xFFDC2626)},
       'Others': {'bg': Color(0xFFF5F6FA), 'text': Color(0xFF6B7280)},

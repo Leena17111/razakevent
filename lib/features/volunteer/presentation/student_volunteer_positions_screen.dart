@@ -92,19 +92,17 @@ class _StudentVolunteerPositionsScreenState
     final user = _profileController.currentUserProfile;
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.userNotAuthenticated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.userNotAuthenticated)));
       return;
     }
 
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ApplyVolunteerPositionScreen(
-          position: position,
-          user: user,
-        ),
+        builder: (_) =>
+            ApplyVolunteerPositionScreen(position: position, user: user),
       ),
     );
 
@@ -124,74 +122,49 @@ class _StudentVolunteerPositionsScreenState
         title: Text(l10n.volunteerPositions),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        actions: [
-          _buildLanguageToggle(),
-        ],
+        actions: [_buildLanguageToggle()],
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             )
           : _errorMessage != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
-                )
-              : Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Row(
-                        children: [
-                          _tabButton(l10n.openPositions, 0),
-                          _tabButton(l10n.myApplications, 1),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _loadData,
-                        child: _selectedTab == 0
-                            ? _buildOpenPositions(l10n)
-                            : _buildMyApplications(l10n),
-                      ),
-                    ),
-                  ],
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  _errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
                 ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textMuted,
-        onTap: (index) {
-          if (index == 0) Navigator.pop(context);
-          if (index == 2) Navigator.pushNamed(context, '/profile');
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.calendar_today_rounded),
-            label: l10n.navEvents,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.groups_rounded),
-            label: l10n.navVolunteer,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline_rounded),
-            label: l10n.navProfile,
-          ),
-        ],
-      ),
+              ),
+            )
+          : Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Row(
+                    children: [
+                      _tabButton(l10n.openPositions, 0),
+                      _tabButton(l10n.myApplications, 1),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _loadData,
+                    child: _selectedTab == 0
+                        ? _buildOpenPositions(l10n)
+                        : _buildMyApplications(l10n),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -279,10 +252,7 @@ class _StudentVolunteerPositionsScreenState
       padding: const EdgeInsets.all(2),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _langButton(isBM, 'EN'),
-          _langButton(isBM, 'BM'),
-        ],
+        children: [_langButton(isBM, 'EN'), _langButton(isBM, 'BM')],
       ),
     );
   }

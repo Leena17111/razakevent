@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/widgets/role_bottom_navigation.dart';
 import '../../../data/models/user_model.dart';
 import '../../profile/logic/profile_controller.dart';
 
@@ -60,30 +61,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Color _roleColor(String role) {
     switch (role) {
       case UserRole.student:
+      case volunteerRole:
         return AppColors.studentBadgeText;
       case UserRole.organizerHead:
-        return AppColors.clubBadgeText;
+        return AppColors.organizerBadgeText;
       case UserRole.secretary:
-        return AppColors.communityBadgeText;
+        return AppColors.secretaryBadgeText;
       case UserRole.admin:
         return AppColors.adminBadgeText;
       default:
-        return AppColors.studentBadgeText;
+        return AppColors.primary;
     }
   }
 
   Color _roleBadgeBg(String role) {
     switch (role) {
       case UserRole.student:
+      case volunteerRole:
         return AppColors.studentBadgeBg;
       case UserRole.organizerHead:
-        return AppColors.clubBadgeBg;
+        return AppColors.organizerBadgeBg;
       case UserRole.secretary:
-        return AppColors.communityBadgeBg;
+        return AppColors.secretaryBadgeBg;
       case UserRole.admin:
         return AppColors.adminBadgeBg;
       default:
-        return AppColors.studentBadgeBg;
+        return AppColors.primarySoft;
     }
   }
 
@@ -91,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (role) {
       case UserRole.student:
         return Icons.school_rounded;
+      case volunteerRole:
+        return Icons.volunteer_activism_rounded;
       case UserRole.organizerHead:
         return Icons.groups_rounded;
       case UserRole.secretary:
@@ -106,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (role) {
       case UserRole.student:
         return 'Student Dashboard';
+      case volunteerRole:
+        return 'Volunteer Dashboard';
       case UserRole.organizerHead:
         return 'Organizer Head Dashboard';
       case UserRole.secretary:
@@ -124,9 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
       case UserRole.organizerHead:
         return _organizerOrganizationName(user);
       case UserRole.secretary:
-        return 'Secretary';
+        return 'Secretary Workspace';
       case UserRole.student:
-        return 'Student';
+        return 'Student Hub';
+      case volunteerRole:
+        return 'Volunteer Hub';
       default:
         return 'Dashboard';
     }
@@ -135,16 +144,39 @@ class _HomeScreenState extends State<HomeScreen> {
   String _heroSubtitle(String role) {
     switch (role) {
       case UserRole.student:
-        return 'Explore KTR events and activities.';
+        return 'Explore events and manage your participation.';
+      case volunteerRole:
+        return 'View roles and manage your applications.';
       case UserRole.organizerHead:
-        return 'Manage your events';
+        return 'Manage events, feedback, volunteers, and equipment.';
       case UserRole.secretary:
-        return 'Manage event documentation';
+        return 'Upload and track event documents.';
       case UserRole.admin:
-        return 'Review and approve event documentation';
+        return 'Review and manage KTR event operations.';
       default:
         return 'Access your RazakEvent dashboard.';
     }
+  }
+
+  IconData _heroBackgroundIcon(String role) {
+    switch (role) {
+      case UserRole.admin:
+        return Icons.fact_check_rounded;
+      case UserRole.organizerHead:
+        return Icons.calendar_month_rounded;
+      case UserRole.secretary:
+        return Icons.description_rounded;
+      case UserRole.student:
+        return Icons.event_available_rounded;
+      case volunteerRole:
+        return Icons.volunteer_activism_rounded;
+      default:
+        return Icons.dashboard_rounded;
+    }
+  }
+
+  List<RoleDashboardDestination> _dashboardItems(String role) {
+    return RoleDashboardConfig.destinationsForRole(role);
   }
 
   Future<void> _openProfile() async {
@@ -155,67 +187,111 @@ class _HomeScreenState extends State<HomeScreen> {
     await _profileController.loadCurrentUserProfile();
   }
 
-  void _showComingSoon(String featureName) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  Future<void> _openDashboardItem(RoleDashboardDestination item) async {
+    if (item.isProfile) {
+      await _openProfile();
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$featureName will be added in a later sprint.',
-          style: AppTextStyles.body.copyWith(color: AppColors.textWhite),
-        ),
-        backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      ),
-    );
+    if (item.routeName == AppRoutes.home) return;
+
+    await Navigator.pushNamed(context, item.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
     final user = _profileController.currentUserProfile;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final contentWidth = screenWidth > 520 ? 460.0 : screenWidth;
+    final isLoading = _profileController.isLoading;
+    final items = user == null
+        ? const <RoleDashboardDestination>[]
+        : _dashboardItems(user.role);
+    final navItems = user == null
+        ? const <RoleDashboardDestination>[]
+        : RoleDashboardConfig.navigationForRole(user.role);
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SizedBox(
-          width: contentWidth,
-          child: _profileController.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary,
-                  ),
-                )
-              : user == null
-                  ? _buildErrorState()
-                  : SafeArea(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
+      bottomNavigationBar: user == null || isLoading
+          ? null
+          : RoleBottomNavigation(
+              destinations: navItems,
+              currentRoute: AppRoutes.home,
+              onDestinationSelected: _openDashboardItem,
+            ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
+          : user == null
+          ? _buildErrorState()
+          : SafeArea(
+              bottom: false,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final horizontalPadding = constraints.maxWidth >= 720
+                      ? 32.0
+                      : 18.0;
+
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      16,
+                      horizontalPadding,
+                      28,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 980),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildTopBar(user),
-                            const SizedBox(height: 16),
-                            _buildHeroCard(user),
                             const SizedBox(height: 18),
-                            _buildDashboardSection(user),
+                            _buildHeroCard(user),
+                            const SizedBox(height: 20),
+                            _buildDashboardSection(user, items),
                           ],
                         ),
                       ),
                     ),
-        ),
-      ),
+                  );
+                },
+              ),
+            ),
     );
   }
 
   Widget _buildTopBar(UserModel user) {
     return Row(
       children: [
+        Container(
+          width: 38,
+          height: 38,
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderLight),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadowDark,
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Image.asset(
+            'assets/images/app_icon.png',
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.event_available_rounded,
+              color: AppColors.primary,
+              size: 20,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             'Welcome back, ${_firstName(user.fullName)}',
@@ -223,28 +299,29 @@ class _HomeScreenState extends State<HomeScreen> {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.title.copyWith(
               color: AppColors.textPrimary,
-              fontSize: 24,
+              fontSize: 23,
               fontWeight: FontWeight.w900,
-              letterSpacing: -0.6,
             ),
           ),
         ),
+        const SizedBox(width: 12),
         Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(12),
             onTap: _openProfile,
             child: Container(
-              width: 46,
-              height: 46,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary, width: 1.4),
                 boxShadow: const [
                   BoxShadow(
                     color: AppColors.shadowNavy,
-                    blurRadius: 14,
-                    offset: Offset(0, 6),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
@@ -252,8 +329,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(
                 _initialFromName(user.fullName),
                 style: AppTextStyles.button.copyWith(
-                  color: AppColors.textWhite,
-                  fontSize: 17,
+                  color: AppColors.primary,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -270,17 +347,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primaryLight,
-            AppColors.primary,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(30),
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadowNavy,
@@ -292,46 +362,34 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: [
           Positioned(
-            right: -28,
-            bottom: -28,
+            right: -18,
+            bottom: -24,
             child: Icon(
               _heroBackgroundIcon(user.role),
-              size: 128,
-              color: AppColors.textWhite.withOpacity(0.08),
+              size: 132,
+              color: AppColors.textWhite.withValues(alpha: 0.08),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Welcome, ${_firstName(user.fullName)}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.subtitle.copyWith(
-                  color: AppColors.textWhite.withOpacity(0.82),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
                 _heroTitle(user),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.heading.copyWith(
                   color: AppColors.textWhite,
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: -0.8,
                 ),
               ),
-              const SizedBox(height: 7),
-              SizedBox(
-                width: 300,
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
                 child: Text(
                   _heroSubtitle(user.role),
                   style: AppTextStyles.subtitle.copyWith(
-                    color: AppColors.textWhite.withOpacity(0.86),
+                    color: AppColors.textWhite.withValues(alpha: 0.86),
                     fontSize: 13.5,
                     height: 1.35,
                   ),
@@ -350,11 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      _roleIcon(user.role),
-                      color: roleColor,
-                      size: 16,
-                    ),
+                    Icon(_roleIcon(user.role), color: roleColor, size: 16),
                     const SizedBox(width: 7),
                     Text(
                       user.role,
@@ -374,32 +428,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  IconData _heroBackgroundIcon(String role) {
-    switch (role) {
-      case UserRole.admin:
-        return Icons.fact_check_rounded;
-      case UserRole.organizerHead:
-        return Icons.calendar_month_rounded;
-      case UserRole.secretary:
-        return Icons.description_rounded;
-      case UserRole.student:
-        return Icons.event_available_rounded;
-      default:
-        return Icons.dashboard_rounded;
-    }
-  }
+  Widget _buildDashboardSection(
+    UserModel user,
+    List<RoleDashboardDestination> items,
+  ) {
+    final gridItems = items.where((item) => !item.isProfile).toList();
 
-  Widget _buildDashboardSection(UserModel user) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.borderLight),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadowDark,
-            blurRadius: 20,
+            blurRadius: 18,
             offset: Offset(0, 8),
           ),
         ],
@@ -409,10 +454,39 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildSectionHeader(user),
           const SizedBox(height: 16),
-          _buildRoleActionCards(user),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final count = _gridColumnCount(constraints.maxWidth);
+
+              return GridView.builder(
+                itemCount: gridItems.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: count,
+                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 14,
+                  mainAxisExtent: count == 1 ? 132 : 164,
+                ),
+                itemBuilder: (context, index) {
+                  final item = gridItems[index];
+                  return _DashboardCard(
+                    item: item,
+                    onTap: () => _openDashboardItem(item),
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
     );
+  }
+
+  int _gridColumnCount(double width) {
+    if (width >= 760) return 3;
+    if (width >= 360) return 2;
+    return 1;
   }
 
   Widget _buildSectionHeader(UserModel user) {
@@ -422,13 +496,13 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Container(
           width: 4,
-          height: 20,
+          height: 22,
           decoration: BoxDecoration(
             color: roleColor,
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        const SizedBox(width: 9),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             _dashboardTitle(user.role).toUpperCase(),
@@ -436,431 +510,10 @@ class _HomeScreenState extends State<HomeScreen> {
               color: AppColors.primary,
               fontSize: 12,
               fontWeight: FontWeight.w900,
-              letterSpacing: 0.7,
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildRoleActionCards(UserModel user) {
-    switch (user.role) {
-      case UserRole.organizerHead:
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Documents',
-                    subtitle: 'Track approval status',
-                    icon: Icons.description_rounded,
-                    color: AppColors.communityBadgeText,
-                    routeName: AppRoutes.trackEventDocumentStatus,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Event Details',
-                    subtitle: 'Manage event info',
-                    icon: Icons.event_note_rounded,
-                    color: AppColors.clubBadgeText,
-                    routeName: AppRoutes.eventDetailsList,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Feedback & Registrations',
-                    subtitle: 'View responses & attendees',
-                    icon: Icons.analytics_rounded,
-                    color: AppColors.studentBadgeText,
-                    routeName: AppRoutes.eventResponsesSelect,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Volunteer Positions',
-                    subtitle: 'Manage applications',
-                    icon: Icons.groups_rounded,
-                    color: AppColors.accent,
-                    routeName: AppRoutes.volunteerManagement,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Feedback Form',
-                    subtitle: 'Set up event feedback',
-                    icon: Icons.feedback_rounded,
-                    color: AppColors.accent,
-                    routeName: AppRoutes.createEventFeedbackForm,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Borrow Equipment',
-                    subtitle: 'Manage borrowed items',
-                    icon: Icons.inventory_2_rounded,
-                    color: AppColors.studentBadgeText,
-                    routeName: AppRoutes.selectEquipmentEvent,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-
-      case UserRole.secretary:
-        return Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                title: 'Proposed Events',
-                subtitle: 'Manage event paperwork',
-                icon: Icons.event_note_rounded,
-                color: AppColors.communityBadgeText,
-                routeName: AppRoutes.secretaryProposedEvents,
-                isCompact: true,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                title: 'Status',
-                subtitle: 'Track all documents',
-                icon: Icons.fact_check_rounded,
-                color: AppColors.studentBadgeText,
-                routeName: AppRoutes.trackEventDocumentStatus,
-                isCompact: true,
-              ),
-            ),
-          ],
-        );
-
-      case UserRole.admin:
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Review',
-                    subtitle: 'Review pending documents',
-                    icon: Icons.rule_folder_rounded,
-                    color: AppColors.accent,
-                    routeName: AppRoutes.reviewEventDocuments,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Archive',
-                    subtitle: 'View reviewed documents',
-                    icon: Icons.inventory_2_rounded,
-                    color: AppColors.textSecondary,
-                    routeName: AppRoutes.adminReviewedDocuments,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Equipment',
-                    subtitle: 'Manage inventory',
-                    icon: Icons.inventory_rounded,
-                    color: AppColors.clubBadgeText,
-                    routeName: AppRoutes.equipmentInventory,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Special Requests',
-                    subtitle: 'Review requests',
-                    icon: Icons.assignment_rounded,
-                    color: AppColors.studentBadgeText,
-                    routeName: AppRoutes.reviewSpecialEquipmentRequests,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-
-      case UserRole.student:
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Events',
-                    subtitle: 'Browse & register',
-                    icon: Icons.event_available_rounded,
-                    color: AppColors.studentBadgeText,
-                    routeName: AppRoutes.browseEvents,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Feedback',
-                    subtitle: 'Submit event feedback',
-                    icon: Icons.rate_review_rounded,
-                    color: AppColors.accent,
-                    routeName: AppRoutes.submitFeedback,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Volunteer Positions',
-                    subtitle: 'Apply for volunteer roles',
-                    icon: Icons.groups_rounded,
-                    color: AppColors.communityBadgeText,
-                    routeName: AppRoutes.studentVolunteerPositions,
-                    isCompact: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionCard(
-                    title: 'Certificates',
-                    subtitle: 'View participation certificates',
-                    icon: Icons.workspace_premium_rounded,
-                    color: AppColors.clubBadgeText,
-                    routeName: AppRoutes.certificates,
-                    isCompact: true,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-
-      default:
-        return _buildActionCard(
-          title: 'View Dashboard',
-          subtitle: 'Access your RazakEvent dashboard.',
-          icon: Icons.dashboard_rounded,
-          color: AppColors.primary,
-          routeName: '',
-        );
-    }
-  }
-
-  Widget _buildActionCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required String routeName,
-    bool isCompact = false,
-    bool isAccentWide = false,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: () {
-          if (routeName.isEmpty) {
-            _showComingSoon(title);
-            return;
-          }
-
-          Navigator.pushNamed(context, routeName);
-        },
-        child: Container(
-          width: double.infinity,
-          constraints: BoxConstraints(
-            minHeight: isCompact ? 122 : 92,
-          ),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isAccentWide ? AppColors.accent : AppColors.surfaceSoft,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isAccentWide ? AppColors.accent : AppColors.borderLight,
-            ),
-            boxShadow: isAccentWide
-                ? const [
-                    BoxShadow(
-                      color: AppColors.shadowDark,
-                      blurRadius: 14,
-                      offset: Offset(0, 6),
-                    ),
-                  ]
-                : null,
-          ),
-          child: isCompact
-              ? _buildCompactCardContent(
-                  title: title,
-                  subtitle: subtitle,
-                  icon: icon,
-                  color: color,
-                )
-              : _buildWideCardContent(
-                  title: title,
-                  subtitle: subtitle,
-                  icon: icon,
-                  color: color,
-                  isAccentWide: isAccentWide,
-                ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompactCardContent({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildCardIcon(icon: icon, color: color),
-        const SizedBox(height: 18),
-        Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.body.copyWith(
-            color: AppColors.textPrimary,
-            fontSize: 15.5,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.2,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          subtitle,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.body.copyWith(
-            color: AppColors.textSecondary,
-            fontSize: 11.8,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWideCardContent({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required bool isAccentWide,
-  }) {
-    final textColor = isAccentWide ? AppColors.textWhite : AppColors.textPrimary;
-    final subtitleColor = isAccentWide
-        ? AppColors.textWhite.withOpacity(0.84)
-        : AppColors.textSecondary;
-
-    return Row(
-      children: [
-        _buildCardIcon(
-          icon: icon,
-          color: color,
-          isAccent: isAccentWide,
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.body.copyWith(
-                  color: textColor,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.25,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                subtitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.body.copyWith(
-                  color: subtitleColor,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        Icon(
-          Icons.arrow_forward_ios_rounded,
-          color: isAccentWide ? AppColors.textWhite : AppColors.textMuted,
-          size: 14,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCardIcon({
-    required IconData icon,
-    required Color color,
-    bool isAccent = false,
-  }) {
-    return Container(
-      width: 46,
-      height: 46,
-      decoration: BoxDecoration(
-        color: isAccent
-            ? AppColors.textWhite.withOpacity(0.16)
-            : color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Icon(
-        icon,
-        color: isAccent ? AppColors.textWhite : color,
-        size: 24,
-      ),
     );
   }
 
@@ -903,6 +556,83 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DashboardCard extends StatelessWidget {
+  final RoleDashboardDestination item;
+  final VoidCallback onTap;
+
+  const _DashboardCard({required this.item, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceSoft,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderLight),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _DashboardIcon(icon: item.icon, color: item.color),
+              const Spacer(),
+              Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textPrimary,
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w900,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                item.subtitle,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardIcon extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+
+  const _DashboardIcon({required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Icon(icon, color: color, size: 24),
     );
   }
 }
