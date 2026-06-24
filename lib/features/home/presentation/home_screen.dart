@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/widgets/role_bottom_navigation.dart';
 import '../../../data/models/user_model.dart';
 import '../../profile/logic/profile_controller.dart';
-
-const _volunteerRole = 'Volunteer';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -62,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Color _roleColor(String role) {
     switch (role) {
       case UserRole.student:
-      case _volunteerRole:
+      case volunteerRole:
         return AppColors.studentBadgeText;
       case UserRole.organizerHead:
         return AppColors.organizerBadgeText;
@@ -78,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Color _roleBadgeBg(String role) {
     switch (role) {
       case UserRole.student:
-      case _volunteerRole:
+      case volunteerRole:
         return AppColors.studentBadgeBg;
       case UserRole.organizerHead:
         return AppColors.organizerBadgeBg;
@@ -95,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (role) {
       case UserRole.student:
         return Icons.school_rounded;
-      case _volunteerRole:
+      case volunteerRole:
         return Icons.volunteer_activism_rounded;
       case UserRole.organizerHead:
         return Icons.groups_rounded;
@@ -112,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (role) {
       case UserRole.student:
         return 'Student Dashboard';
-      case _volunteerRole:
+      case volunteerRole:
         return 'Volunteer Dashboard';
       case UserRole.organizerHead:
         return 'Organizer Head Dashboard';
@@ -135,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return 'Secretary Workspace';
       case UserRole.student:
         return 'Student Hub';
-      case _volunteerRole:
+      case volunteerRole:
         return 'Volunteer Hub';
       default:
         return 'Dashboard';
@@ -145,15 +144,15 @@ class _HomeScreenState extends State<HomeScreen> {
   String _heroSubtitle(String role) {
     switch (role) {
       case UserRole.student:
-        return 'Explore events, feedback, volunteer roles, and certificates.';
-      case _volunteerRole:
-        return 'Find volunteer roles and view your certificates.';
+        return 'Explore events and manage your participation.';
+      case volunteerRole:
+        return 'View roles and manage your applications.';
       case UserRole.organizerHead:
-        return 'Manage event documents, feedback, volunteers, and equipment.';
+        return 'Manage events, feedback, volunteers, and equipment.';
       case UserRole.secretary:
-        return 'Prepare documents and track event proposal progress.';
+        return 'Upload and track event documents.';
       case UserRole.admin:
-        return 'Review documents, archives, equipment, and special requests.';
+        return 'Review and manage KTR event operations.';
       default:
         return 'Access your RazakEvent dashboard.';
     }
@@ -169,197 +168,15 @@ class _HomeScreenState extends State<HomeScreen> {
         return Icons.description_rounded;
       case UserRole.student:
         return Icons.event_available_rounded;
-      case _volunteerRole:
+      case volunteerRole:
         return Icons.volunteer_activism_rounded;
       default:
         return Icons.dashboard_rounded;
     }
   }
 
-  List<_DashboardItem> _dashboardItems(String role) {
-    switch (role) {
-      case UserRole.student:
-        return const [
-          _DashboardItem(
-            title: 'Events',
-            subtitle: 'Browse and register for upcoming activities.',
-            navLabel: 'Events',
-            icon: Icons.event_available_rounded,
-            color: AppColors.studentBadgeText,
-            routeName: AppRoutes.browseEvents,
-          ),
-          _DashboardItem(
-            title: 'Feedback',
-            subtitle: 'Submit feedback for events you joined.',
-            navLabel: 'Feedback',
-            icon: Icons.rate_review_rounded,
-            color: AppColors.accent,
-            routeName: AppRoutes.submitFeedback,
-          ),
-          _DashboardItem(
-            title: 'Volunteer Positions',
-            subtitle: 'Apply for available volunteer roles.',
-            navLabel: 'Volunteer',
-            icon: Icons.groups_rounded,
-            color: AppColors.secretaryBadgeText,
-            routeName: AppRoutes.studentVolunteerPositions,
-          ),
-          _DashboardItem(
-            title: 'Certificates',
-            subtitle: 'View participation and volunteer certificates.',
-            navLabel: 'Certs',
-            icon: Icons.workspace_premium_rounded,
-            color: AppColors.organizerBadgeText,
-            routeName: AppRoutes.certificates,
-          ),
-          _DashboardItem.profile(),
-        ];
-
-      case _volunteerRole:
-        return const [
-          _DashboardItem(
-            title: 'Volunteer Positions',
-            subtitle: 'Apply for available volunteer roles.',
-            navLabel: 'Volunteer',
-            icon: Icons.groups_rounded,
-            color: AppColors.secretaryBadgeText,
-            routeName: AppRoutes.studentVolunteerPositions,
-          ),
-          _DashboardItem(
-            title: 'Certificates',
-            subtitle: 'View volunteer certificates.',
-            navLabel: 'Certs',
-            icon: Icons.workspace_premium_rounded,
-            color: AppColors.organizerBadgeText,
-            routeName: AppRoutes.certificates,
-          ),
-          _DashboardItem.profile(),
-        ];
-
-      case UserRole.organizerHead:
-        return const [
-          _DashboardItem(
-            title: 'Documents',
-            subtitle: 'Track event document approval status.',
-            navLabel: 'Docs',
-            icon: Icons.description_rounded,
-            color: AppColors.secretaryBadgeText,
-            routeName: AppRoutes.trackEventDocumentStatus,
-          ),
-          _DashboardItem(
-            title: 'Event Details',
-            subtitle: 'Create and manage event information.',
-            navLabel: 'Events',
-            icon: Icons.event_note_rounded,
-            color: AppColors.organizerBadgeText,
-            routeName: AppRoutes.eventDetailsList,
-          ),
-          _DashboardItem(
-            title: 'Responses',
-            subtitle: 'View feedback and registration records.',
-            navLabel: 'Responses',
-            icon: Icons.analytics_rounded,
-            color: AppColors.studentBadgeText,
-            routeName: AppRoutes.eventResponsesSelect,
-          ),
-          _DashboardItem(
-            title: 'Volunteer Positions',
-            subtitle: 'Add positions and review applications.',
-            navLabel: 'Volunteer',
-            icon: Icons.groups_rounded,
-            color: AppColors.accent,
-            routeName: AppRoutes.volunteerManagement,
-          ),
-          _DashboardItem(
-            title: 'Feedback Form',
-            subtitle: 'Set up feedback questions for events.',
-            navLabel: 'Forms',
-            icon: Icons.feedback_rounded,
-            color: AppColors.accentDark,
-            routeName: AppRoutes.createEventFeedbackForm,
-          ),
-          _DashboardItem(
-            title: 'Borrow Equipment',
-            subtitle: 'Request and manage borrowed items.',
-            navLabel: 'Equipment',
-            icon: Icons.inventory_2_rounded,
-            color: AppColors.primaryLight,
-            routeName: AppRoutes.selectEquipmentEvent,
-          ),
-          _DashboardItem.profile(),
-        ];
-
-      case UserRole.secretary:
-        return const [
-          _DashboardItem(
-            title: 'Proposed Events',
-            subtitle: 'Review event paperwork and proposal details.',
-            navLabel: 'Events',
-            icon: Icons.event_note_rounded,
-            color: AppColors.secretaryBadgeText,
-            routeName: AppRoutes.secretaryProposedEvents,
-          ),
-          _DashboardItem(
-            title: 'Document Status',
-            subtitle: 'Track submitted event documents.',
-            navLabel: 'Status',
-            icon: Icons.fact_check_rounded,
-            color: AppColors.studentBadgeText,
-            routeName: AppRoutes.trackEventDocumentStatus,
-          ),
-          _DashboardItem.profile(),
-        ];
-
-      case UserRole.admin:
-        return const [
-          _DashboardItem(
-            title: 'Document Review',
-            subtitle: 'Review pending event documents.',
-            navLabel: 'Review',
-            icon: Icons.rule_folder_rounded,
-            color: AppColors.accent,
-            routeName: AppRoutes.reviewEventDocuments,
-          ),
-          _DashboardItem(
-            title: 'Archive',
-            subtitle: 'Browse reviewed document records.',
-            navLabel: 'Archive',
-            icon: Icons.inventory_2_rounded,
-            color: AppColors.textSecondary,
-            routeName: AppRoutes.adminReviewedDocuments,
-          ),
-          _DashboardItem(
-            title: 'Equipment',
-            subtitle: 'Manage equipment inventory.',
-            navLabel: 'Equipment',
-            icon: Icons.inventory_rounded,
-            color: AppColors.organizerBadgeText,
-            routeName: AppRoutes.equipmentInventory,
-          ),
-          _DashboardItem(
-            title: 'Special Requests',
-            subtitle: 'Review special equipment requests.',
-            navLabel: 'Requests',
-            icon: Icons.assignment_rounded,
-            color: AppColors.studentBadgeText,
-            routeName: AppRoutes.reviewSpecialEquipmentRequests,
-          ),
-          _DashboardItem.profile(),
-        ];
-
-      default:
-        return const [
-          _DashboardItem(
-            title: 'Dashboard',
-            subtitle: 'Access your RazakEvent workspace.',
-            navLabel: 'Home',
-            icon: Icons.dashboard_rounded,
-            color: AppColors.primary,
-            routeName: AppRoutes.home,
-          ),
-          _DashboardItem.profile(),
-        ];
-    }
+  List<RoleDashboardDestination> _dashboardItems(String role) {
+    return RoleDashboardConfig.destinationsForRole(role);
   }
 
   Future<void> _openProfile() async {
@@ -370,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await _profileController.loadCurrentUserProfile();
   }
 
-  Future<void> _openDashboardItem(_DashboardItem item) async {
+  Future<void> _openDashboardItem(RoleDashboardDestination item) async {
     if (item.isProfile) {
       await _openProfile();
       return;
@@ -386,14 +203,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = _profileController.currentUserProfile;
     final isLoading = _profileController.isLoading;
     final items = user == null
-        ? const <_DashboardItem>[]
+        ? const <RoleDashboardDestination>[]
         : _dashboardItems(user.role);
+    final navItems = user == null
+        ? const <RoleDashboardDestination>[]
+        : RoleDashboardConfig.navigationForRole(user.role);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       bottomNavigationBar: user == null || isLoading
           ? null
-          : _RoleDashboardNavigation(items: items, onTap: _openDashboardItem),
+          : RoleBottomNavigation(
+              destinations: navItems,
+              currentRoute: AppRoutes.home,
+              onDestinationSelected: _openDashboardItem,
+            ),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
@@ -441,6 +265,33 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTopBar(UserModel user) {
     return Row(
       children: [
+        Container(
+          width: 38,
+          height: 38,
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderLight),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadowDark,
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Image.asset(
+            'assets/images/app_icon.png',
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.event_available_rounded,
+              color: AppColors.primary,
+              size: 20,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             'Welcome back, ${_firstName(user.fullName)}',
@@ -448,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.title.copyWith(
               color: AppColors.textPrimary,
-              fontSize: 24,
+              fontSize: 23,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -457,19 +308,20 @@ class _HomeScreenState extends State<HomeScreen> {
         Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(12),
             onTap: _openProfile,
             child: Container(
-              width: 46,
-              height: 46,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary, width: 1.4),
                 boxShadow: const [
                   BoxShadow(
                     color: AppColors.shadowNavy,
-                    blurRadius: 14,
-                    offset: Offset(0, 6),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
@@ -477,8 +329,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(
                 _initialFromName(user.fullName),
                 style: AppTextStyles.button.copyWith(
-                  color: AppColors.textWhite,
-                  fontSize: 17,
+                  color: AppColors.primary,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -521,17 +373,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Welcome, ${_firstName(user.fullName)}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.subtitle.copyWith(
-                  color: AppColors.textWhite.withValues(alpha: 0.82),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
               Text(
                 _heroTitle(user),
                 maxLines: 2,
@@ -587,7 +428,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDashboardSection(UserModel user, List<_DashboardItem> items) {
+  Widget _buildDashboardSection(
+    UserModel user,
+    List<RoleDashboardDestination> items,
+  ) {
     final gridItems = items.where((item) => !item.isProfile).toList();
 
     return Container(
@@ -717,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _DashboardCard extends StatelessWidget {
-  final _DashboardItem item;
+  final RoleDashboardDestination item;
   final VoidCallback onTap;
 
   const _DashboardCard({required this.item, required this.onTap});
@@ -773,114 +617,6 @@ class _DashboardCard extends StatelessWidget {
   }
 }
 
-class _RoleDashboardNavigation extends StatelessWidget {
-  final List<_DashboardItem> items;
-  final ValueChanged<_DashboardItem> onTap;
-
-  const _RoleDashboardNavigation({required this.items, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final navItems = [
-      const _DashboardItem(
-        title: 'Dashboard',
-        subtitle: 'Current role dashboard.',
-        navLabel: 'Home',
-        icon: Icons.dashboard_rounded,
-        color: AppColors.primary,
-        routeName: AppRoutes.home,
-      ),
-      ...items,
-    ];
-
-    return SafeArea(
-      top: false,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.borderLight)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowDark,
-              blurRadius: 16,
-              offset: Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(12, 9, 12, 10),
-          child: Row(
-            children: [
-              for (final item in navItems) ...[
-                _BottomNavItem(
-                  item: item,
-                  isSelected: item.routeName == AppRoutes.home,
-                  onTap: () => onTap(item),
-                ),
-                const SizedBox(width: 8),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomNavItem extends StatelessWidget {
-  final _DashboardItem item;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _BottomNavItem({
-    required this.item,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = isSelected ? AppColors.primary : AppColors.textSecondary;
-    final background = isSelected ? AppColors.primarySoft : AppColors.surface;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Container(
-          width: 78,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(item.icon, color: foreground, size: 21),
-              const SizedBox(height: 4),
-              Text(
-                item.navLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.caption.copyWith(
-                  color: foreground,
-                  fontSize: 10.5,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  height: 1.1,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _DashboardIcon extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -899,31 +635,4 @@ class _DashboardIcon extends StatelessWidget {
       child: Icon(icon, color: color, size: 24),
     );
   }
-}
-
-class _DashboardItem {
-  final String title;
-  final String subtitle;
-  final String navLabel;
-  final IconData icon;
-  final Color color;
-  final String routeName;
-  bool get isProfile => routeName == AppRoutes.profile;
-
-  const _DashboardItem({
-    required this.title,
-    required this.subtitle,
-    required this.navLabel,
-    required this.icon,
-    required this.color,
-    required this.routeName,
-  });
-
-  const _DashboardItem.profile()
-    : title = 'Profile',
-      subtitle = 'View and update your account details.',
-      navLabel = 'Profile',
-      icon = Icons.person_rounded,
-      color = AppColors.primary,
-      routeName = AppRoutes.profile;
 }

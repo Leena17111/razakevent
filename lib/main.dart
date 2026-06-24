@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'core/constants/app_colors.dart';
 import 'core/localization/locale_controller.dart';
 import 'core/routes/app_routes.dart';
+import 'core/widgets/role_bottom_navigation.dart';
 import 'features/auth/presentation/forgot_password_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
@@ -70,6 +71,10 @@ Future<void> main() async {
 class RazakEventApp extends StatelessWidget {
   const RazakEventApp({super.key});
 
+  Widget _withRoleNavigation(Widget child, String currentRoute) {
+    return RoleNavigationScaffold(currentRoute: currentRoute, child: child);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Locale>(
@@ -95,34 +100,55 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.register: (context) => const RegisterScreen(),
             AppRoutes.resetPassword: (context) => const ForgotPasswordScreen(),
             AppRoutes.home: (context) => const HomeScreen(),
-            AppRoutes.profile: (context) => const ManageProfileScreen(),
+            AppRoutes.profile: (context) => _withRoleNavigation(
+              const ManageProfileScreen(),
+              AppRoutes.profile,
+            ),
             AppRoutes.uploadEventDocument: (_) => const UploadDocumentScreen(),
-            AppRoutes.trackEventDocumentStatus: (_) =>
-                const DocumentStatusScreen(),
+            AppRoutes.trackEventDocumentStatus: (_) => _withRoleNavigation(
+              const DocumentStatusScreen(),
+              AppRoutes.trackEventDocumentStatus,
+            ),
             AppRoutes.documentDetails: (_) => const DocumentDetailsScreen(),
             AppRoutes.editDocument: (_) => const EditDocumentScreen(),
-            AppRoutes.reviewEventDocuments: (_) =>
-                const AdminDocumentDashboardScreen(),
-            AppRoutes.adminDocumentDashboard: (_) =>
-                const AdminDocumentDashboardScreen(),
+            AppRoutes.reviewEventDocuments: (_) => _withRoleNavigation(
+              const AdminDocumentDashboardScreen(),
+              AppRoutes.reviewEventDocuments,
+            ),
+            AppRoutes.adminDocumentDashboard: (_) => _withRoleNavigation(
+              const AdminDocumentDashboardScreen(),
+              AppRoutes.adminDocumentDashboard,
+            ),
             AppRoutes.adminPendingReviews: (_) =>
                 const AdminPendingReviewsScreen(),
-            AppRoutes.adminReviewedDocuments: (_) =>
-                const AdminReviewedDocumentsScreen(),
+            AppRoutes.adminReviewedDocuments: (_) => _withRoleNavigation(
+              const AdminReviewedDocumentsScreen(),
+              AppRoutes.adminReviewedDocuments,
+            ),
             AppRoutes.adminReviewDocument: (_) =>
                 const AdminReviewDocumentScreen(),
-            AppRoutes.eventDetailsList: (_) => const EventDetailsListScreen(),
-            AppRoutes.createEventFeedbackForm: (_) =>
-                const CreateFeedbackFormScreen(),
-            AppRoutes.secretaryProposedEvents: (_) =>
-                const SecretaryProposedEventsScreen(),
+            AppRoutes.eventDetailsList: (_) => _withRoleNavigation(
+              const EventDetailsListScreen(),
+              AppRoutes.eventDetailsList,
+            ),
+            AppRoutes.createEventFeedbackForm: (_) => _withRoleNavigation(
+              const CreateFeedbackFormScreen(),
+              AppRoutes.createEventFeedbackForm,
+            ),
+            AppRoutes.secretaryProposedEvents: (_) => _withRoleNavigation(
+              const SecretaryProposedEventsScreen(),
+              AppRoutes.secretaryProposedEvents,
+            ),
             AppRoutes.secretaryEventDetail: (_) =>
                 const SecretaryEventDetailScreen(),
 
             // Sprint 3 â€” Epic 1: Event Participation & Feedback Module
 
             // Student Event Participation
-            AppRoutes.browseEvents: (_) => const BrowseEventsScreen(),
+            AppRoutes.browseEvents: (_) => _withRoleNavigation(
+              const BrowseEventsScreen(),
+              AppRoutes.browseEvents,
+            ),
             AppRoutes.eventDetail: (_) => const EventDetailScreen(),
             AppRoutes.registerEvent: (_) => const EventRegistrationScreen(),
             AppRoutes.registrationSuccess: (_) => const Scaffold(
@@ -133,11 +159,16 @@ class RazakEventApp extends StatelessWidget {
             ),
 
             // Student Feedback
-            AppRoutes.submitFeedback: (_) => const FeedbackListScreen(),
+            AppRoutes.submitFeedback: (_) => _withRoleNavigation(
+              const FeedbackListScreen(),
+              AppRoutes.submitFeedback,
+            ),
 
             // Organizer Feedback & Registrations
-            AppRoutes.eventResponsesSelect: (_) =>
-                const OrganizerEventSelectScreen(),
+            AppRoutes.eventResponsesSelect: (_) => _withRoleNavigation(
+              const OrganizerEventSelectScreen(),
+              AppRoutes.eventResponsesSelect,
+            ),
             AppRoutes.eventRegistrants: (_) =>
                 const Scaffold(body: Center(child: Text('Event Registrants'))),
             AppRoutes.eventFeedbackResponses: (_) => const Scaffold(
@@ -147,8 +178,10 @@ class RazakEventApp extends StatelessWidget {
             // Sprint 3 â€” Epic 2: Volunteer Recruitment Module
 
             // Student Volunteer
-            AppRoutes.volunteerPositions: (_) =>
-                const StudentVolunteerPositionsScreen(),
+            AppRoutes.volunteerPositions: (_) => _withRoleNavigation(
+              const StudentVolunteerPositionsScreen(),
+              AppRoutes.volunteerPositions,
+            ),
             AppRoutes.applyVolunteer: (_) =>
                 const Scaffold(body: Center(child: Text('Apply Volunteer'))),
             AppRoutes.myVolunteerApplications: (_) => const Scaffold(
@@ -157,29 +190,42 @@ class RazakEventApp extends StatelessWidget {
 
             // Organizer Volunteer Recruitment
             // Organizer Volunteer Recruitment
-            AppRoutes.volunteerManagement: (_) =>
-                const VolunteerEventSelectScreen(mode: 'add'),
+            AppRoutes.volunteerManagement: (_) => _withRoleNavigation(
+              const VolunteerEventSelectScreen(mode: 'add'),
+              AppRoutes.volunteerManagement,
+            ),
             AppRoutes.addVolunteerPosition: (_) =>
                 const VolunteerEventSelectScreen(mode: 'add'),
             AppRoutes.reviewApplications: (_) =>
                 const VolunteerEventSelectScreen(mode: 'review'),
-            AppRoutes.studentVolunteerPositions: (_) =>
-                const StudentVolunteerPositionsScreen(),
+            AppRoutes.studentVolunteerPositions: (_) => _withRoleNavigation(
+              const StudentVolunteerPositionsScreen(),
+              AppRoutes.studentVolunteerPositions,
+            ),
 
             // Sprint 4 â€” Epic 1: Equipment Borrowing Management
 
             // Admin Equipment
-            AppRoutes.equipmentInventory: (_) => const ManageEquipmentScreen(),
+            AppRoutes.equipmentInventory: (_) => _withRoleNavigation(
+              const ManageEquipmentScreen(),
+              AppRoutes.equipmentInventory,
+            ),
 
             AppRoutes.addEquipment: (_) => const EquipmentFormScreen(),
 
             AppRoutes.editEquipment: (_) => const EquipmentFormScreen(),
 
-            AppRoutes.reviewSpecialEquipmentRequests: (_) => const ReviewSpecialRequestsScreen(),
+            AppRoutes.reviewSpecialEquipmentRequests: (_) =>
+                _withRoleNavigation(
+                  const ReviewSpecialRequestsScreen(),
+                  AppRoutes.reviewSpecialEquipmentRequests,
+                ),
 
             // Organizer Equipment
-            AppRoutes.selectEquipmentEvent: (_) =>
-                const BorrowEventSelectScreen(),
+            AppRoutes.selectEquipmentEvent: (_) => _withRoleNavigation(
+              const BorrowEventSelectScreen(),
+              AppRoutes.selectEquipmentEvent,
+            ),
 
             AppRoutes.availableEquipment: (_) =>
                 const BorrowEventSelectScreen(),
@@ -205,7 +251,10 @@ class RazakEventApp extends StatelessWidget {
             ),
 
             // Sprint 4 — Epic 2: Certification Management
-            AppRoutes.certificates:       (_) => const ViewCertificatesScreen(),
+            AppRoutes.certificates: (_) => _withRoleNavigation(
+              const ViewCertificatesScreen(),
+              AppRoutes.certificates,
+            ),
             AppRoutes.certificatePreview: (_) => const Scaffold(
               body: Center(child: Text('Certificate Preview')),
             ),
