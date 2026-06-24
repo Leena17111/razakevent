@@ -37,6 +37,7 @@ class AppRoutes {
   static const String eventDetail = '/events/detail';
   static const String registerEvent = '/events/register';
   static const String registrationSuccess = '/events/register/success';
+  static const String paymentSuccess = '/payment-success';
   static const String myRegisteredEvents = '/events/my-registered';
 
   // Student Feedback

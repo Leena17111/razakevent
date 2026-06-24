@@ -372,34 +372,41 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
   }
 
   Widget _buildBrowseTab(
-    EventBrowseController controller,
-    AppLocalizations l10n,
-  ) {
-    if (controller.isLoading) return _buildShimmerList();
-    if (controller.error != null) {
-      return _buildErrorState(controller, l10n);
-    }
-    if (controller.filteredEvents.isEmpty) return _buildEmptyState(l10n);
+  EventBrowseController controller,
+  AppLocalizations l10n,
+) {
+  if (controller.isLoading) return _buildShimmerList();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await controller.loadEvents();
-        await _loadRegisteredEventIds();
-      },
-      color: AppColors.primary,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),
-        itemCount: controller.filteredEvents.length,
-        itemBuilder: (context, index) {
-          final event = controller.filteredEvents[index];
-          return _buildEventCard(event, controller, l10n, index)
-              .animate()
-              .fadeIn(delay: (index * 60).ms, duration: 400.ms)
-              .slideY(begin: 0.15, curve: Curves.easeOut);
-        },
-      ),
-    );
+  if (controller.error != null) {
+    return _buildErrorState(controller, l10n);
   }
+
+  final visibleEvents = controller.filteredEvents
+      .where((event) => !_registeredEventIds.contains(event.eventId))
+      .toList();
+
+  if (visibleEvents.isEmpty) return _buildEmptyState(l10n);
+
+  return RefreshIndicator(
+    onRefresh: () async {
+      await controller.loadEvents();
+      await _loadRegisteredEventIds();
+    },
+    color: AppColors.primary,
+    child: ListView.builder(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),
+      itemCount: visibleEvents.length,
+      itemBuilder: (context, index) {
+        final event = visibleEvents[index];
+
+        return _buildEventCard(event, controller, l10n, index)
+            .animate()
+            .fadeIn(delay: (index * 60).ms, duration: 400.ms)
+            .slideY(begin: 0.15, curve: Curves.easeOut);
+      },
+    ),
+  );
+}
 
   // ── Registered Tab ──────────────────────────────────────────────────────────
 
@@ -608,38 +615,30 @@ class _BrowseEventsScreenState extends State<BrowseEventsScreen>
     );
   }
 
-  Stream<List<EventModel>> _streamEventsByIds(List<String> eventIds) {
-    if (eventIds.isEmpty) return Stream.value([]);
+  Stream<List<EventModel>> _streamEventsByIds(List<String> eventIds) async* {
+  if (eventIds.isEmpty) {
+    yield [];
+    return;
+  }
 
-    final chunks = <List<String>>[];
-    for (var i = 0; i < eventIds.length; i += 10) {
-      final end = (i + 10 > eventIds.length) ? eventIds.length : i + 10;
-      chunks.add(eventIds.sublist(i, end));
-    }
+  final events = <EventModel>[];
 
-    final streams = chunks
-        .map(
-          (chunk) => FirebaseFirestore.instance
-              .collection('events')
-              .where(FieldPath.documentId, whereIn: chunk)
-              .snapshots()
-              .map(
-                (snap) =>
-                    snap.docs.map((d) => EventModel.fromFirestore(d)).toList(),
-              ),
-        )
-        .toList();
+  for (var i = 0; i < eventIds.length; i += 10) {
+    final end = (i + 10 > eventIds.length) ? eventIds.length : i + 10;
+    final chunk = eventIds.sublist(i, end);
 
-    if (streams.length == 1) return streams.first;
+    final snap = await FirebaseFirestore.instance
+        .collection('events')
+        .where(FieldPath.documentId, whereIn: chunk)
+        .get();
 
-    return streams.fold<Stream<List<EventModel>>>(
-      streams.first,
-      (combined, next) => combined.asyncMap((a) async {
-        final b = await next.first;
-        return [...a, ...b];
-      }),
+    events.addAll(
+      snap.docs.map((doc) => EventModel.fromFirestore(doc)),
     );
   }
+
+  yield events;
+}
 
   Widget _buildRegisteredCard(
     EventModel event,

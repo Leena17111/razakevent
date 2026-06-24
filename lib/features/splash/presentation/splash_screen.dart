@@ -45,12 +45,12 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateNext() async {
-    final route = await _splashController.getInitialRoute();
+  final route = await _splashController.getInitialRoute();
 
-    if (!mounted) return;
+  if (!mounted) return;
 
-    Navigator.pushReplacementNamed(context, route);
-  }
+  Navigator.pushReplacementNamed(context, route);
+}
 
   @override
   void dispose() {
