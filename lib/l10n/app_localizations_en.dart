@@ -69,6 +69,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewDocument => 'Review Document';
 
   @override
+  String get documentReviewDashboardTitle => 'Document Review';
+
+  @override
+  String get documentReviewDashboardSubtitle =>
+      'Review and approve event documentation';
+
+  @override
+  String get reviewed => 'Reviewed';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get review => 'Review';
+
+  @override
+  String get reviewPendingDocuments => 'Review pending\ndocuments';
+
+  @override
+  String pendingCount(int count) {
+    return '$count pending';
+  }
+
+  @override
+  String get archive => 'Archive';
+
+  @override
+  String get viewReviewedDocuments => 'View reviewed\ndocuments';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get untitledDocument => 'Untitled Document';
+
+  @override
+  String get pendingReview => 'Pending Review';
+
+  @override
+  String get needsCorrection => 'Needs Correction';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count hours ago';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count days ago';
+  }
+
+  @override
   String get pdfPreview => 'PDF Preview';
 
   @override
@@ -645,6 +702,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retryButton => 'Retry';
 
   @override
+  String get navHome => 'Home';
+
+  @override
   String get navEvents => 'Events';
 
   @override
@@ -652,6 +712,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProfile => 'Profile';
+
+  @override
+  String get navDocuments => 'Documents';
+
+  @override
+  String get navEquipment => 'Equipment';
+
+  @override
+  String get navBorrow => 'Borrow';
+
+  @override
+  String get navRequests => 'Requests';
+
+  @override
+  String get navFeedback => 'Feedback';
+
+  @override
+  String get navCertificates => 'Certs';
+
+  @override
+  String get navResponses => 'Responses';
+
+  @override
+  String get navForms => 'Forms';
+
+  @override
+  String get navStatus => 'Status';
 
   @override
   String get categoryAll => 'All';
@@ -1542,6 +1629,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get borrowCancelError => 'Unable to cancel this borrow request.';
+
+  @override
+  String get borrowCancelBlocked =>
+      'Borrow requests can only be cancelled more than 24 hours before the event.';
 
   @override
   String get specialRequestReason => 'Reason';

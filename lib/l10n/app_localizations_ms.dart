@@ -70,6 +70,63 @@ class AppLocalizationsMs extends AppLocalizations {
   String get reviewDocument => 'Semak Dokumen';
 
   @override
+  String get documentReviewDashboardTitle => 'Semakan Dokumen';
+
+  @override
+  String get documentReviewDashboardSubtitle =>
+      'Semak dan luluskan dokumentasi acara';
+
+  @override
+  String get reviewed => 'Disemak';
+
+  @override
+  String get thisWeek => 'Minggu Ini';
+
+  @override
+  String get review => 'Semak';
+
+  @override
+  String get reviewPendingDocuments => 'Semak dokumen\ntertangguh';
+
+  @override
+  String pendingCount(int count) {
+    return '$count menunggu';
+  }
+
+  @override
+  String get archive => 'Arkib';
+
+  @override
+  String get viewReviewedDocuments => 'Lihat dokumen\ndisemak';
+
+  @override
+  String get recentActivity => 'Aktiviti Terkini';
+
+  @override
+  String get untitledDocument => 'Dokumen Tanpa Tajuk';
+
+  @override
+  String get pendingReview => 'Menunggu Semakan';
+
+  @override
+  String get needsCorrection => 'Perlu Pembetulan';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count min lalu';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count jam lalu';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count hari lalu';
+  }
+
+  @override
   String get pdfPreview => 'Pratonton PDF';
 
   @override
@@ -652,6 +709,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get retryButton => 'Cuba Lagi';
 
   @override
+  String get navHome => 'Utama';
+
+  @override
   String get navEvents => 'Acara';
 
   @override
@@ -659,6 +719,33 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get navProfile => 'Profil';
+
+  @override
+  String get navDocuments => 'Dokumen';
+
+  @override
+  String get navEquipment => 'Peralatan';
+
+  @override
+  String get navBorrow => 'Pinjam';
+
+  @override
+  String get navRequests => 'Permohonan';
+
+  @override
+  String get navFeedback => 'Maklum Balas';
+
+  @override
+  String get navCertificates => 'Sijil';
+
+  @override
+  String get navResponses => 'Respons';
+
+  @override
+  String get navForms => 'Borang';
+
+  @override
+  String get navStatus => 'Status';
 
   @override
   String get categoryAll => 'Semua';
@@ -1551,6 +1638,10 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get borrowCancelError =>
       'Tidak dapat membatalkan permintaan pinjaman ini.';
+
+  @override
+  String get borrowCancelBlocked =>
+      'Permintaan pinjaman hanya boleh dibatalkan lebih 24 jam sebelum acara.';
 
   @override
   String get specialRequestReason => 'Sebab';

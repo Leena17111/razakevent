@@ -218,6 +218,102 @@ abstract class AppLocalizations {
   /// **'Review Document'**
   String get reviewDocument;
 
+  /// No description provided for @documentReviewDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Review'**
+  String get documentReviewDashboardTitle;
+
+  /// No description provided for @documentReviewDashboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and approve event documentation'**
+  String get documentReviewDashboardSubtitle;
+
+  /// No description provided for @reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed'**
+  String get reviewed;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeek;
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @reviewPendingDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Review pending\ndocuments'**
+  String get reviewPendingDocuments;
+
+  /// No description provided for @pendingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending'**
+  String pendingCount(int count);
+
+  /// No description provided for @archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archive;
+
+  /// No description provided for @viewReviewedDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'View reviewed\ndocuments'**
+  String get viewReviewedDocuments;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No description provided for @untitledDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled Document'**
+  String get untitledDocument;
+
+  /// No description provided for @pendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get pendingReview;
+
+  /// No description provided for @needsCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Correction'**
+  String get needsCorrection;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hours ago'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String daysAgo(int count);
+
   /// No description provided for @pdfPreview.
   ///
   /// In en, this message translates to:
@@ -1328,6 +1424,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retryButton;
 
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
   /// No description provided for @navEvents.
   ///
   /// In en, this message translates to:
@@ -1345,6 +1447,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get navProfile;
+
+  /// No description provided for @navDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents'**
+  String get navDocuments;
+
+  /// No description provided for @navEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get navEquipment;
+
+  /// No description provided for @navBorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow'**
+  String get navBorrow;
+
+  /// No description provided for @navRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get navRequests;
+
+  /// No description provided for @navFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get navFeedback;
+
+  /// No description provided for @navCertificates.
+  ///
+  /// In en, this message translates to:
+  /// **'Certs'**
+  String get navCertificates;
+
+  /// No description provided for @navResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get navResponses;
+
+  /// No description provided for @navForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms'**
+  String get navForms;
+
+  /// No description provided for @navStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get navStatus;
 
   /// No description provided for @categoryAll.
   ///
@@ -3013,6 +3169,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to cancel this borrow request.'**
   String get borrowCancelError;
+
+  /// No description provided for @borrowCancelBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Borrow requests can only be cancelled more than 24 hours before the event.'**
+  String get borrowCancelBlocked;
 
   /// No description provided for @specialRequestReason.
   ///

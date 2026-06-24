@@ -23,6 +23,50 @@
   "submitDocument": "Submit Document",
 
   "reviewDocument": "Review Document",
+  "documentReviewDashboardTitle": "Document Review",
+  "documentReviewDashboardSubtitle": "Review and approve event documentation",
+  "reviewed": "Reviewed",
+  "thisWeek": "This Week",
+  "review": "Review",
+  "reviewPendingDocuments": "Review pending\ndocuments",
+  "pendingCount": "{count} pending",
+  "@pendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archive": "Archive",
+  "viewReviewedDocuments": "View reviewed\ndocuments",
+  "recentActivity": "Recent Activity",
+  "untitledDocument": "Untitled Document",
+  "pendingReview": "Pending Review",
+  "needsCorrection": "Needs Correction",
+  "minutesAgo": "{count} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pdfPreview": "PDF Preview",
   "documentInformation": "Document Information",
   "eventTitle": "Event Title",
@@ -223,9 +267,19 @@
   "detailsButton": "Details",
   "errorLoadingEvents": "Failed to load events",
   "retryButton": "Retry",
+  "navHome": "Home",
   "navEvents": "Events",
   "navVolunteer": "Volunteer",
   "navProfile": "Profile",
+  "navDocuments": "Documents",
+  "navEquipment": "Equipment",
+  "navBorrow": "Borrow",
+  "navRequests": "Requests",
+  "navFeedback": "Feedback",
+  "navCertificates": "Certs",
+  "navResponses": "Responses",
+  "navForms": "Forms",
+  "navStatus": "Status",
   "categoryAll": "All",
   "categorySports": "Sports",
   "categoryAcademic": "Academic",
@@ -564,6 +618,7 @@
   "borrowedLoadError": "Failed to load borrowed equipment.",
   "borrowCancelSuccess": "Borrow request cancelled.",
   "borrowCancelError": "Unable to cancel this borrow request.",
+  "borrowCancelBlocked": "Borrow requests can only be cancelled more than 24 hours before the event.",
   "specialRequestReason": "Reason",
   "specialCreatedAt": "Requested on",
   "specialRequestsEmpty": "No special requests found.",

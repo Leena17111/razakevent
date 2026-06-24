@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/locale_controller.dart';
 import '../../../core/routes/app_routes.dart';
-
-// TODO: Add localization keys for admin screens
-// import '../../../l10n/app_localizations.dart';
+import '../../../core/widgets/language_toggle.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AdminDocumentDashboardScreen extends StatelessWidget {
   const AdminDocumentDashboardScreen({super.key});
@@ -24,26 +23,22 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
         builder: (context, snapshot) {
           final docs = snapshot.data?.docs ?? [];
 
-          final pending =
-              docs.where((d) => _statusOf(d) == 'Pending Review').length;
-          final reviewed =
-              docs.where((d) => _statusOf(d) != 'Pending Review').length;
+          final pending = docs
+              .where((d) => _statusOf(d) == 'Pending Review')
+              .length;
+          final reviewed = docs
+              .where((d) => _statusOf(d) != 'Pending Review')
+              .length;
           final thisWeek = _countThisWeek(docs);
 
           return CustomScrollView(
             slivers: [
+              SliverToBoxAdapter(child: _buildHeader(context)),
               SliverToBoxAdapter(
-                child: _buildHeader(context, pending),
+                child: _buildStatCards(context, pending, reviewed, thisWeek),
               ),
-              SliverToBoxAdapter(
-                child: _buildStatCards(pending, reviewed, thisWeek),
-              ),
-              SliverToBoxAdapter(
-                child: _buildActionCards(context, pending),
-              ),
-              SliverToBoxAdapter(
-                child: _buildRecentActivity(docs),
-              ),
+              SliverToBoxAdapter(child: _buildActionCards(context, pending)),
+              SliverToBoxAdapter(child: _buildRecentActivity(context, docs)),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           );
@@ -53,11 +48,8 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
   }
 
   // ── Header ────────────────────────────────────────────────────────
-  Widget _buildHeader(BuildContext context, int pendingCount) {
-    final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName ?? 'Admin';
-    final initial =
-        displayName.isNotEmpty ? displayName[0].toUpperCase() : 'A';
+  Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: const BoxDecoration(
@@ -104,86 +96,25 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Notification bell
-              Stack(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                  if (pendingCount > 0)
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '$pendingCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
-              const SizedBox(width: 8),
-
-              // Clickable profile avatar
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.profile);
-                },
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      initial,
-                      style: const TextStyle(
-                        color: _navy,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
+              LanguageToggle(
+                selectedLocale: Localizations.localeOf(context),
+                onLocaleChanged: (locale) => localeController.value = locale,
               ),
             ],
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Document Review',
-            style: TextStyle(
+          Text(
+            l10n.documentReviewDashboardTitle,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Review and approve event documentation',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+          Text(
+            l10n.documentReviewDashboardSubtitle,
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
       ),
@@ -191,7 +122,14 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
   }
 
   // ── Stat Cards ─────────────────────────────────────────────────────
-  Widget _buildStatCards(int pending, int reviewed, int thisWeek) {
+  Widget _buildStatCards(
+    BuildContext context,
+    int pending,
+    int reviewed,
+    int thisWeek,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Row(
@@ -201,7 +139,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
             iconColor: Colors.orange.shade600,
             iconBg: Colors.orange.shade50,
             count: pending,
-            label: 'Pending',
+            label: l10n.pending,
           ),
           const SizedBox(width: 12),
           _statCard(
@@ -209,7 +147,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
             iconColor: Colors.green.shade600,
             iconBg: Colors.green.shade50,
             count: reviewed,
-            label: 'Reviewed',
+            label: l10n.reviewed,
           ),
           const SizedBox(width: 12),
           _statCard(
@@ -217,7 +155,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
             iconColor: _navy,
             iconBg: const Color(0xFFE8EAF6),
             count: thisWeek,
-            label: 'This Week',
+            label: l10n.thisWeek,
           ),
         ],
       ),
@@ -279,6 +217,8 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
 
   // ── Action Cards ──────────────────────────────────────────────────
   Widget _buildActionCards(BuildContext context, int pendingCount) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Row(
@@ -318,17 +258,17 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Review',
-                      style: TextStyle(
+                    Text(
+                      l10n.review,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Review pending\ndocuments',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      l10n.reviewPendingDocuments,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 12),
                     if (pendingCount > 0)
@@ -342,7 +282,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '$pendingCount pending',
+                          l10n.pendingCount(pendingCount),
                           style: TextStyle(
                             color: Colors.orange.shade700,
                             fontSize: 12,
@@ -359,8 +299,9 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context)
-                    .pushNamed(AppRoutes.adminReviewedDocuments);
+                Navigator.of(
+                  context,
+                ).pushNamed(AppRoutes.adminReviewedDocuments);
               },
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -392,17 +333,17 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Archive',
-                      style: TextStyle(
+                    Text(
+                      l10n.archive,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'View reviewed\ndocuments',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      l10n.viewReviewedDocuments,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
                 ),
@@ -415,7 +356,11 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
   }
 
   // ── Recent Activity ───────────────────────────────────────────────
-  Widget _buildRecentActivity(List<QueryDocumentSnapshot> docs) {
+  Widget _buildRecentActivity(
+    BuildContext context,
+    List<QueryDocumentSnapshot> docs,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
     final reviewed = docs
         .where((d) => _statusOf(d) != 'Pending Review')
         .take(5)
@@ -428,9 +373,9 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'RECENT ACTIVITY',
-            style: TextStyle(
+          Text(
+            l10n.recentActivity.toUpperCase(),
+            style: const TextStyle(
               color: _navy,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -438,13 +383,14 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          ...reviewed.map((doc) => _activityTile(doc)),
+          ...reviewed.map((doc) => _activityTile(context, doc)),
         ],
       ),
     );
   }
 
-  Widget _activityTile(QueryDocumentSnapshot doc) {
+  Widget _activityTile(BuildContext context, QueryDocumentSnapshot doc) {
+    final l10n = AppLocalizations.of(context)!;
     final data = doc.data() as Map<String, dynamic>;
     final status = data['status'] as String? ?? '';
     final title = data['title'] as String? ?? '';
@@ -472,7 +418,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
         icon = Icons.access_time_rounded;
     }
 
-    final timeAgo = _timeAgo(reviewedAt);
+    final timeAgo = _timeAgo(context, reviewedAt);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -505,7 +451,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title.isNotEmpty ? title : 'Untitled Document',
+                  title.isNotEmpty ? title : l10n.untitledDocument,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -517,7 +463,7 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 Text(
-                  '$status • $timeAgo',
+                  '${_statusLabel(l10n, status)} • $timeAgo',
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
@@ -537,8 +483,11 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
   int _countThisWeek(List<QueryDocumentSnapshot> docs) {
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final weekStartDate =
-        DateTime(weekStart.year, weekStart.month, weekStart.day);
+    final weekStartDate = DateTime(
+      weekStart.year,
+      weekStart.month,
+      weekStart.day,
+    );
 
     return docs.where((doc) {
       final data = doc.data() as Map<String, dynamic>;
@@ -550,15 +499,31 @@ class AdminDocumentDashboardScreen extends StatelessWidget {
     }).length;
   }
 
-  String _timeAgo(Timestamp? ts) {
+  String _timeAgo(BuildContext context, Timestamp? ts) {
+    final l10n = AppLocalizations.of(context)!;
     if (ts == null) return '';
 
     final now = DateTime.now();
     final diff = now.difference(ts.toDate());
 
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-    if (diff.inHours < 24) return '${diff.inHours} hours ago';
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
 
-    return '${diff.inDays} days ago';
+    return l10n.daysAgo(diff.inDays);
+  }
+
+  String _statusLabel(AppLocalizations l10n, String status) {
+    switch (status) {
+      case 'Approved':
+        return l10n.approved;
+      case 'Needs Correction':
+        return l10n.needsCorrection;
+      case 'Rejected':
+        return l10n.rejected;
+      case 'Pending Review':
+        return l10n.pendingReview;
+      default:
+        return status;
+    }
   }
 }
