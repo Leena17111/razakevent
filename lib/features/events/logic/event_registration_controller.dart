@@ -3,6 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum RegistrationStep { form, payment, success }
 
@@ -38,6 +40,8 @@ class EventRegistrationController extends ChangeNotifier {
 
   String _selectedFaculty = '';
   String get selectedFaculty => _selectedFaculty;
+
+  String? get currentUserId => _auth.currentUser?.uid;
 
   // ---------------------------------------------------------------------------
   // Profile loading
@@ -190,6 +194,32 @@ class EventRegistrationController extends ChangeNotifier {
       final uid = _auth.currentUser?.uid;
       if (uid == null) throw Exception('Not authenticated');
 
+      if (kIsWeb) {
+        final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+            .httpsCallable('createCheckoutSession');
+
+        final currentUrl = Uri.base.origin;
+        final faculty = Uri.encodeComponent(_selectedFaculty);
+
+        final result = await callable.call({
+          'eventId': eventId,
+          'amountInCents': (feeInRinggit * 100).toInt(),
+          'currency': 'myr',
+          'successUrl':
+            '$currentUrl/#/payment-success?eventId=$eventId&faculty=$faculty',
+          'cancelUrl': '$currentUrl/#/',
+        });
+
+        final checkoutUrl = result.data['url'] as String;
+
+        await launchUrl(
+          Uri.parse(checkoutUrl),
+          webOnlyWindowName: '_self',
+        );
+
+        return;
+}
+
       // 1. Call Cloud Function to create a PaymentIntent on Stripe's server.
       final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
           .httpsCallable('createPaymentIntent');
@@ -261,6 +291,44 @@ class EventRegistrationController extends ChangeNotifier {
     await batch.commit();
   }
 
+  Future<void> saveWebPaymentRegistration({
+    required String eventId,
+    required String faculty,
+  }) async {
+    final uid = _auth.currentUser!.uid;
+
+    final existing = await _firestore
+        .collection('eventRegistrations')
+        .where('eventId', isEqualTo: eventId)
+        .where('userId', isEqualTo: uid)
+        .limit(1)
+        .get();
+
+    if (existing.docs.isNotEmpty) return;
+
+    final userDoc = await _firestore.collection('users').doc(uid).get();
+    final user = userDoc.data() ?? {};
+
+    final batch = _firestore.batch();
+    final regRef = _firestore.collection('eventRegistrations').doc();
+
+    batch.set(regRef, {
+      'eventId': eventId,
+      'userId': uid,
+      'fullName': user['fullName'] ?? '',
+      'matricNumber': user['matricNumber'] ?? '',
+      'phoneNumber': user['phoneNumber'] ?? '',
+      'faculty': faculty,
+      'paymentStatus': 'paid',
+      'registeredAt': FieldValue.serverTimestamp(),
+    });
+
+    batch.update(_firestore.collection('events').doc(eventId), {
+      'registeredCount': FieldValue.increment(1),
+    });
+
+    await batch.commit();
+  }
   // ---------------------------------------------------------------------------
   // Navigation helpers
   // ---------------------------------------------------------------------------
