@@ -342,34 +342,85 @@ class RoleBottomNavigation extends StatelessWidget {
       ...destinations,
     ];
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.borderLight)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowDark,
-              blurRadius: 16,
-              offset: Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(12, 9, 12, 10),
-          child: Row(
-            children: [
-              for (final item in navItems) ...[
-                _RoleBottomNavItem(
-                  item: item,
-                  isSelected: item.matchesRoute(currentRoute),
-                  onTap: () => _handleTap(context, item),
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.borderLight)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowDark,
+            blurRadius: 16,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 74,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final availableWidth = constraints.maxWidth;
+              final horizontalPadding = availableWidth >= 720 ? 18.0 : 10.0;
+              final gap = availableWidth >= 420 ? 8.0 : 4.0;
+              final maxNavWidth = availableWidth >= 720
+                  ? 720.0
+                  : availableWidth;
+              final usableWidth = maxNavWidth - (horizontalPadding * 2);
+              final itemCount = navItems.length;
+              final fittedItemWidth =
+                  (usableWidth - (gap * (itemCount - 1))) / itemCount;
+              final itemWidth = fittedItemWidth.clamp(58.0, 92.0);
+              final needsScroll =
+                  (itemWidth * itemCount) + (gap * (itemCount - 1)) >
+                  usableWidth;
+              final rowWidth = needsScroll
+                  ? null
+                  : (itemWidth * itemCount) + (gap * (itemCount - 1));
+
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxNavWidth),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: needsScroll
+                        ? const BouncingScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      9,
+                      horizontalPadding,
+                      10,
+                    ),
+                    child: SizedBox(
+                      width: rowWidth,
+                      child: Row(
+                        mainAxisAlignment: needsScroll
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.center,
+                        children: [
+                          for (var index = 0; index < navItems.length; index++)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                right: index == navItems.length - 1 ? 0 : gap,
+                              ),
+                              child: _RoleBottomNavItem(
+                                item: navItems[index],
+                                width: itemWidth,
+                                isSelected: navItems[index].matchesRoute(
+                                  currentRoute,
+                                ),
+                                onTap: () =>
+                                    _handleTap(context, navItems[index]),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 8),
-              ],
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -400,11 +451,13 @@ class RoleBottomNavigation extends StatelessWidget {
 
 class _RoleBottomNavItem extends StatelessWidget {
   final RoleDashboardDestination item;
+  final double width;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _RoleBottomNavItem({
     required this.item,
+    required this.width,
     required this.isSelected,
     required this.onTap,
   });
@@ -422,8 +475,8 @@ class _RoleBottomNavItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         onTap: onTap,
         child: Container(
-          width: 78,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          width: width,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(18),
@@ -433,16 +486,19 @@ class _RoleBottomNavItem extends StatelessWidget {
             children: [
               Icon(item.icon, color: foreground, size: 21),
               const SizedBox(height: 4),
-              Text(
-                item.navLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.caption.copyWith(
-                  color: foreground,
-                  fontSize: 10.5,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  height: 1.1,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.navLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.caption.copyWith(
+                    color: foreground,
+                    fontSize: 10.5,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    height: 1.1,
+                  ),
                 ),
               ),
             ],
