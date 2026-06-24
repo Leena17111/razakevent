@@ -39,6 +39,7 @@ import 'features/equipment/presentation/equipment_form_screen.dart';
 import 'features/equipment/presentation/borrow_event_select_screen.dart';
 import 'features/equipment/presentation/return_borrowed_equipment_screen.dart';
 import 'features/equipment/presentation/review_special_requests_screen.dart';
+import 'features/events/presentation/payment_success_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,14 @@ Future<void> main() async {
   runApp(const RazakEventApp());
 }
 
+String resolveInitialRoute() {
+  if (kIsWeb && Uri.base.fragment.startsWith('/')) {
+    return Uri.base.fragment;
+  }
+
+  return AppRoutes.splash;
+}
+
 class RazakEventApp extends StatelessWidget {
   const RazakEventApp({super.key});
 
@@ -93,7 +102,7 @@ class RazakEventApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          initialRoute: AppRoutes.splash,
+          initialRoute: resolveInitialRoute(),
           routes: {
             AppRoutes.splash: (context) => const SplashScreen(),
             AppRoutes.login: (context) => const LoginScreen(),
@@ -151,9 +160,7 @@ class RazakEventApp extends StatelessWidget {
             ),
             AppRoutes.eventDetail: (_) => const EventDetailScreen(),
             AppRoutes.registerEvent: (_) => const EventRegistrationScreen(),
-            AppRoutes.registrationSuccess: (_) => const Scaffold(
-              body: Center(child: Text('Registration Success')),
-            ),
+           AppRoutes.paymentSuccess: (_) => const PaymentSuccessPage(),
             AppRoutes.myRegisteredEvents: (_) => const Scaffold(
               body: Center(child: Text('My Registered Events')),
             ),
@@ -258,6 +265,17 @@ class RazakEventApp extends StatelessWidget {
             AppRoutes.certificatePreview: (_) => const Scaffold(
               body: Center(child: Text('Certificate Preview')),
             ),
+          },
+          onGenerateRoute: (settings) {
+            if (settings.name != null &&
+                settings.name!.startsWith('/payment-success')) {
+              return MaterialPageRoute(
+                builder: (_) => const PaymentSuccessPage(),
+                settings: settings,
+              );
+            }
+
+            return null;
           },
         );
       },

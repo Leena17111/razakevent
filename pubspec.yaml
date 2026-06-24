@@ -53,6 +53,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_stripe: ^12.6.0
   cloud_functions: ^6.3.1
+  flutter_stripe_web: ^7.3.0
 
   # PayPal payment integration
   # flutter_paypal_payment: opens a PayPal/card payment page inside the app.
