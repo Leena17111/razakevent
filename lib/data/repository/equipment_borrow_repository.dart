@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -167,13 +167,15 @@ class EquipmentBorrowRepository {
           .where('organizerHeadId', isEqualTo: user.uid)
           .get();
 
-      eligible.add(EligibleEvent(
-        id: doc.id,
-        name: data['title'] ?? '',
-        eventDate: eventDate,
-        venue: data['venue'] ?? '',
-        borrowedItemsCount: borrowSnap.docs.length,
-      ));
+      eligible.add(
+        EligibleEvent(
+          id: doc.id,
+          name: data['title'] ?? '',
+          eventDate: eventDate,
+          venue: data['venue'] ?? '',
+          borrowedItemsCount: borrowSnap.docs.length,
+        ),
+      );
     }
 
     eligible.sort((a, b) => a.eventDate.compareTo(b.eventDate));
@@ -374,7 +376,7 @@ class EquipmentBorrowRepository {
         eventDate = (event.data()?['eventDateTime'] as Timestamp?)?.toDate();
       }
       if (eventDate == null ||
-          !eventDate.isAfter(DateTime.now().add(const Duration(days: 3)))) {
+          !eventDate.isAfter(DateTime.now().add(const Duration(hours: 24)))) {
         throw Exception('Borrow request can no longer be cancelled.');
       }
 
@@ -522,8 +524,12 @@ class EquipmentBorrowRepository {
     ]);
 
     // Build sets of eventIds that have at least one borrow or special request
-    final borrowedEventIds = results[2].docs.map((d) => d.data()['eventId'] as String? ?? '').toSet();
-    final specialEventIds = results[3].docs.map((d) => d.data()['eventId'] as String? ?? '').toSet();
+    final borrowedEventIds = results[2].docs
+        .map((d) => d.data()['eventId'] as String? ?? '')
+        .toSet();
+    final specialEventIds = results[3].docs
+        .map((d) => d.data()['eventId'] as String? ?? '')
+        .toSet();
     final allBorrowedEventIds = {...borrowedEventIds, ...specialEventIds};
 
     // Count per event for borrowedItemsCount
@@ -550,9 +556,7 @@ class EquipmentBorrowRepository {
     }
 
     // Only events with admin-approved paperwork can appear here.
-    final approvedEventIds = await _fetchApprovedEventIds(
-      merged.keys.toList(),
-    );
+    final approvedEventIds = await _fetchApprovedEventIds(merged.keys.toList());
 
     final List<EligibleEvent> result = [];
 
@@ -565,13 +569,15 @@ class EquipmentBorrowRepository {
       final Timestamp? ts = data['eventDateTime'] as Timestamp?;
       if (ts == null) continue;
 
-      result.add(EligibleEvent(
-        id: doc.id,
-        name: data['title'] ?? '',
-        eventDate: ts.toDate(),
-        venue: data['venue'] ?? '',
-        borrowedItemsCount: borrowCountMap[doc.id] ?? 0,
-      ));
+      result.add(
+        EligibleEvent(
+          id: doc.id,
+          name: data['title'] ?? '',
+          eventDate: ts.toDate(),
+          venue: data['venue'] ?? '',
+          borrowedItemsCount: borrowCountMap[doc.id] ?? 0,
+        ),
+      );
     }
 
     result.sort((a, b) => b.eventDate.compareTo(a.eventDate));
@@ -586,9 +592,10 @@ class EquipmentBorrowRepository {
         .collection('specialEquipmentRequests')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map(SpecialEquipmentRequest.fromFirestore)
-            .toList());
+        .map(
+          (snap) =>
+              snap.docs.map(SpecialEquipmentRequest.fromFirestore).toList(),
+        );
   }
 
   /// Approves a special equipment request.
@@ -603,11 +610,11 @@ class EquipmentBorrowRepository {
         .collection('specialEquipmentRequests')
         .doc(requestId)
         .update({
-      'status': 'approved',
-      'approvalLocation': location.trim(),
-      'adminNote': note?.trim().isNotEmpty == true ? note!.trim() : null,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': 'approved',
+          'approvalLocation': location.trim(),
+          'adminNote': note?.trim().isNotEmpty == true ? note!.trim() : null,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   /// Rejects a special equipment request with a mandatory reason.
@@ -619,9 +626,9 @@ class EquipmentBorrowRepository {
         .collection('specialEquipmentRequests')
         .doc(requestId)
         .update({
-      'status': 'rejected',
-      'adminNote': reason.trim(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': 'rejected',
+          'adminNote': reason.trim(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 }

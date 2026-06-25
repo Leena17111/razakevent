@@ -265,33 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTopBar(UserModel user) {
     return Row(
       children: [
-        Container(
-          width: 38,
-          height: 38,
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderLight),
-            boxShadow: const [
-              BoxShadow(
-                color: AppColors.shadowDark,
-                blurRadius: 8,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Image.asset(
-            'assets/images/app_icon.png',
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const Icon(
-              Icons.event_available_rounded,
-              color: AppColors.primary,
-              size: 20,
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: Text(
             'Welcome back, ${_firstName(user.fullName)}',

@@ -23,6 +23,50 @@
   "submitDocument": "Hantar Dokumen",
 
   "reviewDocument": "Semak Dokumen",
+  "documentReviewDashboardTitle": "Semakan Dokumen",
+  "documentReviewDashboardSubtitle": "Semak dan luluskan dokumentasi acara",
+  "reviewed": "Disemak",
+  "thisWeek": "Minggu Ini",
+  "review": "Semak",
+  "reviewPendingDocuments": "Semak dokumen\ntertangguh",
+  "pendingCount": "{count} menunggu",
+  "@pendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archive": "Arkib",
+  "viewReviewedDocuments": "Lihat dokumen\ndisemak",
+  "recentActivity": "Aktiviti Terkini",
+  "untitledDocument": "Dokumen Tanpa Tajuk",
+  "pendingReview": "Menunggu Semakan",
+  "needsCorrection": "Perlu Pembetulan",
+  "minutesAgo": "{count} min lalu",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} jam lalu",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} hari lalu",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pdfPreview": "Pratonton PDF",
   "documentInformation": "Maklumat Dokumen",
   "eventTitle": "Tajuk Acara",
@@ -223,9 +267,19 @@
   "detailsButton": "Butiran",
   "errorLoadingEvents": "Gagal memuatkan acara",
   "retryButton": "Cuba Lagi",
+  "navHome": "Utama",
   "navEvents": "Acara",
   "navVolunteer": "Sukarela",
   "navProfile": "Profil",
+  "navDocuments": "Dokumen",
+  "navEquipment": "Peralatan",
+  "navBorrow": "Pinjam",
+  "navRequests": "Permohonan",
+  "navFeedback": "Maklum Balas",
+  "navCertificates": "Sijil",
+  "navResponses": "Respons",
+  "navForms": "Borang",
+  "navStatus": "Status",
   "categoryAll": "Semua",
   "categorySports": "Sukan",
   "categoryAcademic": "Akademik",
@@ -564,6 +618,7 @@
   "borrowedLoadError": "Gagal memuatkan peralatan dipinjam.",
   "borrowCancelSuccess": "Permintaan pinjaman dibatalkan.",
   "borrowCancelError": "Tidak dapat membatalkan permintaan pinjaman ini.",
+  "borrowCancelBlocked": "Permintaan pinjaman hanya boleh dibatalkan lebih 24 jam sebelum acara.",
   "specialRequestReason": "Sebab",
   "specialCreatedAt": "Diminta pada",
   "specialRequestsEmpty": "Tiada permintaan khas ditemui.",

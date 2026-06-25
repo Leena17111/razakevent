@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/user_model.dart';
 import '../../features/profile/logic/profile_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import '../routes/app_routes.dart';
@@ -41,12 +42,85 @@ class RoleDashboardDestination {
   bool matchesRoute(String route) {
     return routeName == route || routeAliases.contains(route);
   }
+
+  String localizedNavLabel(AppLocalizations l10n) {
+    switch (navLabel) {
+      case 'Home':
+        return l10n.navHome;
+      case 'Documents':
+      case 'Docs':
+        return l10n.navDocuments;
+      case 'Equipment':
+        return l10n.navEquipment;
+      case 'Borrow':
+        return l10n.navBorrow;
+      case 'Requests':
+        return l10n.navRequests;
+      case 'Events':
+        return l10n.navEvents;
+      case 'Feedback':
+        return l10n.navFeedback;
+      case 'Volunteer':
+        return l10n.navVolunteer;
+      case 'Certs':
+        return l10n.navCertificates;
+      case 'Profile':
+        return l10n.navProfile;
+      case 'Responses':
+        return l10n.navResponses;
+      case 'Forms':
+        return l10n.navForms;
+      case 'Status':
+        return l10n.navStatus;
+      default:
+        return navLabel;
+    }
+  }
 }
 
 class RoleDashboardConfig {
   RoleDashboardConfig._();
 
   static List<RoleDashboardDestination> navigationForRole(String role) {
+    if (role == UserRole.organizerHead) {
+      return const [
+        RoleDashboardDestination(
+          title: 'Documents',
+          subtitle: 'Track event document approval status.',
+          navLabel: 'Docs',
+          icon: Icons.description_rounded,
+          color: AppColors.secretaryBadgeText,
+          routeName: AppRoutes.trackEventDocumentStatus,
+        ),
+        RoleDashboardDestination(
+          title: 'Event Details',
+          subtitle: 'Create and manage event information.',
+          navLabel: 'Events',
+          icon: Icons.event_note_rounded,
+          color: AppColors.organizerBadgeText,
+          routeName: AppRoutes.eventDetailsList,
+        ),
+        RoleDashboardDestination(
+          title: 'Volunteer Positions',
+          subtitle: 'Add positions and review applications.',
+          navLabel: 'Volunteer',
+          icon: Icons.groups_rounded,
+          color: AppColors.accent,
+          routeName: AppRoutes.volunteerManagement,
+          routeAliases: [AppRoutes.addVolunteerPosition],
+        ),
+        RoleDashboardDestination(
+          title: 'Borrow Equipment',
+          subtitle: 'Request and manage borrowed items.',
+          navLabel: 'Borrow',
+          icon: Icons.inventory_2_rounded,
+          color: AppColors.primaryLight,
+          routeName: AppRoutes.selectEquipmentEvent,
+        ),
+        RoleDashboardDestination.profile(),
+      ];
+    }
+
     if (role != UserRole.admin) return destinationsForRole(role);
 
     return const [
@@ -464,6 +538,7 @@ class _RoleBottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final foreground = isSelected
         ? AppColors.textWhite
         : AppColors.textSecondary;
@@ -489,7 +564,7 @@ class _RoleBottomNavItem extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  item.navLabel,
+                  item.localizedNavLabel(l10n),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,

@@ -31,8 +31,25 @@ class BorrowedEquipmentTab extends StatefulWidget {
 class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
   String _filter = 'all';
 
-  Future<void> _cancel(BorrowedEquipmentRequestModel request) async {
+  bool _canCancel(DateTime eventDate) {
+    return eventDate.isAfter(DateTime.now().add(const Duration(hours: 24)));
+  }
+
+  Future<void> _cancel(
+    BorrowedEquipmentRequestModel request,
+    DateTime eventDate,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
+    if (!_canCancel(eventDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.borrowCancelBlocked),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     try {
       await widget.repository.cancelBorrowRequest(request.id);
       if (!mounted) return;
@@ -47,7 +64,11 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.borrowCancelError),
+          content: Text(
+            _canCancel(eventDate)
+                ? l10n.borrowCancelError
+                : l10n.borrowCancelBlocked,
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -127,7 +148,8 @@ class _BorrowedEquipmentTabState extends State<BorrowedEquipmentTab> {
                               request: request,
                               eventDate: currentEventDate,
                               isCompleted: widget.isCompleted,
-                              onCancel: () => _cancel(request),
+                              onCancel: () =>
+                                  _cancel(request, currentEventDate),
                               onReturn: () async {
                                 final returned = await Navigator.of(context)
                                     .push<bool>(
@@ -322,6 +344,9 @@ class _BorrowedCard extends StatelessWidget {
     final returnDeadline = eventDate.add(const Duration(hours: 24));
     final isBorrowed = request.status == 'borrowed';
     final isOverdue = isBorrowed && DateTime.now().isAfter(returnDeadline);
+    final canCancel = eventDate.isAfter(
+      DateTime.now().add(const Duration(hours: 24)),
+    );
     final deadlineText = DateFormat(
       'd MMM yyyy, h:mm a',
       l10n.localeName,
@@ -354,7 +379,7 @@ class _BorrowedCard extends StatelessWidget {
                   onPressed: onReturn,
                 ),
               ),
-              if (!isCompleted) ...[
+              if (!isCompleted && canCancel) ...[
                 const SizedBox(width: 8),
                 Expanded(
                   child: _OutlinedActionButton(
@@ -367,6 +392,10 @@ class _BorrowedCard extends StatelessWidget {
               ],
             ],
           ),
+          if (!isCompleted && !canCancel) ...[
+            const SizedBox(height: 10),
+            _ReturnReminder(message: l10n.borrowCancelBlocked),
+          ],
         ],
       ],
     );
