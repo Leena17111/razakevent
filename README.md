@@ -13,7 +13,7 @@ Handles user registration, login, logout, password reset, and profile management
 Allows Organizer Heads to manage event details and create feedback forms. Organizer heads for excos and clubs manage event details and feedback forms. Secretaries upload and track official event documents for events. Admins review and approve or reject submitted documents.
 
 ### Sprint 3 — Event Participation Module 
-Allows students to browse and register for approved events, complete payment of registration fee with stripe payment, and submit dynamic feedback forms. Organizer Heads can view registrant lists, feedback responses with AI-generated summaries using Gemini API.
+Allows students to browse and register for approved events, complete payment of registration fee with stripe payment, and submit dynamic feedback forms. Organizer Heads can view registrant lists, feedback responses with AI-generated summaries using Groq API.
 
 ### Sprint 3 — Volunteer Recruitment Module
 Allows students to apply for volunteer positions and track their application status. Organizer heads can manage volunteer slots, and review volunteer applications.
@@ -44,7 +44,7 @@ Allows Students to view and download automatically generated certificates issued
 | Authentication | Firebase Authentication |
 | Database | Cloud Firestore |
 | Storage | Firebase Storage |
-| AI Summary | Gemini API |
+| AI Summary | Groq API |
 | Payment | Stripe |
 | Localization | Flutter Intl, ARB files (EN/BM) |
 
@@ -134,7 +134,7 @@ Create a `.env` file or configure the required API keys before running Sprint 3 
 
 ```text
 STRIPE_PUBLISHABLE_KEY=your_stripe_sandbox_key
-GEMINI_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_gemini_api_key
 ```
 
 Never commit real API keys to GitHub. Add `.env` to `.gitignore`.
@@ -184,5 +184,5 @@ samples, guidance on mobile development, and a full API reference.
 ## Additional Resources
 
 - Firebase Flutter Setup: https://firebase.google.com/docs/flutter/setup
-- Gemini API Documentation: https://ai.google.dev/
+- Groq API Documentation: https://console.groq.com/docs
 - Stripe Documentation: https://docs.stripe.com/
