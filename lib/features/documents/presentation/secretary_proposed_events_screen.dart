@@ -32,6 +32,11 @@ class _SecretaryProposedEventsViewState
   static const Color _navy = Color(0xFF1A237E);
   String _filter = 'All';
 
+  // Cache the document-fetch future so it doesn't re-fire on every
+  // stream rebuild. Only refreshed when the event ID list changes.
+  Future<Map<String, Map<String, dynamic>?>>? _docFuture;
+  List<String> _lastEventIds = [];
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<SecretaryProposedEventsController>();
@@ -57,11 +62,60 @@ class _SecretaryProposedEventsViewState
                   return _buildEmptyState(l10n);
                 }
 
-                return _FilteredEventsList(
-                  events: events,
-                  controller: controller,
-                  l10n: l10n,
-                  filter: _filter,
+                // ── Batched document fetch (cached) ──────────────────────
+                // Only re-fetches when the set of event IDs actually changes,
+                // not on every stream tick.
+                final eventIds = events
+                    .map((e) => e['eventId'] as String? ?? '')
+                    .where((id) => id.isNotEmpty)
+                    .toList();
+
+                if (_docFuture == null ||
+                    !_listEquals(eventIds, _lastEventIds)) {
+                  _lastEventIds = eventIds;
+                  _docFuture =
+                      controller.fetchDocumentsForEvents(eventIds);
+                }
+
+                return FutureBuilder<Map<String, Map<String, dynamic>?>>(
+                  future: _docFuture,
+                  builder: (context, docSnapshot) {
+                    if (docSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final docMap = docSnapshot.data ?? {};
+
+                    // Apply filter in Dart — no extra Firestore round-trips.
+                    final filtered = events.where((event) {
+                      final eventId = event['eventId'] as String? ?? '';
+                      final hasDoc = docMap[eventId] != null;
+                      if (_filter == 'Needs Paperwork') return !hasDoc;
+                      if (_filter == 'Submitted') return hasDoc;
+                      return true; // 'All'
+                    }).toList();
+
+                    if (filtered.isEmpty) {
+                      return _buildFilterEmptyState(l10n);
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final event = filtered[index];
+                        final eventId = event['eventId'] as String? ?? '';
+                        final doc = docMap[eventId];
+                        return _EventProposedCard(
+                          event: event,
+                          document: doc,
+                          l10n: l10n,
+                        );
+                      },
+                    );
+                  },
                 );
               },
             ),
@@ -103,7 +157,8 @@ class _SecretaryProposedEventsViewState
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
+              fontWeight:
+                  selected ? FontWeight.w700 : FontWeight.normal,
               color: selected ? Colors.white : Colors.grey.shade700,
             ),
           ),
@@ -128,7 +183,8 @@ class _SecretaryProposedEventsViewState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon:
+                    const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -153,7 +209,8 @@ class _SecretaryProposedEventsViewState
           const SizedBox(height: 4),
           Text(
             l10n.secretaryProposedEventsSubtitle,
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
+            style:
+                const TextStyle(color: Colors.white70, fontSize: 13),
           ),
         ],
       ),
@@ -165,7 +222,8 @@ class _SecretaryProposedEventsViewState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.event_busy_rounded, size: 64, color: Colors.grey.shade300),
+          Icon(Icons.event_busy_rounded,
+              size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           Text(
             l10n.noProposedEventsYet,
@@ -179,104 +237,55 @@ class _SecretaryProposedEventsViewState
           Text(
             l10n.noProposedEventsSubtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+            style:
+                TextStyle(color: Colors.grey.shade400, fontSize: 13),
           ),
         ],
       ),
     );
   }
-}
 
-// ── Filtered Events List ──────────────────────────────────────────────────────
-class _FilteredEventsList extends StatelessWidget {
-  final List<Map<String, dynamic>> events;
-  final SecretaryProposedEventsController controller;
-  final AppLocalizations l10n;
-  final String filter;
-
-  const _FilteredEventsList({
-    required this.events,
-    required this.controller,
-    required this.l10n,
-    required this.filter,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _filteredStream(controller),
-      builder: (context, snapshot) {
-        final filtered = snapshot.data ?? [];
-        if (filtered.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.event_busy_rounded,
-                    size: 64, color: Colors.grey.shade300),
-                const SizedBox(height: 16),
-                Text(
-                  filter == 'Needs Paperwork'
-                      ? l10n.allEventsPaperworkDone
-                      : filter == 'Submitted'
-                          ? l10n.noSubmittedPaperworkYet
-                          : l10n.noProposedEventsYet,
-                  style:
-                      TextStyle(color: Colors.grey.shade500, fontSize: 15),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        }
-        return ListView.builder(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            return _EventProposedCard(
-              event: filtered[index],
-              controller: controller,
-              l10n: l10n,
-            );
-          },
-        );
-      },
+  Widget _buildFilterEmptyState(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.event_busy_rounded,
+              size: 64, color: Colors.grey.shade300),
+          const SizedBox(height: 16),
+          Text(
+            _filter == 'Needs Paperwork'
+                ? l10n.allEventsPaperworkDone
+                : _filter == 'Submitted'
+                    ? l10n.noSubmittedPaperworkYet
+                    : l10n.noProposedEventsYet,
+            style:
+                TextStyle(color: Colors.grey.shade500, fontSize: 15),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
-  Stream<List<Map<String, dynamic>>> _filteredStream(
-      SecretaryProposedEventsController controller) {
-    return controller.getProposedEvents().asyncMap((events) async {
-      final List<Map<String, dynamic>> result = [];
-      for (final event in events) {
-        final eventId = event['eventId'] as String? ?? '';
-        final docSnap = await FirebaseFirestore.instance
-            .collection('documents')
-            .where('eventId', isEqualTo: eventId)
-            .limit(1)
-            .get();
-        final hasDoc = docSnap.docs.isNotEmpty;
-        if (filter == 'All' ||
-            (filter == 'Needs Paperwork' && !hasDoc) ||
-            (filter == 'Submitted' && hasDoc)) {
-          result.add(event);
-        }
-      }
-      return result;
-    });
+  bool _listEquals(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
 }
 
-// ── Event Card with live paperwork status ────────────────────────────────────
+// ── Card — receives pre-resolved document data, no Firestore inside ──────────
 class _EventProposedCard extends StatelessWidget {
   final Map<String, dynamic> event;
-  final SecretaryProposedEventsController controller;
+  final Map<String, dynamic>? document; // already fetched
   final AppLocalizations l10n;
 
   const _EventProposedCard({
     required this.event,
-    required this.controller,
+    required this.document,
     required this.l10n,
   });
 
@@ -284,114 +293,108 @@ class _EventProposedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final eventId = event['eventId'] as String? ?? '';
     final title = event['title'] as String? ?? '';
     final orgType = event['organizationType'] as String? ?? '';
     final orgName = event['organizationName'] as String? ?? '';
     final category = event['category'] as String? ?? '';
     final eventDateTime = event['eventDateTime'];
     final venue = event['venue'] as String? ?? '';
+    final status = document?['status'] as String?;
 
-    return StreamBuilder<Map<String, dynamic>?>(
-      stream: controller.getLinkedDocument(eventId),
-      builder: (context, snapshot) {
-        final doc = snapshot.data;
-        final status = doc?['status'] as String?;
-
-        return GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(
-            AppRoutes.secretaryEventDetail,
-            arguments: {
-              'event': event,
-              'document': doc,
-            },
-          ),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(
+        AppRoutes.secretaryEventDetail,
+        arguments: {
+          'event': event,
+          'document': document,
+        },
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
-                    _paperworkBadge(status, l10n),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _orgTypeBadge(orgType, l10n),
-                    const SizedBox(width: 8),
-                    Text(
-                      orgName,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        category,
-                        style: const TextStyle(color: Colors.grey, fontSize: 11),
-                      ),
-                    ),
-                  ],
+                _paperworkBadge(status),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _orgTypeBadge(orgType),
+                const SizedBox(width: 8),
+                Text(
+                  orgName,
+                  style: const TextStyle(
+                      color: Colors.grey, fontSize: 13),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today_outlined,
-                        size: 12, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      _formatDateTime(eventDateTime),
-                      style:
-                          const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.location_on_outlined,
-                        size: 12, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      venue,
-                      style:
-                          const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    category,
+                    style: const TextStyle(
+                        color: Colors.grey, fontSize: 11),
+                  ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.calendar_today_outlined,
+                    size: 12, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  _formatDateTime(eventDateTime),
+                  style: const TextStyle(
+                      color: Colors.grey, fontSize: 12),
+                ),
+                const SizedBox(width: 12),
+                const Icon(Icons.location_on_outlined,
+                    size: 12, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  venue,
+                  style: const TextStyle(
+                      color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _paperworkBadge(String? status, AppLocalizations l10n) {
+  Widget _paperworkBadge(String? status) {
     if (status == null) {
       return Container(
         padding:
@@ -443,7 +446,8 @@ class _EventProposedCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
@@ -466,10 +470,11 @@ class _EventProposedCard extends StatelessWidget {
     );
   }
 
-  Widget _orgTypeBadge(String type, AppLocalizations l10n) {
+  Widget _orgTypeBadge(String type) {
     final label = type == 'Exco' ? l10n.exco : l10n.club;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: const Color(0xFFE8EAF6),
         borderRadius: BorderRadius.circular(6),
@@ -487,7 +492,8 @@ class _EventProposedCard extends StatelessWidget {
 
   String _formatDateTime(dynamic value) {
     if (value == null) return '';
-    final dt = value is Timestamp ? value.toDate() : DateTime.now();
+    final dt =
+        value is Timestamp ? value.toDate() : DateTime.now();
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
