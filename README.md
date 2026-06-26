@@ -69,7 +69,7 @@ lib/
 ├── data/
 │   ├── models/             # Shared data models (UserModel, EventModel, etc.)
 │   ├── repository/         # Shared data logic and Firestore queries
-│   └── services/           # Firebase, Gemini, and Stripe service classes
+│   └── services/           # Firebase, Groq, and Stripe service classes
 │
 ├── l10n/                   # ARB localization files (app_en.arb, app_ms.arb)
 │
@@ -134,7 +134,7 @@ Create a `.env` file or configure the required API keys before running Sprint 3 
 
 ```text
 STRIPE_PUBLISHABLE_KEY=your_stripe_sandbox_key
-GROQ_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
 ```
 
 Never commit real API keys to GitHub. Add `.env` to `.gitignore`.
